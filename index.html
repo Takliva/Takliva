@@ -70,11 +70,11 @@
 
     /* Signatur-prikk */
     .sigdot{
-      position:fixed; top:18px; left:18px; width:6px; height:6px; border-radius:50%;
+      position:fixed; top:28px; left:28px; width:6px; height:6px; border-radius:50%;
       background:radial-gradient(circle at 40% 40%, #ffffff 0%, #dfe2ff 55%, rgba(255,255,255,0) 70%);
       opacity:.7;
       box-shadow:0 0 10px rgba(214,210,255,.35), 0 0 2px rgba(255,255,255,.75) inset;
-      animation:pulse 6.5s ease-in-out infinite;
+      animation:pulse 10.5s ease-in-out infinite;
     }
     @keyframes pulse{ 0%,100%{transform:scale(1)} 50%{transform:scale(1.14)} }
 
@@ -89,6 +89,8 @@
 
     /* Stage */
     .stage{height:100%; width:100%; display:grid; place-items:center; text-align:center; padding:2rem; position:relative; z-index:1}
+    /* Skjul scenen helt når sløret er åpent for bedre lesbarhet */
+    body.veil-open .stage{ visibility:hidden }
     .layer{opacity:0; transform:translateY(8px); transition:opacity .9s ease, transform .9s ease}
     .layer.show{opacity:1; transform:none}
     h1.title{margin:0 0 .65rem; font-weight:600; letter-spacing:.06em; text-transform:lowercase; font-size:clamp(46px,8.5vw,108px); text-shadow:0 0 28px rgba(150,130,255,.16)}
@@ -114,8 +116,8 @@
       background:
         radial-gradient(1200px 800px at 50% 42%, rgba(90,70,200,.12), transparent 60%),
         radial-gradient(1000px 720px at 46% 60%, rgba(12,30,120,.14), transparent 55%),
-        rgba(0,0,6,.90);
-      backdrop-filter: blur(6px);
+        rgba(0,0,6,.94);
+      backdrop-filter: blur(10px);
       filter: hue-rotate(var(--hue));
     }
     .panel{ position:relative; max-width:980px; z-index:1; text-align:center }
@@ -365,6 +367,7 @@
   }
   function openVeil(){
     lastFocus = document.activeElement;
+    document.body.classList.add('veil-open');
     veil.classList.add('open');
     enterBtn.setAttribute('aria-expanded','true');
     setInert(true); lockScroll(); trapFocus(veil);
@@ -381,6 +384,7 @@
   }
   function closeVeil(){
     veil.classList.remove('open');
+    document.body.classList.remove('veil-open');
     enterBtn.setAttribute('aria-expanded','false');
     untrapFocus(veil); setInert(false); unlockScroll(); stopDrone();
     if(lastFocus) lastFocus.focus();
@@ -410,17 +414,16 @@
   function startDrone(){
     if(reduceMotion) return; // respekter motion-reduce
     try{
-      if(ac){ gain.gain.linearRampToValueAtTime(0.22, ac.currentTime + 0.6); return; }
+      if(ac){ setVolume(0.22); return; }
 
       ac = new (window.AudioContext || window.webkitAudioContext)();
       master = ac.createGain();
       gain = ac.createGain();
       lp = ac.createBiquadFilter();
       lp.type = 'lowpass';
-      lp.frequency.value = 180;         // mørkere/tyngre topp
+      lp.frequency.value = 180;
       lp.Q.value = 0.7;
 
-      // to nærliggende oscillatorer -> langsom beating/dissonans + sub
       oscA = ac.createOscillator();
       oscB = ac.createOscillator();
       sub  = ac.createOscillator();
@@ -429,21 +432,19 @@
       oscB.type = 'sine';
       sub.type  = 'triangle';
 
-      oscA.frequency.value = 36;        // ~36 Hz
-      oscB.frequency.value = 41;        // ~41 Hz (mild dissonans)
-      sub.frequency.value  = 18;        // sub-understøttelse
+      oscA.frequency.value = 36;
+      oscB.frequency.value = 41;
+      sub.frequency.value  = 18;
 
-      // LFO for sakte pust/detune
       lfo = ac.createOscillator();
       lfoGain = ac.createGain();
       lfo.type = 'sine';
-      lfo.frequency.value = 0.12; // pustefrekvens ~0.12 Hz
-      lfoGain.gain.value = 5;         // +/- ~5 Hz
+      lfo.frequency.value = 0.12;
+      lfoGain.gain.value = 5;
       lfo.connect(lfoGain);
       lfoGain.connect(oscA.frequency);
       lfoGain.connect(oscB.frequency);
 
-      // Gains
       const gA = ac.createGain(); gA.gain.value = 0.22;
       const gB = ac.createGain(); gB.gain.value = 0.18;
       const gS = ac.createGain(); gS.gain.value = 0.10;
@@ -458,19 +459,23 @@
       master.gain.value = 1.0;
 
       oscA.start(); oscB.start(); sub.start(); lfo.start();
-      gain.gain.linearRampToValueAtTime(0.22, ac.currentTime + 1.0);
+      setVolume(0.22);
     }catch(err){
       if(live) live.textContent = 'audio error';
       console.error('Audio init failed', err);
     }
   }
-  function stopDrone(hard=false){
+  function setVolume(target){
     if(!ac) return;
-    const t = ac.currentTime + 0.7;
+    const t = ac.currentTime + 0.6;
     try{
       gain.gain.cancelScheduledValues(ac.currentTime);
-      gain.gain.linearRampToValueAtTime(0.0, t);
+      gain.gain.linearRampToValueAtTime(target, t);
     }catch(_){}
+  }
+  function stopDrone(hard=false){
+    if(!ac) return;
+    setVolume(0.0);
     if(hard){
       setTimeout(()=>{
         try{ oscA?.stop(); oscB?.stop(); sub?.stop(); lfo?.stop(); ac.close(); }catch(_){}
@@ -481,20 +486,22 @@
 
   /* Mute toggle */
   muteBtn.addEventListener('click', ()=>{
-    if(!ac){ if(live) live.textContent='audio inactive'; return; }
+    // Første klikk kan opprette lydkontekst (bruker-gesture)
+    if(!ac) startDrone();
     const pressed = muteBtn.getAttribute('aria-pressed')==='true';
     if(pressed){
       muteBtn.setAttribute('aria-pressed','false'); muteBtn.textContent='mute';
-      startDrone();
+      setVolume(0.22);
     } else {
       muteBtn.setAttribute('aria-pressed','true'); muteBtn.textContent='unmute';
-      stopDrone(true);
+      setVolume(0.0);
     }
   });
 
   /* ESC for å lukke */
   window.addEventListener('keydown', (e)=>{
     if(e.key==='Escape' && veil.classList.contains('open')){ closeVeil(); }
+  }); }
   });
 
   /* =============================================================
