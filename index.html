@@ -42,29 +42,31 @@
     :focus-visible{outline:2px solid #e7e7ef; outline-offset:2px; box-shadow:0 0 0 3px rgba(170,150,255,.25)}
 
     /* --------------------
-       Distance mode
+       Distance mode – ramme følger skjermform
        -------------------- */
     .wrapper{
       min-height:100svh; display:grid; place-items:center;
-      padding: max(5svh, env(safe-area-inset-top)) max(5vw, env(safe-area-inset-right))
-               max(5svh, env(safe-area-inset-bottom)) max(5vw, env(safe-area-inset-left));
+      /* Kun vertikal padding for å unngå side-skift på mobil */
+      padding: max(3svh, env(safe-area-inset-top)) 0
+               max(3svh, env(safe-area-inset-bottom)) 0;
     }
     .frame{
-      position:relative; overflow:hidden; isolation:isolate;
-      width: min(92vw, 880px);
-      height: min(88svh, 880px);
+      position:relative; overflow:hidden; isolation:isolate; margin:0 auto;
+      /* Mindre void rundt: ca 3vw / 3svh margin fra kanter */
+      width: calc(100vw - 6vw);
+      height: calc(100svh - 6svh);
       display:grid; place-items:center;
-      border-radius: 22px;
+      border-radius: 2.2vmin;               /* proporsjonal runding */
       background: var(--scene-bg);
       box-shadow: 0 10px 50px rgba(0,0,0,.65);
       transition: transform .55s ease, opacity .4s ease;
     }
     @media (max-width:640px){
-      .frame{ width:min(94vw, 560px); height:min(86svh, 760px); border-radius:20px }
+      .frame{ width: calc(100vw - 6vw); height: calc(100svh - 8svh); border-radius: 3.5vmin }
     }
     body.veil-open .frame{ opacity:.06; transform: scale(.985) }
 
-    /* Scenelys/gradient ER nå inni rammen */
+    /* Scenelys/gradient ER inni rammen */
     .depth{
       position:absolute; inset:-10% -10% -10% -10%; z-index:0;
       background:
@@ -77,15 +79,15 @@
     }
     @keyframes drift{ 0%{transform: translateY(-1.5%) scale(1.02)} 50%{transform: translateY(1.5%) scale(1.03)} 100%{transform: translateY(-1%) scale(1.015)} }
 
-    /* Haze nederst – også inni rammen */
+    /* Haze nederst – inni rammen */
     .sweep{position:absolute; left:0; right:0; bottom:0; height:22vh; overflow:hidden; pointer-events:none; z-index:2}
     .sweep::before{content:""; position:absolute; inset:0; background:linear-gradient(to bottom, transparent, rgba(0,0,0,.35), rgba(0,0,0,.68))}
     .sweep::after{content:""; position:absolute; inset:auto -10% 12% -10%; height:1px; background:linear-gradient(90deg, transparent, rgba(230,233,255,.08), transparent); animation:sweep 14s linear infinite; opacity:.45}
     @keyframes sweep{ 0%{transform:translateX(-40%)} 100%{transform:translateX(40%)} }
 
-    /* Signatur-prikk – nå ABSOLUTT inni rammen */
+    /* Signatur-prikk – prosent-posisjon i rammen (ikke vh/vw) */
     .sigdot{
-      position:absolute; z-index:3; top:26vh; left:26vw; width:6px; height:6px; border-radius:50%;
+      position:absolute; z-index:3; top:24%; left:26%; width:6px; height:6px; border-radius:50%;
       background:radial-gradient(circle at 40% 40%, #ffffff 0%, #dfe2ff 55%, rgba(255,255,255,0) 70%);
       opacity:.92;
       box-shadow:0 0 14px rgba(214,210,255,.55), 0 0 4px rgba(255,255,255,.95) inset;
@@ -94,8 +96,9 @@
       animation: dotGlow 8.5s ease-in-out infinite;
       transition: opacity .3s ease;
     }
-    body.veil-open .sigdot{ opacity:0 }
-    @media (max-width:640px){ .sigdot{ top:16vh; left:22vw } } /* enda høyere på mobil */
+    /* Skjul dot når veil er åpen – ekstra sterk regel */
+    body.veil-open .sigdot{ opacity:0 !important }
+    @media (max-width:640px){ .sigdot{ top:14%; left:24% } }
 
     @keyframes dotGlow{
       0%,100%{
@@ -104,7 +107,7 @@
         opacity:.92;
       }
       50%{
-        --dot-scale:1.22; /* mer puls */
+        --dot-scale:1.22; /* sensuell, men rolig */
         box-shadow:0 0 46px rgba(214,210,255,.85), 0 0 8px rgba(255,255,255,1) inset;
         opacity:1;
       }
@@ -120,7 +123,7 @@
     /* Gaze spotlight – inni rammen */
     .gaze{ position:absolute; z-index:1; width:44vmax; height:44vmax; border-radius:50%; pointer-events:none; left:50%; top:50%; transform:translate(-50%,-50%); background: radial-gradient(circle at 50% 50%, rgba(210,218,255,.08), rgba(0,0,0,0) 55%); mix-blend-mode: screen; filter: blur(12px) saturate(1.1); }
 
-    /* Stage (innhold lag over lys) */
+    /* Stage */
     .stage{ position:relative; z-index:3; height:100%; width:100%; display:grid; place-items:center; text-align:center; padding:2rem; opacity:1; transition: opacity .35s ease }
     body.veil-open .stage{ opacity:0; pointer-events:none }
     .layer{opacity:1; transform:none; transition:opacity .9s ease, transform .9s ease}
@@ -263,6 +266,7 @@
   const stage=document.querySelector('main.stage');
   const grid=document.getElementById('grid');
   const live=document.getElementById('live');
+  const dotEl=document.querySelector('.sigdot');
 
   let lastFocus=null; let scrollY=0; let focusables=[]; let firstFocusable=null; let lastFocusable=null;
 
@@ -274,8 +278,24 @@
   function handleTab(e){ if(e.key!=='Tab') return; if(focusables.length===0) return; if(e.shiftKey && document.activeElement===firstFocusable){ e.preventDefault(); lastFocusable.focus(); } else if(!e.shiftKey && document.activeElement===lastFocusable){ e.preventDefault(); firstFocusable.focus(); } }
 
   function revealArtifacts(){ grid.classList.remove('latent'); grid.removeAttribute('aria-hidden'); }
-  function openVeil(){ lastFocus=document.activeElement; document.body.classList.add('veil-open'); veil.classList.add('open'); enterBtn.setAttribute('aria-expanded','true'); setInert(true); lockScroll(); trapFocus(veil); requestAnimationFrame(()=>{ const t = veil.querySelector('#vh') || veil; t.setAttribute('tabindex','-1'); t.focus({preventScroll:true}); }); grid.classList.add('latent'); grid.setAttribute('aria-hidden','true'); setTimeout(revealArtifacts, 2200); enterSilenceWithSwell(); }
-  function closeVeil(){ veil.classList.remove('open'); document.body.classList.remove('veil-open'); enterBtn.setAttribute('aria-expanded','false'); untrapFocus(veil); setInert(false); unlockScroll(); if(lastFocus) lastFocus.focus(); }
+  function openVeil(){
+    lastFocus=document.activeElement;
+    document.body.classList.add('veil-open');
+    veil.classList.add('open');
+    enterBtn.setAttribute('aria-expanded','true');
+    if(dotEl){ dotEl.style.opacity='0'; }
+    setInert(true); lockScroll(); trapFocus(veil);
+    requestAnimationFrame(()=>{ const t = veil.querySelector('#vh') || veil; t.setAttribute('tabindex','-1'); t.focus({preventScroll:true}); });
+    grid.classList.add('latent'); grid.setAttribute('aria-hidden','true'); setTimeout(revealArtifacts, 2200);
+    enterSilenceWithSwell();
+  }
+  function closeVeil(){
+    veil.classList.remove('open');
+    document.body.classList.remove('veil-open');
+    enterBtn.setAttribute('aria-expanded','false');
+    if(dotEl){ dotEl.style.opacity=''; }
+    untrapFocus(veil); setInert(false); unlockScroll(); if(lastFocus) lastFocus.focus();
+  }
 
   enterBtn.addEventListener('click', openVeil);
   closeBtn.addEventListener('click', ()=>{ closeVeil(); });
@@ -301,14 +321,11 @@
       const buf=ac.createBuffer(1, frames, sr); const data=buf.getChannelData(0);
       for(let i=0;i<frames;i++){ const n=(Math.random()*2-1); data[i]=(i>0?data[i-1]*0.94+n*0.06:n*0.06); }
       const src=ac.createBufferSource(); src.buffer=buf; src.loop=false;
-      // Bandpass med FAST frekvens = samme tone hele veien
       const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=420; bp.Q.value=5.5;
-      // Lett AM (tremor) for surreal følelse uten pitch-endring
       const g=ac.createGain(); const am=ac.createOscillator(); const amGain=ac.createGain();
-      g.gain.value=0.0; am.frequency.value=0.8; amGain.gain.value=0.18; // 18% amplitude modulering
+      g.gain.value=0.0; am.frequency.value=0.8; amGain.gain.value=0.18;
       am.connect(amGain); amGain.connect(g.gain);
       src.connect(bp); bp.connect(g); g.connect(master);
-      // Envelopen
       g.gain.setValueAtTime(0.0, now);
       g.gain.linearRampToValueAtTime(0.30, now+0.40);
       g.gain.linearRampToValueAtTime(0.0, now+dur);
