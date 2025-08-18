@@ -73,23 +73,23 @@
     .sigdot{
       position:fixed; top:30vh; left:28vw; width:6px; height:6px; border-radius:50%;
       background:radial-gradient(circle at 40% 40%, #ffffff 0%, #dfe2ff 55%, rgba(255,255,255,0) 70%);
-      opacity:.85;
-      box-shadow:0 0 10px rgba(214,210,255,.35), 0 0 2px rgba(255,255,255,.75) inset;
+      opacity:.88;
+      box-shadow:0 0 12px rgba(214,210,255,.5), 0 0 3px rgba(255,255,255,.9) inset;
       transform: translate(var(--dot-x,0px), var(--dot-y,0px)) scale(var(--dot-scale,1));
       will-change: transform, box-shadow, opacity;
       animation: dotGlow 9s ease-in-out infinite;
     }
-    @media (max-width:640px){ .sigdot{ top:22vh; left:26vw } } /* litt høyere på mobil */
+    @media (max-width:640px){ .sigdot{ top:22vh; left:24vw } } /* litt høyere på mobil */
 
     @keyframes dotGlow{
       0%,100%{
-        --dot-scale:1;
-        box-shadow:0 0 10px rgba(214,210,255,.35), 0 0 2px rgba(255,255,255,.75) inset;
-        opacity:.85;
+        --dot-scale:1.00;
+        box-shadow:0 0 12px rgba(214,210,255,.5), 0 0 3px rgba(255,255,255,.9) inset;
+        opacity:.88;
       }
       50%{
-        --dot-scale:1.12; /* sensuell, men rolig */
-        box-shadow:0 0 28px rgba(214,210,255,.65), 0 0 4px rgba(255,255,255,.95) inset;
+        --dot-scale:1.16; /* sensuell, men rolig */
+        box-shadow:0 0 36px rgba(214,210,255,.75), 0 0 6px rgba(255,255,255,1) inset;
         opacity:1;
       }
     }
@@ -360,7 +360,7 @@
     const dot = document.querySelector('.sigdot');
     if(!dot) return;
     function schedule(){
-      const next = 6000 + Math.random()*12000; // 6–18 sek
+      const next = 5000 + Math.random()*10000; // 5–15 sek
       setTimeout(()=>{
         dot.classList.add('tremor');
         dot.addEventListener('animationend', ()=> dot.classList.remove('tremor'), {once:true});
@@ -373,7 +373,7 @@
   /* Sigdot – lett parallax ved scroll (spesielt mobil) */
   (function dotParallax(){
     const onScroll = ()=>{
-      const y = (window.scrollY || document.documentElement.scrollTop) * 0.02; // 2%
+      const y = (window.scrollY || document.documentElement.scrollTop) * 0.03; // 3% for litt mer på mobil
       document.documentElement.style.setProperty('--dot-y', y.toFixed(1)+'px');
     };
     window.addEventListener('scroll', onScroll, {passive:true});
@@ -434,8 +434,7 @@
     grid.classList.add('latent');
     grid.setAttribute('aria-hidden','true');
     setTimeout(revealArtifacts, 2200);
-    playClick();        // kort klikk/clip
-    stopDrone(true);    // total stillhet i sløret
+    enterSilenceWithRiser(); // myk zero-cross + riser
   }
   function closeVeil(){
     veil.classList.remove('open');
@@ -462,17 +461,24 @@
   });
 
   /* =============================================================
-     AUDIO — tyngre/dissonant drone + click-pop + motion-reduce
+     AUDIO — tyngre/dissonant drone + riser + zero-cross fade
   ============================================================= */
   let ac, master, gain, lp, oscA, oscB, sub, lfo, lfoGain;
+
+  function ensureAC(){
+    if(ac) return;
+    ac = new (window.AudioContext || window.webkitAudioContext)();
+    master = ac.createGain();
+    master.gain.value = 1.0;
+    master.connect(ac.destination);
+  }
 
   function startDrone(){
     if(reduceMotion) return; // respekter motion-reduce
     try{
-      if(ac){ setVolume(0.22); return; }
+      if(ac && gain){ setVolume(0.22); return; }
 
-      ac = new (window.AudioContext || window.webkitAudioContext)();
-      master = ac.createGain();
+      ensureAC();
       gain = ac.createGain();
       lp = ac.createBiquadFilter();
       lp.type = 'lowpass';
@@ -508,10 +514,8 @@
 
       lp.connect(gain);
       gain.connect(master);
-      master.connect(ac.destination);
 
       gain.gain.value = 0.0;
-      master.gain.value = 1.0;
 
       oscA.start(); oscB.start(); sub.start(); lfo.start();
       setVolume(0.22);
@@ -520,57 +524,103 @@
       console.error('Audio init failed', err);
     }
   }
+
+  // Smooth volumekurve (tau litt større på mobil Safari)
   function setVolume(target){
-    if(!ac) return;
+    if(!ac || !gain) return;
     const now = ac.currentTime;
     try{
+      const tau = /iPhone|iPad|iPod|Safari/i.test(navigator.userAgent) ? 0.1 : 0.06;
       gain.gain.cancelScheduledValues(now);
-      gain.gain.setTargetAtTime(target, now, 0.06); // smooth → mindre klikk
+      gain.gain.setTargetAtTime(target, now, tau);
     }catch(_){}
   }
+
+  // Zero-cross-lignende uttoning med kosinus-kurve (klikkløst)
+  function rampToZero(duration=0.08){
+    if(!ac || !gain) return;
+    const now = ac.currentTime;
+    const start = gain.gain.value;
+    const N = 256;
+    const curve = new Float32Array(N);
+    for(let i=0;i<N;i++){
+      const t = i/(N-1);               // 0..1
+      const w = 0.5*(1+Math.cos(Math.PI*t)); // Hann: 1→0, null hastighet ved ender
+      curve[i] = start * w;
+    }
+    gain.gain.cancelScheduledValues(now);
+    gain.gain.setValueCurveAtTime(curve, now, duration);
+  }
+
   function stopDrone(hard=false){
-    if(!ac) return;
-    setVolume(0.0);
+    if(!ac || !gain) return;
+    rampToZero(0.08);
     if(hard){
       setTimeout(()=>{
-        try{ oscA?.stop(); oscB?.stop(); sub?.stop(); lfo?.stop(); ac.close(); }catch(_){}
-        ac = null;
-      }, 120);
+        try{ oscA?.stop(); oscB?.stop(); sub?.stop(); lfo?.stop(); }catch(_){}
+        try{ ac.close(); }catch(_){}
+        ac = null; master=null; gain=null; lp=null; oscA=oscB=sub=lfo=lfoGain=null;
+      }, 100);
     }
   }
 
-  // kort klikk/clip-lyd
-  function playClick(){
+  // Lengre riser (noise + bandpass sweep) – spiller selv om dronen er avslått
+  function playRiser(){
     try{
-      if(!ac){
-        ac = new (window.AudioContext || window.webkitAudioContext)();
-        master = ac.createGain(); master.gain.value = 1.0; master.connect(ac.destination);
-        gain = ac.createGain(); gain.gain.value = 0; gain.connect(master); // dummy gain
-      }
-      const dur = 0.05;
+      ensureAC();
+      const now = ac.currentTime;
+
+      // Noise-buffer ~1.2s
+      const dur = 1.1;
       const sr = ac.sampleRate;
       const frames = Math.floor(sr*dur);
       const buf = ac.createBuffer(1, frames, sr);
       const data = buf.getChannelData(0);
-      for(let i=0;i<frames;i++){ data[i] = (Math.random()*2-1) * (1 - i/frames); } // noise burst m/decay
-      const src = ac.createBufferSource(); src.buffer = buf;
-      const hp = ac.createBiquadFilter(); hp.type='highpass'; hp.frequency.value = 800;
-      const g = ac.createGain(); g.gain.value = 0.25;
-      src.connect(hp); hp.connect(g); g.connect(master);
-      src.start(); src.stop(ac.currentTime + dur);
-    }catch(_){}
+      for(let i=0;i<frames;i++){
+        // litt mykere noise (pink-ish enkel filter): glidende gjennomsnitt
+        const n = (Math.random()*2-1);
+        data[i] = (i>0 ? data[i-1]*0.92 + n*0.08 : n*0.08);
+      }
+
+      const src = ac.createBufferSource(); src.buffer = buf; src.loop = false;
+      const bp = ac.createBiquadFilter(); bp.type='bandpass';
+      const g  = ac.createGain(); g.gain.value = 0.0;
+
+      src.connect(bp); bp.connect(g); g.connect(master);
+
+      // Sweep
+      bp.frequency.setValueAtTime(180, now);
+      bp.frequency.exponentialRampToValueAtTime(1600, now + dur*0.8);
+      bp.Q.setValueAtTime(1.2, now);
+      bp.Q.linearRampToValueAtTime(6.0, now + dur*0.7);
+
+      // Envelopen (fade inn → peak → fade ut)
+      g.gain.setValueAtTime(0.0, now);
+      g.gain.linearRampToValueAtTime(0.32, now + 0.35);
+      g.gain.linearRampToValueAtTime(0.0, now + dur);
+
+      src.start(now);
+      src.stop(now + dur + 0.02);
+    }catch(err){ console.warn('riser error', err); }
+  }
+
+  // Kombi: myk zero-cross → riser → stillhet
+  function enterSilenceWithRiser(){
+    if(gain){ rampToZero(0.08); }
+    playRiser();
+    if(gain){ setTimeout(()=> stopDrone(true), 110); } // steng etter uttoning starter
   }
 
   /* Mute toggle */
   muteBtn.addEventListener('click', ()=>{
-    if(!ac) startDrone();
+    if(!ac || !gain){ startDrone(); return; }
     const pressed = muteBtn.getAttribute('aria-pressed')==='true';
     if(pressed){
       muteBtn.setAttribute('aria-pressed','false'); muteBtn.textContent='mute';
       setVolume(0.22);
     } else {
       muteBtn.setAttribute('aria-pressed','true'); muteBtn.textContent='unmute';
-      setVolume(0.0);
+      rampToZero(0.08); // null-klikk fade
     }
   });
 
