@@ -18,16 +18,15 @@
 
   <style>
     :root{
-      --bg:#050508;
-      --ink:#d2d2d8;      /* primærtekst (tall, viktige tekster) */
-      --mute:#b8bec9;     /* sekundærtekst (labels) */
-      --accent:rgba(192,180,255,.12);
+      --bg:#000;           /* utsiden = ekte void */
+      --scene-bg:#050508;  /* scenens bakgrunn */
+      --ink:#d2d2d8;      /* primærtekst */
+      --mute:#b8bec9;     /* sekundærtekst */
       --void-glow: radial-gradient(800px 620px at 50% 56%, rgba(180,170,255,.08), transparent 60%);
       --pulse: 1;         /* global lys-puls (oppdatert i JS) */
       --hue: 0deg;        /* fargetemperatur-drift (oppdatert i JS) */
     }
     *{box-sizing:border-box}
-
     .sr-only{ position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
 
     html,body{height:100%;margin:0}
@@ -35,43 +34,29 @@
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
       color:var(--ink);
       background: var(--bg);
-      overflow:auto;
+      overflow:auto;                 /* scroll unlocked by default */
       overscroll-behavior:contain;
     }
     body.lock{ position:fixed; width:100%; height:100svh; overflow:hidden; }
 
     :focus-visible{outline:2px solid #e7e7ef; outline-offset:2px; box-shadow:0 0 0 3px rgba(170,150,255,.25)}
 
-    /* Bakgrunn */
-    .depth{
-      position:fixed; inset:-10% -10% -10% -10%; z-index:-2;
-      background:
-        radial-gradient(80vmax 60vmax at 20% 30%, rgba(21,12,80,.55), transparent 60%),
-        radial-gradient(65vmax 45vmax at 80% 70%, rgba(8,24,92,.55), transparent 60%),
-        radial-gradient(140vmax 100vmax at 50% 120%, rgba(255,255,255,.05), transparent 70%),
-        var(--void-glow),
-        var(--bg);
-      filter: saturate(.95) contrast(1.05) brightness(var(--pulse)) hue-rotate(var(--hue));
-      animation: drift 48s ease-in-out infinite alternate;
-    }
-    @keyframes drift{ 0%{transform: translateY(-1.5%) scale(1.02)} 50%{transform: translateY(1.5%) scale(1.03)} 100%{transform: translateY(-1%) scale(1.015)} }
-
-    .sweep{position:fixed; left:0; right:0; bottom:0; height:22vh; overflow:hidden; pointer-events:none}
-    .sweep::before{content:""; position:absolute; inset:0; background:linear-gradient(to bottom, transparent, rgba(0,0,0,.35), rgba(0,0,0,.68))}
-    .sweep::after{content:""; position:absolute; inset:auto -10% 12% -10%; height:1px; background:linear-gradient(90deg, transparent, rgba(230,233,255,.08), transparent); animation:sweep 14s linear infinite; opacity:.45}
-    @keyframes sweep{ 0%{transform:translateX(-40%)} 100%{transform:translateX(40%)} }
-
-    /* --- Distance mode: wrapper + frame --- */
+    /* --------------------
+       Distance mode
+       -------------------- */
     .wrapper{
       min-height:100svh; display:grid; place-items:center;
       padding: max(5svh, env(safe-area-inset-top)) max(5vw, env(safe-area-inset-right))
                max(5svh, env(safe-area-inset-bottom)) max(5vw, env(safe-area-inset-left));
     }
     .frame{
+      position:relative; overflow:hidden; isolation:isolate;
       width: min(92vw, 880px);
       height: min(88svh, 880px);
       display:grid; place-items:center;
       border-radius: 22px;
+      background: var(--scene-bg);
+      box-shadow: 0 10px 50px rgba(0,0,0,.65);
       transition: transform .55s ease, opacity .4s ease;
     }
     @media (max-width:640px){
@@ -79,30 +64,64 @@
     }
     body.veil-open .frame{ opacity:.06; transform: scale(.985) }
 
-    /* Signature dot */
-    .sigdot{
-      position:fixed; top:30vh; left:28vw; width:6px; height:6px; border-radius:50%;
-      background:radial-gradient(circle at 40% 40%, #ffffff 0%, #dfe2ff 55%, rgba(255,255,255,0) 70%);
-      opacity:.88; box-shadow:0 0 12px rgba(214,210,255,.5), 0 0 3px rgba(255,255,255,.9) inset;
-      transform: translate(var(--dot-x,0px), var(--dot-y,0px)) scale(var(--dot-scale,1));
-      will-change: transform, box-shadow, opacity; animation: dotGlow 9s ease-in-out infinite;
+    /* Scenelys/gradient ER nå inni rammen */
+    .depth{
+      position:absolute; inset:-10% -10% -10% -10%; z-index:0;
+      background:
+        radial-gradient(80vmax 60vmax at 20% 30%, rgba(21,12,80,.55), transparent 60%),
+        radial-gradient(65vmax 45vmax at 80% 70%, rgba(8,24,92,.55), transparent 60%),
+        radial-gradient(140vmax 100vmax at 50% 120%, rgba(255,255,255,.05), transparent 70%),
+        var(--void-glow), var(--scene-bg);
+      filter: saturate(.95) contrast(1.05) brightness(var(--pulse)) hue-rotate(var(--hue));
+      animation: drift 48s ease-in-out infinite alternate;
     }
-    @media (max-width:640px){ .sigdot{ top:22vh; left:24vw } }
-    @keyframes dotGlow{ 0%,100%{ --dot-scale:1; box-shadow:0 0 12px rgba(214,210,255,.5), 0 0 3px rgba(255,255,255,.9) inset; opacity:.88 }
-                        50%{ --dot-scale:1.16; box-shadow:0 0 36px rgba(214,210,255,.75), 0 0 6px rgba(255,255,255,1) inset; opacity:1 } }
+    @keyframes drift{ 0%{transform: translateY(-1.5%) scale(1.02)} 50%{transform: translateY(1.5%) scale(1.03)} 100%{transform: translateY(-1%) scale(1.015)} }
+
+    /* Haze nederst – også inni rammen */
+    .sweep{position:absolute; left:0; right:0; bottom:0; height:22vh; overflow:hidden; pointer-events:none; z-index:2}
+    .sweep::before{content:""; position:absolute; inset:0; background:linear-gradient(to bottom, transparent, rgba(0,0,0,.35), rgba(0,0,0,.68))}
+    .sweep::after{content:""; position:absolute; inset:auto -10% 12% -10%; height:1px; background:linear-gradient(90deg, transparent, rgba(230,233,255,.08), transparent); animation:sweep 14s linear infinite; opacity:.45}
+    @keyframes sweep{ 0%{transform:translateX(-40%)} 100%{transform:translateX(40%)} }
+
+    /* Signatur-prikk – nå ABSOLUTT inni rammen */
+    .sigdot{
+      position:absolute; z-index:3; top:26vh; left:26vw; width:6px; height:6px; border-radius:50%;
+      background:radial-gradient(circle at 40% 40%, #ffffff 0%, #dfe2ff 55%, rgba(255,255,255,0) 70%);
+      opacity:.92;
+      box-shadow:0 0 14px rgba(214,210,255,.55), 0 0 4px rgba(255,255,255,.95) inset;
+      transform: translate(var(--dot-x,0px), var(--dot-y,0px)) scale(var(--dot-scale,1));
+      will-change: transform, box-shadow, opacity;
+      animation: dotGlow 8.5s ease-in-out infinite;
+      transition: opacity .3s ease;
+    }
+    body.veil-open .sigdot{ opacity:0 }
+    @media (max-width:640px){ .sigdot{ top:16vh; left:22vw } } /* enda høyere på mobil */
+
+    @keyframes dotGlow{
+      0%,100%{
+        --dot-scale:1.00;
+        box-shadow:0 0 14px rgba(214,210,255,.55), 0 0 4px rgba(255,255,255,.95) inset;
+        opacity:.92;
+      }
+      50%{
+        --dot-scale:1.22; /* mer puls */
+        box-shadow:0 0 46px rgba(214,210,255,.85), 0 0 8px rgba(255,255,255,1) inset;
+        opacity:1;
+      }
+    }
     @keyframes tremor{ 0%{transform:translate(var(--dot-x,0px),var(--dot-y,0px)) scale(var(--dot-scale,1))}
                       20%{transform:translate(calc(var(--dot-x,0px)+.6px),calc(var(--dot-y,0px)-.6px)) scale(var(--dot-scale,1))}
                       40%{transform:translate(calc(var(--dot-x,0px)-.6px),calc(var(--dot-y,0px)+.7px)) scale(var(--dot-scale,1))}
                       60%{transform:translate(calc(var(--dot-x,0px)+.7px),calc(var(--dot-y,0px)+.5px)) scale(var(--dot-scale,1))}
                       80%{transform:translate(calc(var(--dot-x,0px)-.5px),calc(var(--dot-y,0px)-.7px)) scale(var(--dot-scale,1))}
                       100%{transform:translate(var(--dot-x,0px),var(--dot-y,0px)) scale(var(--dot-scale,1))} }
-    .sigdot.tremor{ animation: dotGlow 9s ease-in-out infinite, tremor .6s ease-in-out 1 }
+    .sigdot.tremor{ animation: dotGlow 8.5s ease-in-out infinite, tremor .6s ease-in-out 1 }
 
-    /* Gaze spotlight */
-    .gaze{ position:fixed; width:44vmax; height:44vmax; border-radius:50%; pointer-events:none; left:50%; top:50%; transform:translate(-50%,-50%); background: radial-gradient(circle at 50% 50%, rgba(210,218,255,.08), rgba(0,0,0,0) 55%); mix-blend-mode: screen; filter: blur(12px) saturate(1.1); z-index:0 }
+    /* Gaze spotlight – inni rammen */
+    .gaze{ position:absolute; z-index:1; width:44vmax; height:44vmax; border-radius:50%; pointer-events:none; left:50%; top:50%; transform:translate(-50%,-50%); background: radial-gradient(circle at 50% 50%, rgba(210,218,255,.08), rgba(0,0,0,0) 55%); mix-blend-mode: screen; filter: blur(12px) saturate(1.1); }
 
-    /* Stage */
-    .stage{height:100%; width:100%; display:grid; place-items:center; text-align:center; padding:2rem; position:relative; z-index:1; opacity:1; transition: opacity .35s ease}
+    /* Stage (innhold lag over lys) */
+    .stage{ position:relative; z-index:3; height:100%; width:100%; display:grid; place-items:center; text-align:center; padding:2rem; opacity:1; transition: opacity .35s ease }
     body.veil-open .stage{ opacity:0; pointer-events:none }
     .layer{opacity:1; transform:none; transition:opacity .9s ease, transform .9s ease}
     .js .layer{opacity:0; transform:translateY(8px)}
@@ -121,7 +140,7 @@
     .veil{position:fixed; inset:0; display:grid; place-items:center; padding:2rem; opacity:0; pointer-events:none; transition:opacity .6s ease; overflow:auto; -webkit-overflow-scrolling:touch; touch-action:auto}
     .veil.open{opacity:1; pointer-events:auto}
     .veil .glass{ position:absolute; inset:0; background: radial-gradient(1200px 800px at 50% 42%, rgba(90,70,200,.12), transparent 60%), radial-gradient(1000px 720px at 46% 60%, rgba(12,30,120,.14), transparent 55%), rgba(0,0,6,.94); backdrop-filter: blur(10px); filter: hue-rotate(var(--hue)) }
-    .panel{ position:relative; width:min(92vw, 880px); max-height:88svh; z-index:1; text-align:center; border-radius:22px; padding: clamp(16px, 2.2vw, 28px); }
+    .panel{ position:relative; width:min(92vw, 880px); max-height:88svh; z-index:1; text-align:center; border-radius:22px; padding: clamp(16px, 2.2vw, 28px); background:transparent }
     @media (max-width:640px){ .panel{ width:min(94vw,560px); max-height:86svh; border-radius:20px } }
     .panel h2{ margin:.2rem 0 .85rem 0; font-weight:600; letter-spacing:.04em; font-size:clamp(22px,3.1vw,36px) }
     .panel p{ margin:.45rem 0 1rem 0; font-size:clamp(15px,2vw,19px); line-height:1.9; color:#c6c8d0; opacity:.95 }
@@ -150,17 +169,18 @@
     @keyframes hitch{ 0%{transform:translateY(0)} 8%{transform:translateY(1px)} 12%{transform:translateY(-1px)} 18%{letter-spacing:.02em} 24%{opacity:.96} 30%{transform:translateY(.5px)} 36%{letter-spacing:0} 48%{opacity:.9} 60%{transform:translateY(0)} 100%{opacity:1} }
     .hitch{ animation: hitch 1.8s steps(20,end) 1 both }
 
-    @media (prefers-reduced-motion: reduce){ *,*::before,*::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:0s !important; scroll-behavior:auto !important } .depth{animation:none} .sweep::after{animation:none} .gaze{transition:none} }
+    @media (prefers-reduced-motion: reduce){ *,*::before,*::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:0s !important; scroll-behavior:auto !important } .gaze{transition:none} }
   </style>
 </head>
 <body>
   <script>document.documentElement.classList.add('js');</script>
-  <div class="depth" aria-hidden="true"></div>
-  <div class="gaze" aria-hidden="true"></div>
-  <div class="sigdot" title="voidpass"></div>
 
   <div class="wrapper">
-    <div class="frame">
+    <div class="frame" role="region" aria-label="void scene">
+      <div class="depth" aria-hidden="true"></div>
+      <div class="gaze" aria-hidden="true"></div>
+      <div class="sigdot" title="voidpass"></div>
+
       <main class="stage" aria-labelledby="t">
         <div class="layer l1">
           <h1 id="t" class="title">void.</h1>
@@ -187,9 +207,12 @@
           </div>
         </div>
       </main>
+
+      <div class="sweep" aria-hidden="true"></div>
     </div>
   </div>
 
+  <!-- veil over hele skjermen (scene forblir bak) -->
   <section class="veil" id="veil" aria-modal="true" role="dialog" aria-labelledby="vh">
     <div class="glass" aria-hidden="true"></div>
     <div class="panel">
@@ -210,12 +233,12 @@
     </div>
   </section>
 
-  <div class="sweep" aria-hidden="true"></div>
   <noscript><div style="color:#d2d2d8; text-align:center; padding:1rem">This experience requires JavaScript enabled.</div></noscript>
 
 <script>
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /* Reveal */
   const l1=document.querySelector('.l1'), l2=document.querySelector('.l2'), l3=document.querySelector('.l3');
   setTimeout(()=>l1.classList.add('show'),180);
   setTimeout(()=>l2.classList.add('show'),740);
@@ -223,11 +246,15 @@
   [l1.querySelector('h1'), document.querySelector('.sub')].forEach(el=> el && el.classList.add('hitch'));
   setTimeout(()=> document.querySelectorAll('.hitch').forEach(el=> el.classList.remove('hitch')), 1900);
 
+  /* Gaze lag */
   (function initGaze(){ if(reduceMotion) return; const gaze=document.querySelector('.gaze'); let gx=50,gy=50,tx=50,ty=50,raf=null; function f(){ gx=gx+(tx-gx)*0.12; gy=gy+(ty-gy)*0.12; gaze.style.transform=`translate(-50%,-50%) translate(${gx-50}%, ${gy-50}%)`; raf=requestAnimationFrame(f);} window.addEventListener('mousemove',e=>{ tx=(e.clientX/window.innerWidth)*100; ty=(e.clientY/window.innerHeight)*100; if(!raf) raf=requestAnimationFrame(f);}); })();
 
+  /* Dot – sporadisk tremor */
   (function dotTremor(){ if(reduceMotion) return; const dot=document.querySelector('.sigdot'); if(!dot) return; function schedule(){ const next=5000+Math.random()*10000; setTimeout(()=>{ dot.classList.add('tremor'); dot.addEventListener('animationend',()=>dot.classList.remove('tremor'),{once:true}); schedule(); }, next);} schedule(); })();
+  /* Dot parallax ved scroll (litt mer på mobil) */
   (function dotParallax(){ const onScroll=()=>{ const y=(window.scrollY||document.documentElement.scrollTop)*0.03; document.documentElement.style.setProperty('--dot-y', y.toFixed(1)+'px'); }; window.addEventListener('scroll', onScroll, {passive:true}); onScroll(); })();
 
+  /* Veil, fokus, scroll */
   const veil=document.getElementById('veil');
   const enterBtn=document.getElementById('enter');
   const closeBtn=document.getElementById('close');
@@ -241,14 +268,13 @@
 
   function lockScroll(){ scrollY = window.scrollY || 0; document.body.classList.add('lock'); document.body.style.top = `-${scrollY}px`; }
   function unlockScroll(){ document.body.classList.remove('lock'); document.body.style.top = ''; window.scrollTo(0, scrollY); }
-
   function setInert(on){ stage.setAttribute('aria-hidden', on ? 'true':'false'); try{ stage.inert = !!on; }catch(e){} }
   function trapFocus(c){ focusables = c.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'); firstFocusable = focusables[0]; lastFocusable = focusables[focusables.length-1]; c.addEventListener('keydown', handleTab); }
   function untrapFocus(c){ c.removeEventListener('keydown', handleTab); }
   function handleTab(e){ if(e.key!=='Tab') return; if(focusables.length===0) return; if(e.shiftKey && document.activeElement===firstFocusable){ e.preventDefault(); lastFocusable.focus(); } else if(!e.shiftKey && document.activeElement===lastFocusable){ e.preventDefault(); firstFocusable.focus(); } }
 
   function revealArtifacts(){ grid.classList.remove('latent'); grid.removeAttribute('aria-hidden'); }
-  function openVeil(){ lastFocus=document.activeElement; document.body.classList.add('veil-open'); veil.classList.add('open'); enterBtn.setAttribute('aria-expanded','true'); setInert(true); lockScroll(); trapFocus(veil); requestAnimationFrame(()=>{ const t = veil.querySelector('#vh') || veil; t.setAttribute('tabindex','-1'); t.focus({preventScroll:true}); }); grid.classList.add('latent'); grid.setAttribute('aria-hidden','true'); setTimeout(revealArtifacts, 2200); enterSilenceWithRiser(); }
+  function openVeil(){ lastFocus=document.activeElement; document.body.classList.add('veil-open'); veil.classList.add('open'); enterBtn.setAttribute('aria-expanded','true'); setInert(true); lockScroll(); trapFocus(veil); requestAnimationFrame(()=>{ const t = veil.querySelector('#vh') || veil; t.setAttribute('tabindex','-1'); t.focus({preventScroll:true}); }); grid.classList.add('latent'); grid.setAttribute('aria-hidden','true'); setTimeout(revealArtifacts, 2200); enterSilenceWithSwell(); }
   function closeVeil(){ veil.classList.remove('open'); document.body.classList.remove('veil-open'); enterBtn.setAttribute('aria-expanded','false'); untrapFocus(veil); setInert(false); unlockScroll(); if(lastFocus) lastFocus.focus(); }
 
   enterBtn.addEventListener('click', openVeil);
@@ -257,22 +283,50 @@
 
   grid.addEventListener('click', (e)=>{ const btn=e.target.closest('.bind'); if(!btn) return; const card=btn.closest('.card'); const id=card?.dataset?.id||'artefact'; const bound=card.classList.toggle('bound'); btn.setAttribute('aria-pressed', bound?'true':'false'); btn.textContent = bound ? 'bound' : 'bind to self'; if(live) live.textContent = bound ? `${id} bound` : `${id} unbound`; });
 
-  /* AUDIO */
+  /* --------------------
+     AUDIO – drone + statisk surreal swell + klikkløs
+     -------------------- */
   let ac, master, gain, lp, oscA, oscB, sub, lfo, lfoGain;
   function ensureAC(){ if(ac) return; ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); master.gain.value=1.0; master.connect(ac.destination); }
   function startDrone(){ if(reduceMotion) return; try{ if(ac && gain){ setVolume(0.22); return; } ensureAC(); gain=ac.createGain(); lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=180; lp.Q.value=0.7; oscA=ac.createOscillator(); oscB=ac.createOscillator(); sub=ac.createOscillator(); oscA.type='sine'; oscB.type='sine'; sub.type='triangle'; oscA.frequency.value=36; oscB.frequency.value=41; sub.frequency.value=18; lfo=ac.createOscillator(); lfoGain=ac.createGain(); lfo.type='sine'; lfo.frequency.value=0.12; lfoGain.gain.value=5; lfo.connect(lfoGain); lfoGain.connect(oscA.frequency); lfoGain.connect(oscB.frequency); const gA=ac.createGain(); gA.gain.value=0.22; const gB=ac.createGain(); gB.gain.value=0.18; const gS=ac.createGain(); gS.gain.value=0.10; oscA.connect(gA); oscB.connect(gB); sub.connect(gS); gA.connect(lp); gB.connect(lp); gS.connect(lp); lp.connect(gain); gain.connect(master); gain.gain.value=0.0; oscA.start(); oscB.start(); sub.start(); lfo.start(); setVolume(0.22);}catch(err){ if(live) live.textContent='audio error'; console.error('Audio init failed', err);} }
   function setVolume(target){ if(!ac||!gain) return; const now=ac.currentTime; try{ const tau=/iPhone|iPad|iPod|Safari/i.test(navigator.userAgent)?0.1:0.06; gain.gain.cancelScheduledValues(now); gain.gain.setTargetAtTime(target, now, tau);}catch(_){} }
   function rampToZero(duration=0.08){ if(!ac||!gain) return; const now=ac.currentTime; const start=gain.gain.value; const N=256; const curve=new Float32Array(N); for(let i=0;i<N;i++){ const t=i/(N-1); const w=0.5*(1+Math.cos(Math.PI*t)); curve[i]=start*w; } gain.gain.cancelScheduledValues(now); gain.gain.setValueCurveAtTime(curve, now, duration); }
   function stopDrone(hard=false){ if(!ac||!gain) return; rampToZero(0.08); if(hard){ setTimeout(()=>{ try{ oscA?.stop(); oscB?.stop(); sub?.stop(); lfo?.stop(); }catch(_){} try{ ac.close(); }catch(_){} ac=null; master=null; gain=null; lp=null; oscA=oscB=sub=lfo=lfoGain=null; }, 100);} }
-  function playRiser(){ try{ ensureAC(); const now=ac.currentTime; const dur=1.1; const sr=ac.sampleRate; const frames=Math.floor(sr*dur); const buf=ac.createBuffer(1, frames, sr); const data=buf.getChannelData(0); for(let i=0;i<frames;i++){ const n=(Math.random()*2-1); data[i]=(i>0?data[i-1]*0.92+n*0.08:n*0.08);} const src=ac.createBufferSource(); src.buffer=buf; src.loop=false; const bp=ac.createBiquadFilter(); bp.type='bandpass'; const g=ac.createGain(); g.gain.value=0.0; src.connect(bp); bp.connect(g); g.connect(master); bp.frequency.setValueAtTime(180, now); bp.frequency.exponentialRampToValueAtTime(1600, now+dur*0.8); bp.Q.setValueAtTime(1.2, now); bp.Q.linearRampToValueAtTime(6.0, now+dur*0.7); g.gain.setValueAtTime(0.0, now); g.gain.linearRampToValueAtTime(0.32, now+0.35); g.gain.linearRampToValueAtTime(0.0, now+dur); src.start(now); src.stop(now+dur+0.02);}catch(err){ console.warn('riser error', err);} }
-  function enterSilenceWithRiser(){ if(gain){ rampToZero(0.08); } playRiser(); if(gain){ setTimeout(()=> stopDrone(true), 110); } }
 
+  // Statisk surreal swell (ingen pitch-sweep)
+  function playSwell(){
+    try{
+      ensureAC();
+      const now=ac.currentTime; const dur=1.2; const sr=ac.sampleRate; const frames=Math.floor(sr*dur);
+      const buf=ac.createBuffer(1, frames, sr); const data=buf.getChannelData(0);
+      for(let i=0;i<frames;i++){ const n=(Math.random()*2-1); data[i]=(i>0?data[i-1]*0.94+n*0.06:n*0.06); }
+      const src=ac.createBufferSource(); src.buffer=buf; src.loop=false;
+      // Bandpass med FAST frekvens = samme tone hele veien
+      const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=420; bp.Q.value=5.5;
+      // Lett AM (tremor) for surreal følelse uten pitch-endring
+      const g=ac.createGain(); const am=ac.createOscillator(); const amGain=ac.createGain();
+      g.gain.value=0.0; am.frequency.value=0.8; amGain.gain.value=0.18; // 18% amplitude modulering
+      am.connect(amGain); amGain.connect(g.gain);
+      src.connect(bp); bp.connect(g); g.connect(master);
+      // Envelopen
+      g.gain.setValueAtTime(0.0, now);
+      g.gain.linearRampToValueAtTime(0.30, now+0.40);
+      g.gain.linearRampToValueAtTime(0.0, now+dur);
+      am.start(now); src.start(now); src.stop(now+dur+0.03); am.stop(now+dur+0.05);
+    }catch(err){ console.warn('swell error', err); }
+  }
+  function enterSilenceWithSwell(){ if(gain){ rampToZero(0.08); } playSwell(); if(gain){ setTimeout(()=> stopDrone(true), 120); } }
+
+  /* Mute */
   muteBtn.addEventListener('click', ()=>{ if(!ac||!gain){ startDrone(); return; } const pressed=muteBtn.getAttribute('aria-pressed')==='true'; if(pressed){ muteBtn.setAttribute('aria-pressed','false'); muteBtn.textContent='mute'; setVolume(0.22); } else { muteBtn.setAttribute('aria-pressed','true'); muteBtn.textContent='unmute'; rampToZero(0.08); } });
 
+  /* ESC */
   window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && veil.classList.contains('open')){ closeVeil(); } });
 
+  /* Global puls + hue-drift */
   (function animateField(){ if(reduceMotion) return; const pulseFreq=0.16; const hueAmpDeg=8; const huePeriod=90000; const t0=performance.now(); function frame(){ const now=performance.now(); const t=(now-t0)/1000; const phase=Math.sin(2*Math.PI*pulseFreq*t); const pulse=0.96+0.05*((phase+1)/2); document.documentElement.style.setProperty('--pulse', pulse.toFixed(3)); const hue=Math.sin((now-t0)*(2*Math.PI/huePeriod))*hueAmpDeg; document.documentElement.style.setProperty('--hue', hue.toFixed(2)+'deg'); requestAnimationFrame(frame);} requestAnimationFrame(frame); })();
 
+  /* Countdown */
   const TARGET_UTC_MS = Date.UTC(2026, 1, 1, 0, 0, 0);
   const RITUAL_START_REAL_MS = null; const RITUAL_SPEED = 0.5;
   (function initRitualCountdown(){ const el={ days:document.getElementById('cd-days'), hours:document.getElementById('cd-hours'), mins:document.getElementById('cd-mins'), secs:document.getElementById('cd-secs'), digits:document.querySelector('.cd-digits'), openMsg:document.getElementById('cd-open') }; if(!el.days||!el.hours||!el.mins||!el.secs) return; const startReal=(typeof RITUAL_START_REAL_MS==='number')?RITUAL_START_REAL_MS:Date.now(); const base=Math.max(0, TARGET_UTC_MS - startReal); function fmt(n){ return n<10?'0'+n:''+n;} function render(ms){ let total=Math.floor(ms/1000); if(total<0) total=0; const d=Math.floor(total/86400); const h=Math.floor((total%86400)/3600); const m=Math.floor((total%3600)/60); const s=total%60; el.days.textContent=fmt(d); el.hours.textContent=fmt(h); el.mins.textContent=fmt(m); el.secs.textContent=fmt(s);} function done(){ if(el.digits) el.digits.hidden=true; if(el.openMsg){ el.openMsg.hidden=false; el.openMsg.textContent='The door is open.';} if(live) live.textContent='ritual open'; } function tick(){ const now=Date.now(); const elapsed=now-startReal; const ritual=elapsed*RITUAL_SPEED; const remain=Math.floor(base - ritual); if(remain<=0){ render(0); done(); clearInterval(iv); return; } render(remain);} tick(); const iv=setInterval(tick, 1000); })();
