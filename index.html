@@ -10,7 +10,6 @@
   <meta property="og:title" content="voidpass — field prototype" />
   <meta property="og:description" content="Enter the voidpass: a field of dominion, mystery, and binding." />
   <meta property="og:type" content="website" />
-  <!-- Sett absolutt URL når domenet er klart, f.eks. https://dittdomene.no/og-voidpass.png -->
   <meta property="og:image" content="/og-voidpass.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="theme-color" content="#000000" />
@@ -29,7 +28,6 @@
     }
     *{box-sizing:border-box}
 
-    /* Visuelt skjul for skjermlesere */
     .sr-only{ position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
 
     html,body{height:100%;margin:0}
@@ -37,15 +35,14 @@
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
       color:var(--ink);
       background: var(--bg);
-      overflow:auto;                 /* scroll unlocked by default */
+      overflow:auto;
       overscroll-behavior:contain;
     }
-    /* lås bare dokumentscrollen; veil/panel har egen scroll */
-    body.lock{ position:fixed; width:100%; height:100vh; overflow:hidden; }
+    body.lock{ position:fixed; width:100%; height:100svh; overflow:hidden; }
 
     :focus-visible{outline:2px solid #e7e7ef; outline-offset:2px; box-shadow:0 0 0 3px rgba(170,150,255,.25)}
 
-    /* Bakgrunn: dyp drift + hue-rotate (rommet lever) */
+    /* Bakgrunn */
     .depth{
       position:fixed; inset:-10% -10% -10% -10%; z-index:-2;
       background:
@@ -57,67 +54,57 @@
       filter: saturate(.95) contrast(1.05) brightness(var(--pulse)) hue-rotate(var(--hue));
       animation: drift 48s ease-in-out infinite alternate;
     }
-    @keyframes drift{
-      0%  {transform: translateY(-1.5%) scale(1.02)}
-      50% {transform: translateY(1.5%)  scale(1.03)}
-      100%{transform: translateY(-1%)   scale(1.015)}
-    }
+    @keyframes drift{ 0%{transform: translateY(-1.5%) scale(1.02)} 50%{transform: translateY(1.5%) scale(1.03)} 100%{transform: translateY(-1%) scale(1.015)} }
 
-    /* Haze sweep nederst */
     .sweep{position:fixed; left:0; right:0; bottom:0; height:22vh; overflow:hidden; pointer-events:none}
     .sweep::before{content:""; position:absolute; inset:0; background:linear-gradient(to bottom, transparent, rgba(0,0,0,.35), rgba(0,0,0,.68))}
     .sweep::after{content:""; position:absolute; inset:auto -10% 12% -10%; height:1px; background:linear-gradient(90deg, transparent, rgba(230,233,255,.08), transparent); animation:sweep 14s linear infinite; opacity:.45}
     @keyframes sweep{ 0%{transform:translateX(-40%)} 100%{transform:translateX(40%)} }
 
-    /* --- Signature dot (mer puls/glød + risting + variabler for parallax/scale) --- */
+    /* --- Distance mode: wrapper + frame --- */
+    .wrapper{
+      min-height:100svh; display:grid; place-items:center;
+      padding: max(5svh, env(safe-area-inset-top)) max(5vw, env(safe-area-inset-right))
+               max(5svh, env(safe-area-inset-bottom)) max(5vw, env(safe-area-inset-left));
+    }
+    .frame{
+      width: min(92vw, 880px);
+      height: min(88svh, 880px);
+      display:grid; place-items:center;
+      border-radius: 22px;
+      transition: transform .55s ease, opacity .4s ease;
+    }
+    @media (max-width:640px){
+      .frame{ width:min(94vw, 560px); height:min(86svh, 760px); border-radius:20px }
+    }
+    body.veil-open .frame{ opacity:.06; transform: scale(.985) }
+
+    /* Signature dot */
     .sigdot{
       position:fixed; top:30vh; left:28vw; width:6px; height:6px; border-radius:50%;
       background:radial-gradient(circle at 40% 40%, #ffffff 0%, #dfe2ff 55%, rgba(255,255,255,0) 70%);
-      opacity:.88;
-      box-shadow:0 0 12px rgba(214,210,255,.5), 0 0 3px rgba(255,255,255,.9) inset;
+      opacity:.88; box-shadow:0 0 12px rgba(214,210,255,.5), 0 0 3px rgba(255,255,255,.9) inset;
       transform: translate(var(--dot-x,0px), var(--dot-y,0px)) scale(var(--dot-scale,1));
-      will-change: transform, box-shadow, opacity;
-      animation: dotGlow 9s ease-in-out infinite;
+      will-change: transform, box-shadow, opacity; animation: dotGlow 9s ease-in-out infinite;
     }
-    @media (max-width:640px){ .sigdot{ top:22vh; left:24vw } } /* litt høyere på mobil */
-
-    @keyframes dotGlow{
-      0%,100%{
-        --dot-scale:1.00;
-        box-shadow:0 0 12px rgba(214,210,255,.5), 0 0 3px rgba(255,255,255,.9) inset;
-        opacity:.88;
-      }
-      50%{
-        --dot-scale:1.16; /* sensuell, men rolig */
-        box-shadow:0 0 36px rgba(214,210,255,.75), 0 0 6px rgba(255,255,255,1) inset;
-        opacity:1;
-      }
-    }
-
-    @keyframes tremor{
-      0%{   transform:translate(var(--dot-x,0px), var(--dot-y,0px)) scale(var(--dot-scale,1)) }
-      20%{  transform:translate(calc(var(--dot-x,0px) + .6px), calc(var(--dot-y,0px) - .6px)) scale(var(--dot-scale,1)) }
-      40%{  transform:translate(calc(var(--dot-x,0px) - .6px), calc(var(--dot-y,0px) + .7px)) scale(var(--dot-scale,1)) }
-      60%{  transform:translate(calc(var(--dot-x,0px) + .7px), calc(var(--dot-y,0px) + .5px)) scale(var(--dot-scale,1)) }
-      80%{  transform:translate(calc(var(--dot-x,0px) - .5px), calc(var(--dot-y,0px) - .7px)) scale(var(--dot-scale,1)) }
-      100%{ transform:translate(var(--dot-x,0px), var(--dot-y,0px)) scale(var(--dot-scale,1)) }
-    }
-    .sigdot.tremor{ animation: dotGlow 9s ease-in-out infinite, tremor .6s ease-in-out 1; }
+    @media (max-width:640px){ .sigdot{ top:22vh; left:24vw } }
+    @keyframes dotGlow{ 0%,100%{ --dot-scale:1; box-shadow:0 0 12px rgba(214,210,255,.5), 0 0 3px rgba(255,255,255,.9) inset; opacity:.88 }
+                        50%{ --dot-scale:1.16; box-shadow:0 0 36px rgba(214,210,255,.75), 0 0 6px rgba(255,255,255,1) inset; opacity:1 } }
+    @keyframes tremor{ 0%{transform:translate(var(--dot-x,0px),var(--dot-y,0px)) scale(var(--dot-scale,1))}
+                      20%{transform:translate(calc(var(--dot-x,0px)+.6px),calc(var(--dot-y,0px)-.6px)) scale(var(--dot-scale,1))}
+                      40%{transform:translate(calc(var(--dot-x,0px)-.6px),calc(var(--dot-y,0px)+.7px)) scale(var(--dot-scale,1))}
+                      60%{transform:translate(calc(var(--dot-x,0px)+.7px),calc(var(--dot-y,0px)+.5px)) scale(var(--dot-scale,1))}
+                      80%{transform:translate(calc(var(--dot-x,0px)-.5px),calc(var(--dot-y,0px)-.7px)) scale(var(--dot-scale,1))}
+                      100%{transform:translate(var(--dot-x,0px),var(--dot-y,0px)) scale(var(--dot-scale,1))} }
+    .sigdot.tremor{ animation: dotGlow 9s ease-in-out infinite, tremor .6s ease-in-out 1 }
 
     /* Gaze spotlight */
-    .gaze{
-      position:fixed; width:44vmax; height:44vmax; border-radius:50%; pointer-events:none;
-      left:50%; top:50%; transform:translate(-50%,-50%);
-      background: radial-gradient(circle at 50% 50%, rgba(210,218,255,.08), rgba(0,0,0,0) 55%);
-      mix-blend-mode: screen; filter: blur(12px) saturate(1.1);
-      z-index:0;
-    }
+    .gaze{ position:fixed; width:44vmax; height:44vmax; border-radius:50%; pointer-events:none; left:50%; top:50%; transform:translate(-50%,-50%); background: radial-gradient(circle at 50% 50%, rgba(210,218,255,.08), rgba(0,0,0,0) 55%); mix-blend-mode: screen; filter: blur(12px) saturate(1.1); z-index:0 }
 
     /* Stage */
     .stage{height:100%; width:100%; display:grid; place-items:center; text-align:center; padding:2rem; position:relative; z-index:1; opacity:1; transition: opacity .35s ease}
     body.veil-open .stage{ opacity:0; pointer-events:none }
     .layer{opacity:1; transform:none; transition:opacity .9s ease, transform .9s ease}
-    /* Når JS er tilgjengelig, bruker vi reveal-animasjon */
     .js .layer{opacity:0; transform:translateY(8px)}
     .js .layer.show{opacity:1; transform:none}
     h1.title{margin:0 0 .65rem; font-weight:600; letter-spacing:.06em; text-transform:lowercase; font-size:clamp(46px,8.5vw,108px); text-shadow:0 0 28px rgba(150,130,255,.16)}
@@ -125,187 +112,98 @@
     .note{margin:.3rem 0 2.1rem; font-size:13px; color:var(--mute)}
 
     .actions{display:inline-flex; gap:.85rem}
-    .btn{
-      border:1px solid var(--ink); color:var(--ink); background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
-      padding:.62rem 1.35rem; text-transform:uppercase; letter-spacing:.08em; font-size:12px; cursor:pointer; transition:170ms;
-    }
+    .btn{ border:1px solid var(--ink); color:var(--ink); background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); padding:.62rem 1.35rem; text-transform:uppercase; letter-spacing:.08em; font-size:12px; cursor:pointer; transition:170ms }
     .btn:hover{background:var(--ink); color:#111}
-    .btn:focus-visible, .bind:focus-visible, .back:focus-visible{
-      outline:2px solid #e7e7ef; outline-offset:2px; box-shadow:0 0 0 3px rgba(170,150,255,.25)
-    }
+    .btn:focus-visible, .bind:focus-visible, .back:focus-visible{ outline:2px solid #e7e7ef; outline-offset:2px; box-shadow:0 0 0 3px rgba(170,150,255,.25) }
     .ghost:hover{background:transparent; color:#9a9a9a; border-color:#9a9a9a}
 
-    /* Veil (modal) */
+    /* Veil */
     .veil{position:fixed; inset:0; display:grid; place-items:center; padding:2rem; opacity:0; pointer-events:none; transition:opacity .6s ease; overflow:auto; -webkit-overflow-scrolling:touch; touch-action:auto}
     .veil.open{opacity:1; pointer-events:auto}
-    .veil .glass{
-      position:absolute; inset:0;
-      background:
-        radial-gradient(1200px 800px at 50% 42%, rgba(90,70,200,.12), transparent 60%),
-        radial-gradient(1000px 720px at 46% 60%, rgba(12,30,120,.14), transparent 55%),
-        rgba(0,0,6,.94);
-      backdrop-filter: blur(10px);
-      filter: hue-rotate(var(--hue));
-    }
-    .panel{ position:relative; max-width:980px; z-index:1; text-align:center; max-height:92vh; overflow:auto; }
+    .veil .glass{ position:absolute; inset:0; background: radial-gradient(1200px 800px at 50% 42%, rgba(90,70,200,.12), transparent 60%), radial-gradient(1000px 720px at 46% 60%, rgba(12,30,120,.14), transparent 55%), rgba(0,0,6,.94); backdrop-filter: blur(10px); filter: hue-rotate(var(--hue)) }
+    .panel{ position:relative; width:min(92vw, 880px); max-height:88svh; z-index:1; text-align:center; border-radius:22px; padding: clamp(16px, 2.2vw, 28px); }
+    @media (max-width:640px){ .panel{ width:min(94vw,560px); max-height:86svh; border-radius:20px } }
     .panel h2{ margin:.2rem 0 .85rem 0; font-weight:600; letter-spacing:.04em; font-size:clamp(22px,3.1vw,36px) }
     .panel p{ margin:.45rem 0 1rem 0; font-size:clamp(15px,2vw,19px); line-height:1.9; color:#c6c8d0; opacity:.95 }
     .back{ display:inline-block; margin-top:1.2rem; font-size:13px; color:var(--mute); text-decoration:none; border-bottom:1px dashed #333; padding-bottom:2px; background:none; border:none; cursor:pointer }
     .back:hover{color:#fff; border-color:#555}
 
-    /* Artefakter */
     .grid{ margin:1.6rem auto 0; display:grid; grid-template-columns:repeat( auto-fit, minmax(220px, 1fr) ); gap:14px; transition: opacity .6s ease }
     .grid.latent{opacity:0; pointer-events:none}
-    .card{ position:relative; border:1px solid rgba(220,220,255,.18); padding:14px; background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); }
+    .card{ position:relative; border:1px solid rgba(220,220,255,.18); padding:14px; background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); border-radius:10px }
     .card h3{ margin:.1rem 0 .35rem 0; font-size:15px; letter-spacing:.08em; text-transform:uppercase }
     .card p{ margin:.2rem 0 .6rem 0; font-size:13px; color:#c8c8d2; line-height:1.6 }
-    .bind{
-      display:inline-flex; align-items:center; gap:.45rem; font-size:11px; letter-spacing:.12em; text-transform:uppercase; padding:.5rem .8rem; cursor:pointer;
-      background:transparent; color:var(--ink); border:1px solid rgba(220,220,255,.5);
-    }
+    .bind{ display:inline-flex; align-items:center; gap:.45rem; font-size:11px; letter-spacing:.12em; text-transform:uppercase; padding:.65rem .9rem; cursor:pointer; background:transparent; color:var(--ink); border:1px solid rgba(220,220,255,.5) }
     .bind:hover{ background:var(--ink); color:#0a0a0a }
     .ring{ position:absolute; inset:-2px; border-radius:6px; pointer-events:none; box-shadow:0 0 0 0 rgba(170,150,255,.35); transition: box-shadow .6s ease }
     .card.bound .ring{ box-shadow:0 0 0 2px rgba(170,150,255,.55), 0 0 34px 6px rgba(140,120,255,.18) }
 
-    /* Countdown */
     .countdown{ margin-top:.35rem; display:grid; justify-items:center; gap:.4rem }
-    .cd-label{
-      color:var(--mute);
-      letter-spacing:.08em;
-      text-transform:lowercase;
-      opacity:.85;
-      margin-bottom:.35rem;
-      font-size:clamp(12px,1.6vw,14px);
-    }
-    .cd-digits{
-      display:flex; align-items:flex-end; justify-content:center; gap:1rem;
-      color:var(--ink);
-      font-variant-numeric: tabular-nums;
-      font-feature-settings: "tnum" 1;
-      text-align:center;
-    }
-    .cd-seg span{
-      display:block;
-      font-size:clamp(22px,5vw,48px);
-      line-height:1;
-      min-width: 5ch;             /* stabil bredde: 00 */
-    }
-    .cd-seg small{
-      display:block; margin-top:.4rem; font-size:clamp(10px,1.4vw,12px); color:var(--mute); letter-spacing:.12em; opacity:.9;
-    }
+    .cd-label{ color:var(--mute); letter-spacing:.08em; text-transform:lowercase; opacity:.85; margin-bottom:.35rem; font-size:clamp(12px,1.6vw,14px) }
+    .cd-digits{ display:flex; align-items:flex-end; justify-content:center; gap:1rem; color:var(--ink); font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; text-align:center }
+    .cd-seg span{ display:block; font-size:clamp(22px,5vw,48px); line-height:1; min-width: 5ch }
+    .cd-seg small{ display:block; margin-top:.4rem; font-size:clamp(10px,1.4vw,12px); color:var(--mute); letter-spacing:.12em; opacity:.9 }
     .cd-open-msg{ color:var(--ink); font-size:clamp(18px,4.2vw,28px); letter-spacing:.02em; margin-top:.2rem }
 
-    @media (max-width:420px){
-      .cd-digits{ gap:.6rem }
-      .cd-seg span{ min-width:4.5ch }
-    }
+    @media (max-width:420px){ .cd-digits{ gap:.6rem } .cd-seg span{ min-width:4.5ch } }
 
-    /* Hitch/glitch ved første last */
-    @keyframes hitch{
-      0%{transform:translateY(0)} 8%{transform:translateY(1px)} 12%{transform:translateY(-1px)}
-      18%{letter-spacing:.02em} 24%{opacity:.96} 30%{transform:translateY(.5px)} 36%{letter-spacing:0}
-      48%{opacity:.9} 60%{transform:translateY(0)} 100%{opacity:1}
-    }
+    @keyframes hitch{ 0%{transform:translateY(0)} 8%{transform:translateY(1px)} 12%{transform:translateY(-1px)} 18%{letter-spacing:.02em} 24%{opacity:.96} 30%{transform:translateY(.5px)} 36%{letter-spacing:0} 48%{opacity:.9} 60%{transform:translateY(0)} 100%{opacity:1} }
     .hitch{ animation: hitch 1.8s steps(20,end) 1 both }
 
-    /* Motion-reduce */
-    @media (prefers-reduced-motion: reduce){
-      *, *::before, *::after{
-        animation-duration:.001ms !important; animation-iteration-count:1 !important;
-        transition-duration:0s !important; scroll-behavior:auto !important
-      }
-      .depth{ animation:none }
-      .sweep::after{ animation:none }
-      .gaze{ transition:none }
-    }
+    @media (prefers-reduced-motion: reduce){ *,*::before,*::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:0s !important; scroll-behavior:auto !important } .depth{animation:none} .sweep::after{animation:none} .gaze{transition:none} }
   </style>
 </head>
 <body>
   <script>document.documentElement.classList.add('js');</script>
-  <!-- bakgrunn -->
   <div class="depth" aria-hidden="true"></div>
   <div class="gaze" aria-hidden="true"></div>
   <div class="sigdot" title="voidpass"></div>
 
-  <!-- stage -->
-  <main class="stage" aria-labelledby="t">
-    <div class="layer l1">
-      <h1 id="t" class="title">void.</h1>
-
-      <!-- Countdown (ritual time) -->
-      <div class="countdown" id="countdown">
-        <div class="cd-label">the door opens</div>
-        <div class="cd-digits" aria-live="polite" aria-atomic="true">
-          <div class="cd-seg">
-            <span id="cd-days">00</span>
-            <small>days</small>
-          </div>
-          <div class="cd-seg">
-            <span id="cd-hours">00</span>
-            <small>hours</small>
-          </div>
-          <div class="cd-seg">
-            <span id="cd-mins">00</span>
-            <small>mins</small>
-          </div>
-          <div class="cd-seg">
-            <span id="cd-secs">00</span>
-            <small>secs</small>
+  <div class="wrapper">
+    <div class="frame">
+      <main class="stage" aria-labelledby="t">
+        <div class="layer l1">
+          <h1 id="t" class="title">void.</h1>
+          <div class="countdown" id="countdown">
+            <div class="cd-label">the door opens</div>
+            <div class="cd-digits" aria-live="polite" aria-atomic="true">
+              <div class="cd-seg"><span id="cd-days">00</span><small>days</small></div>
+              <div class="cd-seg"><span id="cd-hours">00</span><small>hours</small></div>
+              <div class="cd-seg"><span id="cd-mins">00</span><small>mins</small></div>
+              <div class="cd-seg"><span id="cd-secs">00</span><small>secs</small></div>
+            </div>
+            <div class="cd-open-msg" id="cd-open" hidden>The door is open.</div>
           </div>
         </div>
-        <div class="cd-open-msg" id="cd-open" hidden>The door is open.</div>
-      </div>
+        <div class="layer l2">
+          <p class="sub">the architecture has no walls.<br/>the mind has no owner.</p>
+          <div class="note">(origin field / dominion)</div>
+        </div>
+        <div class="layer l3">
+          <div class="actions">
+            <button class="btn" id="enter" aria-controls="veil" aria-expanded="false">enter</button>
+            <button class="btn ghost" id="pass">remain outside</button>
+            <button class="btn ghost" id="mute" aria-pressed="false" aria-label="mute drone">mute</button>
+          </div>
+        </div>
+      </main>
     </div>
+  </div>
 
-    <div class="layer l2">
-      <p class="sub">the architecture has no walls.<br/>the mind has no owner.</p>
-      <div class="note">(origin field / dominion)</div>
-    </div>
-
-    <div class="layer l3">
-      <div class="actions">
-        <button class="btn" id="enter" aria-controls="veil" aria-expanded="false">enter</button>
-        <button class="btn ghost" id="pass">remain outside</button>
-        <button class="btn ghost" id="mute" aria-pressed="false" aria-label="mute drone">mute</button>
-      </div>
-    </div>
-  </main>
-
-  <!-- veil -->
   <section class="veil" id="veil" aria-modal="true" role="dialog" aria-labelledby="vh">
     <div class="glass" aria-hidden="true"></div>
     <div class="panel">
-      <!-- En enkelt live-region (forenklet) -->
       <div class="sr-only" aria-live="polite" role="status" id="live"></div>
-
       <h2 id="vh">we are no longer in reality. we are in voidpass.</h2>
       <p style="margin-top:.2rem; opacity:.92">you did not arrive. we pulled you.</p>
       <p style="margin-top:.2rem; opacity:.92">the field opens.</p>
       <p style="margin-top:.2rem; opacity:.92">what you bind here will not belong to you.</p>
       <p style="margin-top:.2rem; opacity:.92">it will change you.</p>
-
-      <!-- Artefakter (skjules først, vises etter kort forsinkelse) -->
       <div class="grid latent" id="grid" aria-hidden="true">
-        <article class="card" data-id="sigil-stone">
-          <div class="ring"></div>
-          <h3>sigil: stone</h3>
-          <p>cold memory carrier. weight without touch. holds the pressure for you.</p>
-          <button class="bind" aria-pressed="false">bind to self</button>
-        </article>
-        <article class="card" data-id="ink-rite">
-          <div class="ring"></div>
-          <h3>rite: ink</h3>
-          <p>a mark in the field. proof of passage. the line obeys until it doesn’t.</p>
-          <button class="bind" aria-pressed="false">bind to self</button>
-        </article>
-        <article class="card" data-id="voice-drift">
-          <div class="ring"></div>
-          <h3>drift: voice</h3>
-          <p>low frequency escort. a soft command that never ends.</p>
-          <button class="bind" aria-pressed="false">bind to self</button>
-        </article>
+        <article class="card" data-id="sigil-stone"><div class="ring"></div><h3>sigil: stone</h3><p>cold memory carrier. weight without touch. holds the pressure for you.</p><button class="bind" aria-pressed="false">bind to self</button></article>
+        <article class="card" data-id="ink-rite"><div class="ring"></div><h3>rite: ink</h3><p>a mark in the field. proof of passage. the line obeys until it doesn’t.</p><button class="bind" aria-pressed="false">bind to self</button></article>
+        <article class="card" data-id="voice-drift"><div class="ring"></div><h3>drift: voice</h3><p>low frequency escort. a soft command that never ends.</p><button class="bind" aria-pressed="false">bind to self</button></article>
       </div>
-
       <div style="margin-top:1rem; display:flex; gap:.75rem; justify-content:center; align-items:center">
         <button type="button" class="back" id="close" aria-label="Close dialog and return">← back</button>
       </div>
@@ -313,20 +211,11 @@
   </section>
 
   <div class="sweep" aria-hidden="true"></div>
-
-  <noscript>
-    <div style="color:#d2d2d8; text-align:center; padding:1rem">This experience requires JavaScript enabled.</div>
-  </noscript>
+  <noscript><div style="color:#d2d2d8; text-align:center; padding:1rem">This experience requires JavaScript enabled.</div></noscript>
 
 <script>
-  /* =============================================================
-     SETUP
-  ============================================================= */
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* =============================================================
-     ENTRANCE REVEAL + HITCH
-  ============================================================= */
   const l1=document.querySelector('.l1'), l2=document.querySelector('.l2'), l3=document.querySelector('.l3');
   setTimeout(()=>l1.classList.add('show'),180);
   setTimeout(()=>l2.classList.add('show'),740);
@@ -334,55 +223,11 @@
   [l1.querySelector('h1'), document.querySelector('.sub')].forEach(el=> el && el.classList.add('hitch'));
   setTimeout(()=> document.querySelectorAll('.hitch').forEach(el=> el.classList.remove('hitch')), 1900);
 
-  /* =============================================================
-     GAZE — RAF (dominance lag)
-  ============================================================= */
-  (function initGaze(){
-    if(reduceMotion) return;
-    const gaze=document.querySelector('.gaze');
-    let gx=50, gy=50, tx=50, ty=50, gazeRAF=null;
-    function gazeFrame(){
-      gx = gx + (tx - gx)*0.12;
-      gy = gy + (ty - gy)*0.12;
-      gaze.style.transform = `translate(-50%,-50%) translate(${gx-50}%, ${gy-50}%)`;
-      gazeRAF = requestAnimationFrame(gazeFrame);
-    }
-    window.addEventListener('mousemove', (e)=>{
-      tx = (e.clientX / window.innerWidth )*100;
-      ty = (e.clientY / window.innerHeight)*100;
-      if(!gazeRAF) gazeRAF = requestAnimationFrame(gazeFrame);
-    });
-  })();
+  (function initGaze(){ if(reduceMotion) return; const gaze=document.querySelector('.gaze'); let gx=50,gy=50,tx=50,ty=50,raf=null; function f(){ gx=gx+(tx-gx)*0.12; gy=gy+(ty-gy)*0.12; gaze.style.transform=`translate(-50%,-50%) translate(${gx-50}%, ${gy-50}%)`; raf=requestAnimationFrame(f);} window.addEventListener('mousemove',e=>{ tx=(e.clientX/window.innerWidth)*100; ty=(e.clientY/window.innerHeight)*100; if(!raf) raf=requestAnimationFrame(f);}); })();
 
-  /* Sigdot – tilfeldig liten rist av og til */
-  (function dotTremor(){
-    if(reduceMotion) return;
-    const dot = document.querySelector('.sigdot');
-    if(!dot) return;
-    function schedule(){
-      const next = 5000 + Math.random()*10000; // 5–15 sek
-      setTimeout(()=>{
-        dot.classList.add('tremor');
-        dot.addEventListener('animationend', ()=> dot.classList.remove('tremor'), {once:true});
-        schedule();
-      }, next);
-    }
-    schedule();
-  })();
+  (function dotTremor(){ if(reduceMotion) return; const dot=document.querySelector('.sigdot'); if(!dot) return; function schedule(){ const next=5000+Math.random()*10000; setTimeout(()=>{ dot.classList.add('tremor'); dot.addEventListener('animationend',()=>dot.classList.remove('tremor'),{once:true}); schedule(); }, next);} schedule(); })();
+  (function dotParallax(){ const onScroll=()=>{ const y=(window.scrollY||document.documentElement.scrollTop)*0.03; document.documentElement.style.setProperty('--dot-y', y.toFixed(1)+'px'); }; window.addEventListener('scroll', onScroll, {passive:true}); onScroll(); })();
 
-  /* Sigdot – lett parallax ved scroll (spesielt mobil) */
-  (function dotParallax(){
-    const onScroll = ()=>{
-      const y = (window.scrollY || document.documentElement.scrollTop) * 0.03; // 3% for litt mer på mobil
-      document.documentElement.style.setProperty('--dot-y', y.toFixed(1)+'px');
-    };
-    window.addEventListener('scroll', onScroll, {passive:true});
-    onScroll();
-  })();
-
-  /* =============================================================
-     VEIL — fokusfelle, scroll lock, stille før artefakter
-  ============================================================= */
   const veil=document.getElementById('veil');
   const enterBtn=document.getElementById('enter');
   const closeBtn=document.getElementById('close');
@@ -397,311 +242,40 @@
   function lockScroll(){ scrollY = window.scrollY || 0; document.body.classList.add('lock'); document.body.style.top = `-${scrollY}px`; }
   function unlockScroll(){ document.body.classList.remove('lock'); document.body.style.top = ''; window.scrollTo(0, scrollY); }
 
-  function setInert(on){
-    stage.setAttribute('aria-hidden', on ? 'true':'false');
-    try{ stage.inert = !!on; }catch(e){}
-  }
-  function trapFocus(container){
-    focusables = container.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])');
-    firstFocusable = focusables[0];
-    lastFocusable = focusables[focusables.length-1];
-    container.addEventListener('keydown', handleTab);
-  }
-  function untrapFocus(container){ container.removeEventListener('keydown', handleTab); }
-  function handleTab(e){
-    if(e.key !== 'Tab') return;
-    if(focusables.length===0) return;
-    if(e.shiftKey && document.activeElement===firstFocusable){ e.preventDefault(); lastFocusable.focus(); }
-    else if(!e.shiftKey && document.activeElement===lastFocusable){ e.preventDefault(); firstFocusable.focus(); }
-  }
+  function setInert(on){ stage.setAttribute('aria-hidden', on ? 'true':'false'); try{ stage.inert = !!on; }catch(e){} }
+  function trapFocus(c){ focusables = c.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'); firstFocusable = focusables[0]; lastFocusable = focusables[focusables.length-1]; c.addEventListener('keydown', handleTab); }
+  function untrapFocus(c){ c.removeEventListener('keydown', handleTab); }
+  function handleTab(e){ if(e.key!=='Tab') return; if(focusables.length===0) return; if(e.shiftKey && document.activeElement===firstFocusable){ e.preventDefault(); lastFocusable.focus(); } else if(!e.shiftKey && document.activeElement===lastFocusable){ e.preventDefault(); firstFocusable.focus(); } }
 
-  function revealArtifacts(){
-    grid.classList.remove('latent');
-    grid.removeAttribute('aria-hidden');
-  }
-  function openVeil(){
-    lastFocus = document.activeElement;
-    document.body.classList.add('veil-open');
-    veil.classList.add('open');
-    enterBtn.setAttribute('aria-expanded','true');
-    setInert(true); lockScroll(); trapFocus(veil);
-    requestAnimationFrame(()=>{
-      const target = veil.querySelector('#vh') || veil;
-      target.setAttribute('tabindex','-1');
-      target.focus({preventScroll:true});
-    });
-    // stillhet før artefakter
-    grid.classList.add('latent');
-    grid.setAttribute('aria-hidden','true');
-    setTimeout(revealArtifacts, 2200);
-    enterSilenceWithRiser(); // myk zero-cross + riser
-  }
-  function closeVeil(){
-    veil.classList.remove('open');
-    document.body.classList.remove('veil-open');
-    enterBtn.setAttribute('aria-expanded','false');
-    untrapFocus(veil); setInert(false); unlockScroll();
-    if(lastFocus) lastFocus.focus();
-  }
+  function revealArtifacts(){ grid.classList.remove('latent'); grid.removeAttribute('aria-hidden'); }
+  function openVeil(){ lastFocus=document.activeElement; document.body.classList.add('veil-open'); veil.classList.add('open'); enterBtn.setAttribute('aria-expanded','true'); setInert(true); lockScroll(); trapFocus(veil); requestAnimationFrame(()=>{ const t = veil.querySelector('#vh') || veil; t.setAttribute('tabindex','-1'); t.focus({preventScroll:true}); }); grid.classList.add('latent'); grid.setAttribute('aria-hidden','true'); setTimeout(revealArtifacts, 2200); enterSilenceWithRiser(); }
+  function closeVeil(){ veil.classList.remove('open'); document.body.classList.remove('veil-open'); enterBtn.setAttribute('aria-expanded','false'); untrapFocus(veil); setInert(false); unlockScroll(); if(lastFocus) lastFocus.focus(); }
 
   enterBtn.addEventListener('click', openVeil);
   closeBtn.addEventListener('click', ()=>{ closeVeil(); });
-  passBtn.addEventListener('click', ()=>{ openVeil(); }); // "valg" uten valg
+  passBtn.addEventListener('click', ()=>{ openVeil(); });
 
-  /* Artefakt-binding + ARIA-live */
-  grid.addEventListener('click', (e)=>{
-    const btn = e.target.closest('.bind');
-    if(!btn) return;
-    const card = btn.closest('.card');
-    const id = card?.dataset?.id || 'artefact';
-    const bound = card.classList.toggle('bound');
-    btn.setAttribute('aria-pressed', bound ? 'true':'false');
-    btn.textContent = bound ? 'bound' : 'bind to self';
-    if(live) live.textContent = bound ? `${id} bound` : `${id} unbound`;
-  });
+  grid.addEventListener('click', (e)=>{ const btn=e.target.closest('.bind'); if(!btn) return; const card=btn.closest('.card'); const id=card?.dataset?.id||'artefact'; const bound=card.classList.toggle('bound'); btn.setAttribute('aria-pressed', bound?'true':'false'); btn.textContent = bound ? 'bound' : 'bind to self'; if(live) live.textContent = bound ? `${id} bound` : `${id} unbound`; });
 
-  /* =============================================================
-     AUDIO — tyngre/dissonant drone + riser + zero-cross fade
-  ============================================================= */
+  /* AUDIO */
   let ac, master, gain, lp, oscA, oscB, sub, lfo, lfoGain;
+  function ensureAC(){ if(ac) return; ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); master.gain.value=1.0; master.connect(ac.destination); }
+  function startDrone(){ if(reduceMotion) return; try{ if(ac && gain){ setVolume(0.22); return; } ensureAC(); gain=ac.createGain(); lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=180; lp.Q.value=0.7; oscA=ac.createOscillator(); oscB=ac.createOscillator(); sub=ac.createOscillator(); oscA.type='sine'; oscB.type='sine'; sub.type='triangle'; oscA.frequency.value=36; oscB.frequency.value=41; sub.frequency.value=18; lfo=ac.createOscillator(); lfoGain=ac.createGain(); lfo.type='sine'; lfo.frequency.value=0.12; lfoGain.gain.value=5; lfo.connect(lfoGain); lfoGain.connect(oscA.frequency); lfoGain.connect(oscB.frequency); const gA=ac.createGain(); gA.gain.value=0.22; const gB=ac.createGain(); gB.gain.value=0.18; const gS=ac.createGain(); gS.gain.value=0.10; oscA.connect(gA); oscB.connect(gB); sub.connect(gS); gA.connect(lp); gB.connect(lp); gS.connect(lp); lp.connect(gain); gain.connect(master); gain.gain.value=0.0; oscA.start(); oscB.start(); sub.start(); lfo.start(); setVolume(0.22);}catch(err){ if(live) live.textContent='audio error'; console.error('Audio init failed', err);} }
+  function setVolume(target){ if(!ac||!gain) return; const now=ac.currentTime; try{ const tau=/iPhone|iPad|iPod|Safari/i.test(navigator.userAgent)?0.1:0.06; gain.gain.cancelScheduledValues(now); gain.gain.setTargetAtTime(target, now, tau);}catch(_){} }
+  function rampToZero(duration=0.08){ if(!ac||!gain) return; const now=ac.currentTime; const start=gain.gain.value; const N=256; const curve=new Float32Array(N); for(let i=0;i<N;i++){ const t=i/(N-1); const w=0.5*(1+Math.cos(Math.PI*t)); curve[i]=start*w; } gain.gain.cancelScheduledValues(now); gain.gain.setValueCurveAtTime(curve, now, duration); }
+  function stopDrone(hard=false){ if(!ac||!gain) return; rampToZero(0.08); if(hard){ setTimeout(()=>{ try{ oscA?.stop(); oscB?.stop(); sub?.stop(); lfo?.stop(); }catch(_){} try{ ac.close(); }catch(_){} ac=null; master=null; gain=null; lp=null; oscA=oscB=sub=lfo=lfoGain=null; }, 100);} }
+  function playRiser(){ try{ ensureAC(); const now=ac.currentTime; const dur=1.1; const sr=ac.sampleRate; const frames=Math.floor(sr*dur); const buf=ac.createBuffer(1, frames, sr); const data=buf.getChannelData(0); for(let i=0;i<frames;i++){ const n=(Math.random()*2-1); data[i]=(i>0?data[i-1]*0.92+n*0.08:n*0.08);} const src=ac.createBufferSource(); src.buffer=buf; src.loop=false; const bp=ac.createBiquadFilter(); bp.type='bandpass'; const g=ac.createGain(); g.gain.value=0.0; src.connect(bp); bp.connect(g); g.connect(master); bp.frequency.setValueAtTime(180, now); bp.frequency.exponentialRampToValueAtTime(1600, now+dur*0.8); bp.Q.setValueAtTime(1.2, now); bp.Q.linearRampToValueAtTime(6.0, now+dur*0.7); g.gain.setValueAtTime(0.0, now); g.gain.linearRampToValueAtTime(0.32, now+0.35); g.gain.linearRampToValueAtTime(0.0, now+dur); src.start(now); src.stop(now+dur+0.02);}catch(err){ console.warn('riser error', err);} }
+  function enterSilenceWithRiser(){ if(gain){ rampToZero(0.08); } playRiser(); if(gain){ setTimeout(()=> stopDrone(true), 110); } }
 
-  function ensureAC(){
-    if(ac) return;
-    ac = new (window.AudioContext || window.webkitAudioContext)();
-    master = ac.createGain();
-    master.gain.value = 1.0;
-    master.connect(ac.destination);
-  }
+  muteBtn.addEventListener('click', ()=>{ if(!ac||!gain){ startDrone(); return; } const pressed=muteBtn.getAttribute('aria-pressed')==='true'; if(pressed){ muteBtn.setAttribute('aria-pressed','false'); muteBtn.textContent='mute'; setVolume(0.22); } else { muteBtn.setAttribute('aria-pressed','true'); muteBtn.textContent='unmute'; rampToZero(0.08); } });
 
-  function startDrone(){
-    if(reduceMotion) return; // respekter motion-reduce
-    try{
-      if(ac && gain){ setVolume(0.22); return; }
+  window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && veil.classList.contains('open')){ closeVeil(); } });
 
-      ensureAC();
-      gain = ac.createGain();
-      lp = ac.createBiquadFilter();
-      lp.type = 'lowpass';
-      lp.frequency.value = 180;
-      lp.Q.value = 0.7;
+  (function animateField(){ if(reduceMotion) return; const pulseFreq=0.16; const hueAmpDeg=8; const huePeriod=90000; const t0=performance.now(); function frame(){ const now=performance.now(); const t=(now-t0)/1000; const phase=Math.sin(2*Math.PI*pulseFreq*t); const pulse=0.96+0.05*((phase+1)/2); document.documentElement.style.setProperty('--pulse', pulse.toFixed(3)); const hue=Math.sin((now-t0)*(2*Math.PI/huePeriod))*hueAmpDeg; document.documentElement.style.setProperty('--hue', hue.toFixed(2)+'deg'); requestAnimationFrame(frame);} requestAnimationFrame(frame); })();
 
-      oscA = ac.createOscillator();
-      oscB = ac.createOscillator();
-      sub  = ac.createOscillator();
-
-      oscA.type = 'sine';
-      oscB.type = 'sine';
-      sub.type  = 'triangle';
-
-      oscA.frequency.value = 36;
-      oscB.frequency.value = 41;
-      sub.frequency.value  = 18;
-
-      lfo = ac.createOscillator();
-      lfoGain = ac.createGain();
-      lfo.type = 'sine';
-      lfo.frequency.value = 0.12;
-      lfoGain.gain.value = 5;
-      lfo.connect(lfoGain);
-      lfoGain.connect(oscA.frequency);
-      lfoGain.connect(oscB.frequency);
-
-      const gA = ac.createGain(); gA.gain.value = 0.22;
-      const gB = ac.createGain(); gB.gain.value = 0.18;
-      const gS = ac.createGain(); gS.gain.value = 0.10;
-      oscA.connect(gA); oscB.connect(gB); sub.connect(gS);
-      gA.connect(lp); gB.connect(lp); gS.connect(lp);
-
-      lp.connect(gain);
-      gain.connect(master);
-
-      gain.gain.value = 0.0;
-
-      oscA.start(); oscB.start(); sub.start(); lfo.start();
-      setVolume(0.22);
-    }catch(err){
-      if(live) live.textContent = 'audio error';
-      console.error('Audio init failed', err);
-    }
-  }
-
-  // Smooth volumekurve (tau litt større på mobil Safari)
-  function setVolume(target){
-    if(!ac || !gain) return;
-    const now = ac.currentTime;
-    try{
-      const tau = /iPhone|iPad|iPod|Safari/i.test(navigator.userAgent) ? 0.1 : 0.06;
-      gain.gain.cancelScheduledValues(now);
-      gain.gain.setTargetAtTime(target, now, tau);
-    }catch(_){}
-  }
-
-  // Zero-cross-lignende uttoning med kosinus-kurve (klikkløst)
-  function rampToZero(duration=0.08){
-    if(!ac || !gain) return;
-    const now = ac.currentTime;
-    const start = gain.gain.value;
-    const N = 256;
-    const curve = new Float32Array(N);
-    for(let i=0;i<N;i++){
-      const t = i/(N-1);               // 0..1
-      const w = 0.5*(1+Math.cos(Math.PI*t)); // Hann: 1→0, null hastighet ved ender
-      curve[i] = start * w;
-    }
-    gain.gain.cancelScheduledValues(now);
-    gain.gain.setValueCurveAtTime(curve, now, duration);
-  }
-
-  function stopDrone(hard=false){
-    if(!ac || !gain) return;
-    rampToZero(0.08);
-    if(hard){
-      setTimeout(()=>{
-        try{ oscA?.stop(); oscB?.stop(); sub?.stop(); lfo?.stop(); }catch(_){}
-        try{ ac.close(); }catch(_){}
-        ac = null; master=null; gain=null; lp=null; oscA=oscB=sub=lfo=lfoGain=null;
-      }, 100);
-    }
-  }
-
-  // Lengre riser (noise + bandpass sweep) – spiller selv om dronen er avslått
-  function playRiser(){
-    try{
-      ensureAC();
-      const now = ac.currentTime;
-
-      // Noise-buffer ~1.2s
-      const dur = 1.1;
-      const sr = ac.sampleRate;
-      const frames = Math.floor(sr*dur);
-      const buf = ac.createBuffer(1, frames, sr);
-      const data = buf.getChannelData(0);
-      for(let i=0;i<frames;i++){
-        // litt mykere noise (pink-ish enkel filter): glidende gjennomsnitt
-        const n = (Math.random()*2-1);
-        data[i] = (i>0 ? data[i-1]*0.92 + n*0.08 : n*0.08);
-      }
-
-      const src = ac.createBufferSource(); src.buffer = buf; src.loop = false;
-      const bp = ac.createBiquadFilter(); bp.type='bandpass';
-      const g  = ac.createGain(); g.gain.value = 0.0;
-
-      src.connect(bp); bp.connect(g); g.connect(master);
-
-      // Sweep
-      bp.frequency.setValueAtTime(180, now);
-      bp.frequency.exponentialRampToValueAtTime(1600, now + dur*0.8);
-      bp.Q.setValueAtTime(1.2, now);
-      bp.Q.linearRampToValueAtTime(6.0, now + dur*0.7);
-
-      // Envelopen (fade inn → peak → fade ut)
-      g.gain.setValueAtTime(0.0, now);
-      g.gain.linearRampToValueAtTime(0.32, now + 0.35);
-      g.gain.linearRampToValueAtTime(0.0, now + dur);
-
-      src.start(now);
-      src.stop(now + dur + 0.02);
-    }catch(err){ console.warn('riser error', err); }
-  }
-
-  // Kombi: myk zero-cross → riser → stillhet
-  function enterSilenceWithRiser(){
-    if(gain){ rampToZero(0.08); }
-    playRiser();
-    if(gain){ setTimeout(()=> stopDrone(true), 110); } // steng etter uttoning starter
-  }
-
-  /* Mute toggle */
-  muteBtn.addEventListener('click', ()=>{
-    if(!ac || !gain){ startDrone(); return; }
-    const pressed = muteBtn.getAttribute('aria-pressed')==='true';
-    if(pressed){
-      muteBtn.setAttribute('aria-pressed','false'); muteBtn.textContent='mute';
-      setVolume(0.22);
-    } else {
-      muteBtn.setAttribute('aria-pressed','true'); muteBtn.textContent='unmute';
-      rampToZero(0.08); // null-klikk fade
-    }
-  });
-
-  /* ESC for å lukke */
-  window.addEventListener('keydown', (e)=>{
-    if(e.key==='Escape' && veil.classList.contains('open')){ closeVeil(); }
-  });
-
-  /* =============================================================
-     GLOBAL PULSE + HUE-DRIFT (rommet “lever”)
-  ============================================================= */
-  (function animateField(){
-    if(reduceMotion) return; // respekter motion-reduce
-    const pulseFreq = 0.16;            // matcher lydens pust
-    const hueAmpDeg = 8;               // +/- 8 grader hue
-    const huePeriod = 90_000;          // ~90s full syklus
-    const t0 = performance.now();
-    function frame(){
-      const now = performance.now();
-      const t = (now - t0)/1000;
-      const phase = Math.sin(2*Math.PI*pulseFreq*t);
-      const pulse = 0.96 + 0.05*((phase+1)/2); // 0.96..1.01
-      document.documentElement.style.setProperty('--pulse', pulse.toFixed(3));
-      const hue = Math.sin((now - t0) * (2*Math.PI / huePeriod)) * hueAmpDeg;
-      document.documentElement.style.setProperty('--hue', hue.toFixed(2)+'deg');
-      requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-  })();
-
-  /* =============================================================
-     RITUAL COUNTDOWN — 1 second (ritual) = 2 seconds (real)
-     - Mål: 1. feb 2026 00:00:00 UTC (kan endres)
-     - Du kan låse starttid (RITUAL_START_REAL_MS) for forutsigbar avspilling
-  ============================================================= */
-  const TARGET_UTC_MS = Date.UTC(2026, 1, 1, 0, 0, 0); // Feb = 1 (0-indeksert måned)
-  const RITUAL_START_REAL_MS = null;
-  const RITUAL_SPEED = 0.5; // 0.5x realtid = 1 ritual-sek = 2 sanne sek
-
-  (function initRitualCountdown(){
-    const el = {
-      days:  document.getElementById('cd-days'),
-      hours: document.getElementById('cd-hours'),
-      mins:  document.getElementById('cd-mins'),
-      secs:  document.getElementById('cd-secs'),
-      digits: document.querySelector('.cd-digits'),
-      openMsg: document.getElementById('cd-open')
-    };
-    if(!el.days || !el.hours || !el.mins || !el.secs) return;
-
-    const startReal = (typeof RITUAL_START_REAL_MS === 'number') ? RITUAL_START_REAL_MS : Date.now();
-    const baseRitualRemaining = Math.max(0, TARGET_UTC_MS - startReal);
-
-    function fmt(n){ return n<10 ? '0'+n : ''+n; }
-    function render(ms){
-      let total = Math.floor(ms/1000); if(total<0) total=0;
-      const d = Math.floor(total/86400);
-      const h = Math.floor((total%86400)/3600);
-      const m = Math.floor((total%3600)/60);
-      const s = total%60;
-      el.days.textContent  = fmt(d);
-      el.hours.textContent = fmt(h);
-      el.mins.textContent  = fmt(m);
-      el.secs.textContent  = fmt(s);
-    }
-    function done(){
-      if(el.digits) el.digits.hidden = true;
-      if(el.openMsg){ el.openMsg.hidden = false; el.openMsg.textContent = 'The door is open.'; }
-      if(live) live.textContent = 'ritual open';
-    }
-    function tick(){
-      const nowReal = Date.now();
-      const elapsedReal = nowReal - startReal;
-      const elapsedRitual = elapsedReal * RITUAL_SPEED;         // skalerer tiden
-      const remainingRitual = Math.floor(baseRitualRemaining - elapsedRitual);
-      if(remainingRitual <= 0){ render(0); done(); clearInterval(iv); return; }
-      render(remainingRitual);
-    }
-    tick();
-    const iv = setInterval(tick, 1000); // oppdater hvert ekte sekund (sek vises i halv hastighet)
-  })();
+  const TARGET_UTC_MS = Date.UTC(2026, 1, 1, 0, 0, 0);
+  const RITUAL_START_REAL_MS = null; const RITUAL_SPEED = 0.5;
+  (function initRitualCountdown(){ const el={ days:document.getElementById('cd-days'), hours:document.getElementById('cd-hours'), mins:document.getElementById('cd-mins'), secs:document.getElementById('cd-secs'), digits:document.querySelector('.cd-digits'), openMsg:document.getElementById('cd-open') }; if(!el.days||!el.hours||!el.mins||!el.secs) return; const startReal=(typeof RITUAL_START_REAL_MS==='number')?RITUAL_START_REAL_MS:Date.now(); const base=Math.max(0, TARGET_UTC_MS - startReal); function fmt(n){ return n<10?'0'+n:''+n;} function render(ms){ let total=Math.floor(ms/1000); if(total<0) total=0; const d=Math.floor(total/86400); const h=Math.floor((total%86400)/3600); const m=Math.floor((total%3600)/60); const s=total%60; el.days.textContent=fmt(d); el.hours.textContent=fmt(h); el.mins.textContent=fmt(m); el.secs.textContent=fmt(s);} function done(){ if(el.digits) el.digits.hidden=true; if(el.openMsg){ el.openMsg.hidden=false; el.openMsg.textContent='The door is open.';} if(live) live.textContent='ritual open'; } function tick(){ const now=Date.now(); const elapsed=now-startReal; const ritual=elapsed*RITUAL_SPEED; const remain=Math.floor(base - ritual); if(remain<=0){ render(0); done(); clearInterval(iv); return; } render(remain);} tick(); const iv=setInterval(tick, 1000); })();
 </script>
 </body>
 </html>
