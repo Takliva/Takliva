@@ -50,12 +50,16 @@
     .wrapper{ min-height:100svh; display:grid; place-items:center; }
     .frame{
       position:relative; overflow:hidden; isolation:isolate; margin:0 auto;
-      width:var(--frame-w);              /* 50% av viewport-bredden */
-      height:var(--frame-h);             /* 50% av viewport-høyden */
+      width:var(--frame-w);
+      height:var(--frame-h);
       display:grid; place-items:center;
-      border-radius:0;                    /* samme form som skjermen */
+      border-radius:0;
       background: var(--scene-bg);
       box-shadow: 0 10px 50px rgba(0,0,0,.65);
+      /* Skaler typografi etter rammens størrelse */
+      --fmin: min(var(--frame-w), var(--frame-h));
+      --fs-base: calc(var(--fmin) / 28);
+      font-size: var(--fs-base);
       transition: transform .55s ease, opacity .4s ease;
     }
     body.veil-open .frame{ opacity:.06; transform: scale(.985) }
@@ -83,12 +87,13 @@
        Signatur-prikk – rolig, sensuell puls (≈16s), subtil størrelse + glød
        -------------------- */
     .sigdot{
-      position:absolute; z-index:3; top:24%; left:26%; width:6px; height:6px; border-radius:50%;
+      position:absolute; z-index:3; top:22%; left:18%; width:6px; height:6px; border-radius:50%;
       background:radial-gradient(circle at 40% 40%, #ffffff 0%, #dfe2ff 55%, rgba(255,255,255,0) 70%);
       opacity:.88;
       transform: translateZ(0) scale(1);
       will-change: transform, opacity, box-shadow;
       animation: dotPulse 16s ease-in-out infinite;
+      animation-play-state: running;
       transition: opacity .3s ease;
       box-shadow:0 0 12px rgba(214,210,255,.50), 0 0 3px rgba(255,255,255,.9) inset;
     }
@@ -110,14 +115,14 @@
     .js .layer.show{opacity:1; transform:none}
 
     /* Typografi: Sans serif for tittel og veil-h2 */
-    h1.title{ margin:0 0 .65rem; font-weight:600; letter-spacing:.06em; text-transform:lowercase; font-size:clamp(46px,8.5vw,108px); text-shadow:0 0 28px rgba(150,130,255,.16); font-family: Inter, Helvetica, Arial, ui-sans-serif, system-ui }
-    #vh{ font-family: Inter, Helvetica, Arial, ui-sans-serif, system-ui }
+    h1.title{ margin:0 0 .65rem; font-weight:600; letter-spacing:.02em; text-transform:lowercase; font-size: clamp(2.6em, 3.4em, 4.6em); text-shadow:0 0 28px rgba(150,130,255,.16); font-family: Inter, Helvetica, Arial, ui-sans-serif, system-ui }
+    #vh{ font-family: Inter, Helvetica, Arial, ui-sans-serif, system-ui; font-weight:600 }
 
-    .sub{margin:.25rem 0 1.2rem; font-size:clamp(16px,2.2vw,22px); line-height:1.8; color:#bfc2cc; opacity:.92}
+    .sub{margin:.25rem 0 1.2rem; font-size:clamp(1.0em,1.15em,1.35em); line-height:1.8; color:#bfc2cc; opacity:.92}
     .note{margin:.3rem 0 2.1rem; font-size:13px; color:var(--mute)}
 
     .actions{display:inline-flex; gap:.85rem}
-    .btn{ border:1px solid var(--ink); color:var(--ink); background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); padding:.62rem 1.35rem; text-transform:uppercase; letter-spacing:.08em; font-size:12px; cursor:pointer; transition:170ms }
+    .btn{ border:1px solid var(--ink); color:var(--ink); background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); padding:.55em 1.2em; text-transform:uppercase; letter-spacing:.08em; font-size:.75em; cursor:pointer; transition:170ms }
     .btn:hover{background:var(--ink); color:#111}
     .btn:focus-visible, .bind:focus-visible, .back:focus-visible{ outline:2px solid #e7e7ef; outline-offset:2px; box-shadow:0 0 0 3px rgba(170,150,255,.25) }
     .ghost:hover{background:transparent; color:#9a9a9a; border-color:#9a9a9a}
@@ -130,14 +135,14 @@
 
     /* Panel matcher også rammens størrelse og er alltid midtstilt */
     .panel{ position:absolute; width:var(--frame-w); max-height:var(--frame-h); left:50%; top:50%; transform:translate(-50%,-50%); z-index:1; text-align:center; border-radius:0; padding: clamp(16px, 2.2vw, 28px); background:transparent; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; overflow:auto }
-    .panel h2{ margin:.2rem auto .85rem auto; font-weight:600; letter-spacing:.04em; font-size:clamp(22px,3.1vw,36px) }
-    .panel p{ margin:.45rem 0 1rem 0; font-size:clamp(15px,2vw,19px); line-height:1.9; color:#c6c8d0; opacity:.95 }
+    .panel h2{ margin:.2rem auto .85rem auto; font-weight:600; letter-spacing:.02em; font-size:clamp(1.6em,2em,2.4em); font-family: Inter, Helvetica, Arial, ui-sans-serif, system-ui }
+    .panel p{ margin:.45rem 0 1rem 0; font-size:clamp(1.0em,1.1em,1.2em); line-height:1.9; color:#c6c8d0; opacity:.95 }
 
     .back{ display:inline-block; margin-top:1.2rem; font-size:13px; color:var(--mute); text-decoration:none; border-bottom:1px dashed #333; padding-bottom:2px; background:none; border:none; cursor:pointer }
     .back:hover{color:#fff; border-color:#555}
 
     /* Artefakter-grid: tvungen bredde = panelens bredde, forblir inne i fargerammen */
-    .grid{ margin:1.6rem auto 0; display:grid; grid-template-columns:repeat( auto-fit, minmax(220px, 1fr) ); gap:14px; transition: opacity .6s ease; width:100% }
+    .grid{ margin:1.6rem auto 0; width: min(1200px, 86%); display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:14px; transition: opacity .6s ease }
     .grid.latent{opacity:0; pointer-events:none}
     .card{ position:relative; border:1px solid rgba(220,220,255,.18); padding:14px; background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); border-radius:10px; overflow:hidden }
     .card h3{ margin:.1rem 0 .35rem 0; font-size:15px; letter-spacing:.08em; text-transform:uppercase }
@@ -328,7 +333,7 @@
 
       const ms=(window.VOIDPASS_CONFIG?.swellFadeMs||220)/1000;
       g.gain.setValueAtTime(0.0, now);
-      g.gain.linearRampToValueAtTime(0.26, now+ms);
+      g.gain.linearRampToValueAtTime(0.38, now+ms);
       g.gain.linearRampToValueAtTime(0.0, now+dur);
 
       am.start(now); src.start(now); src.stop(now+dur+0.05); am.stop(now+dur+0.07);
@@ -338,6 +343,9 @@
 
   function enterSilenceWithSwell(){
     if(gain){ rampToZero(0.14); }
+    // spill en tydelig, rolig swell uten å slå av AudioContext
+    playSwell();
+  }
     // liten forsinkelse for å unngå overlapp/"glitch"
     setTimeout(()=>{ playSwell(); if(gain){ setTimeout(()=> stopDrone(true), 180); } }, 90);
   }
