@@ -25,6 +25,9 @@
       --void-glow: radial-gradient(800px 620px at 50% 56%, rgba(180,170,255,.08), transparent 60%);
       --pulse: 1;         /* global lys-puls (oppdatert i JS) */
       --hue: 0deg;        /* fargetemperatur-drift (oppdatert i JS) */
+      /* Felles mål til både scene og veil-panel: 50% av skjerm = svart ramme ~1/4 rundt */
+      --frame-w: 50vw;
+      --frame-h: 50svh;
     }
     *{box-sizing:border-box}
     .sr-only{ position:absolute !important; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0 }
@@ -42,15 +45,15 @@
     :focus-visible{outline:2px solid #e7e7ef; outline-offset:2px; box-shadow:0 0 0 3px rgba(170,150,255,.25)}
 
     /* --------------------
-       Distance mode – svart ramme 25% rundt (indre vindu ~50% viewport)
+       Distance mode – svart ramme 25% rundt (indre vindu = 50% viewport)
        -------------------- */
     .wrapper{ min-height:100svh; display:grid; place-items:center; }
     .frame{
       position:relative; overflow:hidden; isolation:isolate; margin:0 auto;
-      width:50vw;              /* 50% av viewport-bredden */
-      height:50svh;            /* 50% av viewport-høyden (stabil på mobil) */
+      width:var(--frame-w);              /* 50% av viewport-bredden */
+      height:var(--frame-h);             /* 50% av viewport-høyden */
       display:grid; place-items:center;
-      border-radius:0;         /* samme form som skjermen */
+      border-radius:0;                    /* samme form som skjermen */
       background: var(--scene-bg);
       box-shadow: 0 10px 50px rgba(0,0,0,.65);
       transition: transform .55s ease, opacity .4s ease;
@@ -77,21 +80,21 @@
     @keyframes sweep{ 0%{transform:translateX(-40%)} 100%{transform:translateX(40%)} }
 
     /* --------------------
-       Signatur-prikk – jevn, langsom puls (≈8s), 1.00→1.06→1.00 og 0.8→1→0.8
+       Signatur-prikk – rolig, sensuell puls (≈16s), subtil størrelse + glød
        -------------------- */
     .sigdot{
       position:absolute; z-index:3; top:24%; left:26%; width:6px; height:6px; border-radius:50%;
       background:radial-gradient(circle at 40% 40%, #ffffff 0%, #dfe2ff 55%, rgba(255,255,255,0) 70%);
-      opacity:.9;
+      opacity:.88;
       transform: translateZ(0) scale(1);
-      will-change: transform, opacity;
-      animation: dotPulse 8s ease-in-out infinite;
+      will-change: transform, opacity, box-shadow;
+      animation: dotPulse 16s ease-in-out infinite;
       transition: opacity .3s ease;
+      box-shadow:0 0 12px rgba(214,210,255,.50), 0 0 3px rgba(255,255,255,.9) inset;
     }
     @keyframes dotPulse{
-      0%   { transform:scale(1.000); opacity:0.80 }
-      50%  { transform:scale(1.060); opacity:1.00 }
-      100% { transform:scale(1.000); opacity:0.80 }
+      0%,100%{ transform:scale(1.000); opacity:0.82; box-shadow:0 0 12px rgba(214,210,255,.50), 0 0 3px rgba(255,255,255,.90) inset }
+      50%    { transform:scale(1.060); opacity:1.00; box-shadow:0 0 32px rgba(214,210,255,.80), 0 0 6px rgba(255,255,255,1.0) inset }
     }
     /* Skjul dot når veil er åpen */
     body.veil-open .sigdot{ opacity:0 !important }
@@ -106,7 +109,7 @@
     .js .layer{opacity:0; transform:translateY(8px)}
     .js .layer.show{opacity:1; transform:none}
 
-    /* Typografi: KUN disse i eksplisitt sans serif */
+    /* Typografi: Sans serif for tittel og veil-h2 */
     h1.title{ margin:0 0 .65rem; font-weight:600; letter-spacing:.06em; text-transform:lowercase; font-size:clamp(46px,8.5vw,108px); text-shadow:0 0 28px rgba(150,130,255,.16); font-family: Inter, Helvetica, Arial, ui-sans-serif, system-ui }
     #vh{ font-family: Inter, Helvetica, Arial, ui-sans-serif, system-ui }
 
@@ -119,21 +122,21 @@
     .btn:focus-visible, .bind:focus-visible, .back:focus-visible{ outline:2px solid #e7e7ef; outline-offset:2px; box-shadow:0 0 0 3px rgba(170,150,255,.25) }
     .ghost:hover{background:transparent; color:#9a9a9a; border-color:#9a9a9a}
 
-    /* Veil */
-    .veil{position:fixed; inset:0; display:grid; place-items:center; padding:2rem; opacity:0; pointer-events:none; transition:opacity .6s ease; overflow:auto; -webkit-overflow-scrolling:touch; touch-action:auto}
+    /* Veil – nå sentrert og klippet til samme RAMME som scenen */
+    .veil{position:fixed; inset:0; display:grid; place-items:center; padding:0; opacity:0; pointer-events:none; transition:opacity .6s ease;}
     .veil.open{opacity:1; pointer-events:auto}
-    .veil .glass{ position:absolute; inset:0; background: radial-gradient(1200px 800px at 50% 42%, rgba(90,70,200,.12), transparent 60%), radial-gradient(1000px 720px at 46% 60%, rgba(12,30,120,.14), transparent 55%), rgba(0,0,6,.94); backdrop-filter: blur(10px); filter: hue-rotate(var(--hue)) }
+    /* Glass er nå samme størrelse som rammen og sentrert */
+    .veil .glass{ position:relative; width:var(--frame-w); height:var(--frame-h); margin:0 auto; background: radial-gradient(1200px 800px at 50% 42%, rgba(90,70,200,.12), transparent 60%), radial-gradient(1000px 720px at 46% 60%, rgba(12,30,120,.14), transparent 55%), rgba(0,0,6,.94); backdrop-filter: blur(10px); filter: hue-rotate(var(--hue)); }
 
-    /* Viktig for mobil: sentrert panel + innhold alltid innenfor (ingen overflow) */
-    .panel{ position:relative; width:min(92vw, 880px); max-height:86svh; z-index:1; text-align:center; border-radius:0; padding: clamp(16px, 2.2vw, 28px); background:transparent; display:grid; place-items:center; overflow:auto }
-    @media (max-width:640px){ .panel{ width:min(94vw,560px); max-height:82svh } }
-    .panel h2{ margin:.2rem 0 .85rem 0; font-weight:600; letter-spacing:.04em; font-size:clamp(22px,3.1vw,36px) }
+    /* Panel matcher også rammens størrelse og er alltid midtstilt */
+    .panel{ position:absolute; width:var(--frame-w); max-height:var(--frame-h); left:50%; top:50%; transform:translate(-50%,-50%); z-index:1; text-align:center; border-radius:0; padding: clamp(16px, 2.2vw, 28px); background:transparent; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; overflow:auto }
+    .panel h2{ margin:.2rem auto .85rem auto; font-weight:600; letter-spacing:.04em; font-size:clamp(22px,3.1vw,36px) }
     .panel p{ margin:.45rem 0 1rem 0; font-size:clamp(15px,2vw,19px); line-height:1.9; color:#c6c8d0; opacity:.95 }
 
     .back{ display:inline-block; margin-top:1.2rem; font-size:13px; color:var(--mute); text-decoration:none; border-bottom:1px dashed #333; padding-bottom:2px; background:none; border:none; cursor:pointer }
     .back:hover{color:#fff; border-color:#555}
 
-    /* Artefakter-grid: hold alltid innenfor fargeområdet (panel) ved scroll */
+    /* Artefakter-grid: tvungen bredde = panelens bredde, forblir inne i fargerammen */
     .grid{ margin:1.6rem auto 0; display:grid; grid-template-columns:repeat( auto-fit, minmax(220px, 1fr) ); gap:14px; transition: opacity .6s ease; width:100% }
     .grid.latent{opacity:0; pointer-events:none}
     .card{ position:relative; border:1px solid rgba(220,220,255,.18); padding:14px; background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); border-radius:10px; overflow:hidden }
@@ -162,8 +165,8 @@
 </head>
 <body>
   <script>
-    /* ÉN konfig-nøkkel for lydnivå (kan justeres uten ny deploy ved inline endring) */
-    window.VOIDPASS_CONFIG = { bassGain: 1.25, swellFadeMs: 180, openDebounceMs: 400 };
+    /* Lydkonfig – justér her uten å endre resten */
+    window.VOIDPASS_CONFIG = { bassGain: 1.6, swellFadeMs: 220, openDebounceMs: 450 };
   </script>
   <script>document.documentElement.classList.add('js');</script>
 
@@ -204,7 +207,7 @@
     </div>
   </div>
 
-  <!-- veil over hele skjermen (scene forblir bak) -->
+  <!-- veil over hele skjermen, men innhold/glass klippes til rammestørrelse -->
   <section class="veil" id="veil" aria-modal="true" role="dialog" aria-labelledby="vh">
     <div class="glass" aria-hidden="true"></div>
     <div class="panel">
@@ -228,9 +231,6 @@
   <noscript><div style="color:#d2d2d8; text-align:center; padding:1rem">This experience requires JavaScript enabled.</div></noscript>
 
 <script>
-  /* =============================================================
-     INGEN endringer i tekster eller timer-logikk nedenfor
-  ============================================================= */
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* Reveal */
@@ -265,7 +265,7 @@
   function revealArtifacts(){ grid.classList.remove('latent'); grid.removeAttribute('aria-hidden'); }
   function openVeil(){
     const now = Date.now();
-    if(now - lastOpenAt < (window.VOIDPASS_CONFIG?.openDebounceMs||400)) return; // debounce
+    if(now - lastOpenAt < (window.VOIDPASS_CONFIG?.openDebounceMs||450)) return; // debounce
     lastOpenAt = now;
 
     lastFocus=document.activeElement;
@@ -276,6 +276,7 @@
     setInert(true); lockScroll(); trapFocus(veil);
     requestAnimationFrame(()=>{ const t = veil.querySelector('#vh') || veil; t.setAttribute('tabindex','-1'); t.focus({preventScroll:true}); });
     grid.classList.add('latent'); grid.setAttribute('aria-hidden','true'); setTimeout(revealArtifacts, 2200);
+
     enterSilenceWithSwell();
   }
   function closeVeil(){
@@ -304,12 +305,12 @@
 
   function setVolume(target){ if(!ac||!gain) return; const now=ac.currentTime; try{ const tau=/iPhone|iPad|iPod|Safari/i.test(navigator.userAgent)?0.1:0.06; gain.gain.cancelScheduledValues(now); gain.gain.setTargetAtTime(target, now, tau);}catch(_){} }
 
-  function rampToZero(duration=0.12){ if(!ac||!gain) return; const now=ac.currentTime; const start=gain.gain.value; const N=256; const curve=new Float32Array(N); for(let i=0;i<N;i++){ const t=i/(N-1); const w=0.5*(1+Math.cos(Math.PI*t)); curve[i]=start*w; } gain.gain.cancelScheduledValues(now); gain.gain.setValueCurveAtTime(curve, now, duration); }
+  function rampToZero(duration=0.14){ if(!ac||!gain) return; const now=ac.currentTime; const start=gain.gain.value; const N=256; const curve=new Float32Array(N); for(let i=0;i<N;i++){ const t=i/(N-1); const w=0.5*(1+Math.cos(Math.PI*t)); curve[i]=start*w; } gain.gain.cancelScheduledValues(now); gain.gain.setValueCurveAtTime(curve, now, duration); }
 
-  function stopDrone(hard=false){ if(!ac||!gain) return; rampToZero(0.12); if(hard){ setTimeout(()=>{ try{ oscA?.stop(); oscB?.stop(); sub?.stop(); lfo?.stop(); }catch(_){} try{ ac.close(); }catch(_){} ac=null; master=compressor=gain=lp=oscA=oscB=sub=lfo=lfoGain=null; }, 150);} }
+  function stopDrone(hard=false){ if(!ac||!gain) return; rampToZero(0.14); if(hard){ setTimeout(()=>{ try{ oscA?.stop(); oscB?.stop(); sub?.stop(); lfo?.stop(); }catch(_){} try{ ac.close(); }catch(_){} ac=null; master=compressor=gain=lp=oscA=oscB=sub=lfo=lfoGain=null; }, 160);} }
 
   // Statisk surreal swell (ingen pitch-sweep) med fade inn/ut og forrige-instans-stopp
-  function fadeAndStopSwell(){ if(!swellNodes||!ac) return; const { g, src, am } = swellNodes; try{ const now=ac.currentTime; const ms=(window.VOIDPASS_CONFIG?.swellFadeMs||180)/1000; g.gain.cancelScheduledValues(now); g.gain.linearRampToValueAtTime(0.0, now+ms); setTimeout(()=>{ try{ src.stop(); }catch(_){} try{ am.stop(); }catch(_){} swellNodes=null; }, (ms*1000)+30); }catch(_){} }
+  function fadeAndStopSwell(){ if(!swellNodes||!ac) return; const { g, src, am } = swellNodes; try{ const now=ac.currentTime; const ms=(window.VOIDPASS_CONFIG?.swellFadeMs||220)/1000; g.gain.cancelScheduledValues(now); g.gain.linearRampToValueAtTime(0.0, now+ms); setTimeout(()=>{ try{ src.stop(); }catch(_){} try{ am.stop(); }catch(_){} swellNodes=null; }, (ms*1000)+40); }catch(_){} }
 
   function playSwell(){
     try{
@@ -325,20 +326,25 @@
       g.gain.value=0.0; am.frequency.value=0.8; amGain.gain.value=0.18; am.connect(amGain); amGain.connect(g.gain);
       src.connect(bp); bp.connect(g); g.connect(compressor||master);
 
-      const ms=(window.VOIDPASS_CONFIG?.swellFadeMs||180)/1000;
+      const ms=(window.VOIDPASS_CONFIG?.swellFadeMs||220)/1000;
       g.gain.setValueAtTime(0.0, now);
-      g.gain.linearRampToValueAtTime(0.30, now+ms);
+      g.gain.linearRampToValueAtTime(0.26, now+ms);
       g.gain.linearRampToValueAtTime(0.0, now+dur);
 
-      am.start(now); src.start(now); src.stop(now+dur+0.03); am.stop(now+dur+0.05);
+      am.start(now); src.start(now); src.stop(now+dur+0.05); am.stop(now+dur+0.07);
       swellNodes = { g, src, am };
     }catch(err){ console.warn('swell error', err); }
   }
 
-  function enterSilenceWithSwell(){ if(gain){ rampToZero(0.12); } playSwell(); if(gain){ setTimeout(()=> stopDrone(true), 150); } }
+  function enterSilenceWithSwell(){
+    if(gain){ rampToZero(0.14); }
+    // liten forsinkelse for å unngå overlapp/"glitch"
+    setTimeout(()=>{ playSwell(); if(gain){ setTimeout(()=> stopDrone(true), 180); } }, 90);
+  }
 
   /* Mute (klikkløs) */
-  muteBtn.addEventListener('click', ()=>{ if(!ac||!gain){ startDrone(); return; } const pressed=muteBtn.getAttribute('aria-pressed')==='true'; if(pressed){ muteBtn.setAttribute('aria-pressed','false'); muteBtn.textContent='mute'; setVolume(0.22); } else { muteBtn.setAttribute('aria-pressed','true'); muteBtn.textContent='unmute'; rampToZero(0.12); } });
+  const muteBtn=document.getElementById('mute');
+  muteBtn.addEventListener('click', ()=>{ if(!ac||!gain){ startDrone(); return; } const pressed=muteBtn.getAttribute('aria-pressed')==='true'; if(pressed){ muteBtn.setAttribute('aria-pressed','false'); muteBtn.textContent='mute'; setVolume(0.22); } else { muteBtn.setAttribute('aria-pressed','true'); muteBtn.textContent='unmute'; rampToZero(0.14); } });
 
   /* ESC */
   window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && veil.classList.contains('open')){ closeVeil(); } });
