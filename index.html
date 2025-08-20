@@ -342,8 +342,7 @@
     setTimeout(()=>{ playSwell(); if(gain){ setTimeout(()=> stopDrone(true), 180); } }, 90);
   }
 
-  /* Mute (klikkløs) */
-  const muteBtn=document.getElementById('mute');
+  /* Mute (klikkløs) — bruker eksisterende muteBtn */
   muteBtn.addEventListener('click', ()=>{ if(!ac||!gain){ startDrone(); return; } const pressed=muteBtn.getAttribute('aria-pressed')==='true'; if(pressed){ muteBtn.setAttribute('aria-pressed','false'); muteBtn.textContent='mute'; setVolume(0.22); } else { muteBtn.setAttribute('aria-pressed','true'); muteBtn.textContent='unmute'; rampToZero(0.14); } });
 
   /* ESC */
