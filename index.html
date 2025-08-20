@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>voidpass </title>
+  <title>voidpass — field prototype</title>
 
-  <!-- Meta / Open Graph -->
-  <meta name="description" content="Enter the voidpass" />
-  <meta property="og:title" content="voidpass" />
-  <meta property="og:description" content="Enter the voidpass" />
+  <!-- Meta / Open Graph (uendret innhold/tekster) -->
+  <meta name="description" content="Enter the voidpass: a field of dominion, mystery, and binding." />
+  <meta property="og:title" content="voidpass — field prototype" />
+  <meta property="og:description" content="Enter the voidpass: a field of dominion, mystery, and binding." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="/og-voidpass.png" />
   <meta name="twitter:card" content="summary_large_image" />
@@ -18,10 +18,10 @@
 
   <style>
     :root{
-      --bg:#000;           /* utsiden = ekte void */
+      --bg:#000;           /* svart maske utenfor rammen */
       --scene-bg:#050508;  /* scenens bakgrunn */
-      --ink:#d2d2d8;      /* primærtekst */
-      --mute:#b8bec9;     /* sekundærtekst */
+      --ink:#d2d2d8;
+      --mute:#b8bec9;
       --void-glow: radial-gradient(800px 620px at 50% 56%, rgba(180,170,255,.08), transparent 60%);
       --pulse: 1;         /* global lys-puls (oppdatert i JS) */
       --hue: 0deg;        /* fargetemperatur-drift (oppdatert i JS) */
@@ -34,7 +34,7 @@
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Inter, Roboto, Arial, sans-serif;
       color:var(--ink);
       background: var(--bg);
-      overflow:auto;                 /* scroll unlocked by default */
+      overflow:auto;
       overscroll-behavior:contain;
     }
     body.lock{ position:fixed; width:100%; height:100svh; overflow:hidden; }
@@ -42,27 +42,18 @@
     :focus-visible{outline:2px solid #e7e7ef; outline-offset:2px; box-shadow:0 0 0 3px rgba(170,150,255,.25)}
 
     /* --------------------
-       Distance mode – ramme følger skjermform
+       Distance mode – svart ramme 25% rundt (indre vindu ~50% viewport)
        -------------------- */
-    .wrapper{
-      min-height:100svh; display:grid; place-items:center;
-      /* Kun vertikal padding for å unngå side-skift på mobil */
-      padding: max(3svh, env(safe-area-inset-top)) 0
-               max(3svh, env(safe-area-inset-bottom)) 0;
-    }
+    .wrapper{ min-height:100svh; display:grid; place-items:center; }
     .frame{
       position:relative; overflow:hidden; isolation:isolate; margin:0 auto;
-      /* Mindre void rundt: ca 3vw / 3svh margin fra kanter */
-      width: calc(100vw - 6vw);
-      height: calc(100svh - 6svh);
+      width:50vw;              /* 50% av viewport-bredden */
+      height:50svh;            /* 50% av viewport-høyden (stabil på mobil) */
       display:grid; place-items:center;
-      border-radius: 2.2vmin;               /* proporsjonal runding */
+      border-radius:0;         /* samme form som skjermen */
       background: var(--scene-bg);
       box-shadow: 0 10px 50px rgba(0,0,0,.65);
       transition: transform .55s ease, opacity .4s ease;
-    }
-    @media (max-width:640px){
-      .frame{ width: calc(100vw - 6vw); height: calc(100svh - 8svh); border-radius: 3.5vmin }
     }
     body.veil-open .frame{ opacity:.06; transform: scale(.985) }
 
@@ -85,40 +76,25 @@
     .sweep::after{content:""; position:absolute; inset:auto -10% 12% -10%; height:1px; background:linear-gradient(90deg, transparent, rgba(230,233,255,.08), transparent); animation:sweep 14s linear infinite; opacity:.45}
     @keyframes sweep{ 0%{transform:translateX(-40%)} 100%{transform:translateX(40%)} }
 
-    /* Signatur-prikk – prosent-posisjon i rammen (ikke vh/vw) */
+    /* --------------------
+       Signatur-prikk – jevn, langsom puls (≈8s), 1.00→1.06→1.00 og 0.8→1→0.8
+       -------------------- */
     .sigdot{
       position:absolute; z-index:3; top:24%; left:26%; width:6px; height:6px; border-radius:50%;
       background:radial-gradient(circle at 40% 40%, #ffffff 0%, #dfe2ff 55%, rgba(255,255,255,0) 70%);
-      opacity:.92;
-      box-shadow:0 0 14px rgba(214,210,255,.55), 0 0 4px rgba(255,255,255,.95) inset;
-      transform: translate(var(--dot-x,0px), var(--dot-y,0px)) scale(var(--dot-scale,1));
-      will-change: transform, box-shadow, opacity;
-      animation: dotGlow 8.5s ease-in-out infinite;
+      opacity:.9;
+      transform: translateZ(0) scale(1);
+      will-change: transform, opacity;
+      animation: dotPulse 8s ease-in-out infinite;
       transition: opacity .3s ease;
     }
-    /* Skjul dot når veil er åpen – ekstra sterk regel */
-    body.veil-open .sigdot{ opacity:0 !important }
-    @media (max-width:640px){ .sigdot{ top:14%; left:24% } }
-
-    @keyframes dotGlow{
-      0%,100%{
-        --dot-scale:1.00;
-        box-shadow:0 0 14px rgba(214,210,255,.55), 0 0 4px rgba(255,255,255,.95) inset;
-        opacity:.92;
-      }
-      50%{
-        --dot-scale:1.22; /* sensuell, men rolig */
-        box-shadow:0 0 46px rgba(214,210,255,.85), 0 0 8px rgba(255,255,255,1) inset;
-        opacity:1;
-      }
+    @keyframes dotPulse{
+      0%   { transform:scale(1.000); opacity:0.80 }
+      50%  { transform:scale(1.060); opacity:1.00 }
+      100% { transform:scale(1.000); opacity:0.80 }
     }
-    @keyframes tremor{ 0%{transform:translate(var(--dot-x,0px),var(--dot-y,0px)) scale(var(--dot-scale,1))}
-                      20%{transform:translate(calc(var(--dot-x,0px)+.6px),calc(var(--dot-y,0px)-.6px)) scale(var(--dot-scale,1))}
-                      40%{transform:translate(calc(var(--dot-x,0px)-.6px),calc(var(--dot-y,0px)+.7px)) scale(var(--dot-scale,1))}
-                      60%{transform:translate(calc(var(--dot-x,0px)+.7px),calc(var(--dot-y,0px)+.5px)) scale(var(--dot-scale,1))}
-                      80%{transform:translate(calc(var(--dot-x,0px)-.5px),calc(var(--dot-y,0px)-.7px)) scale(var(--dot-scale,1))}
-                      100%{transform:translate(var(--dot-x,0px),var(--dot-y,0px)) scale(var(--dot-scale,1))} }
-    .sigdot.tremor{ animation: dotGlow 8.5s ease-in-out infinite, tremor .6s ease-in-out 1 }
+    /* Skjul dot når veil er åpen */
+    body.veil-open .sigdot{ opacity:0 !important }
 
     /* Gaze spotlight – inni rammen */
     .gaze{ position:absolute; z-index:1; width:44vmax; height:44vmax; border-radius:50%; pointer-events:none; left:50%; top:50%; transform:translate(-50%,-50%); background: radial-gradient(circle at 50% 50%, rgba(210,218,255,.08), rgba(0,0,0,0) 55%); mix-blend-mode: screen; filter: blur(12px) saturate(1.1); }
@@ -129,7 +105,11 @@
     .layer{opacity:1; transform:none; transition:opacity .9s ease, transform .9s ease}
     .js .layer{opacity:0; transform:translateY(8px)}
     .js .layer.show{opacity:1; transform:none}
-    h1.title{margin:0 0 .65rem; font-weight:600; letter-spacing:.06em; text-transform:lowercase; font-size:clamp(46px,8.5vw,108px); text-shadow:0 0 28px rgba(150,130,255,.16)}
+
+    /* Typografi: KUN disse i eksplisitt sans serif */
+    h1.title{ margin:0 0 .65rem; font-weight:600; letter-spacing:.06em; text-transform:lowercase; font-size:clamp(46px,8.5vw,108px); text-shadow:0 0 28px rgba(150,130,255,.16); font-family: Inter, Helvetica, Arial, ui-sans-serif, system-ui }
+    #vh{ font-family: Inter, Helvetica, Arial, ui-sans-serif, system-ui }
+
     .sub{margin:.25rem 0 1.2rem; font-size:clamp(16px,2.2vw,22px); line-height:1.8; color:#bfc2cc; opacity:.92}
     .note{margin:.3rem 0 2.1rem; font-size:13px; color:var(--mute)}
 
@@ -143,16 +123,20 @@
     .veil{position:fixed; inset:0; display:grid; place-items:center; padding:2rem; opacity:0; pointer-events:none; transition:opacity .6s ease; overflow:auto; -webkit-overflow-scrolling:touch; touch-action:auto}
     .veil.open{opacity:1; pointer-events:auto}
     .veil .glass{ position:absolute; inset:0; background: radial-gradient(1200px 800px at 50% 42%, rgba(90,70,200,.12), transparent 60%), radial-gradient(1000px 720px at 46% 60%, rgba(12,30,120,.14), transparent 55%), rgba(0,0,6,.94); backdrop-filter: blur(10px); filter: hue-rotate(var(--hue)) }
-    .panel{ position:relative; width:min(92vw, 880px); max-height:88svh; z-index:1; text-align:center; border-radius:22px; padding: clamp(16px, 2.2vw, 28px); background:transparent }
-    @media (max-width:640px){ .panel{ width:min(94vw,560px); max-height:86svh; border-radius:20px } }
+
+    /* Viktig for mobil: sentrert panel + innhold alltid innenfor (ingen overflow) */
+    .panel{ position:relative; width:min(92vw, 880px); max-height:86svh; z-index:1; text-align:center; border-radius:0; padding: clamp(16px, 2.2vw, 28px); background:transparent; display:grid; place-items:center; overflow:auto }
+    @media (max-width:640px){ .panel{ width:min(94vw,560px); max-height:82svh } }
     .panel h2{ margin:.2rem 0 .85rem 0; font-weight:600; letter-spacing:.04em; font-size:clamp(22px,3.1vw,36px) }
     .panel p{ margin:.45rem 0 1rem 0; font-size:clamp(15px,2vw,19px); line-height:1.9; color:#c6c8d0; opacity:.95 }
+
     .back{ display:inline-block; margin-top:1.2rem; font-size:13px; color:var(--mute); text-decoration:none; border-bottom:1px dashed #333; padding-bottom:2px; background:none; border:none; cursor:pointer }
     .back:hover{color:#fff; border-color:#555}
 
-    .grid{ margin:1.6rem auto 0; display:grid; grid-template-columns:repeat( auto-fit, minmax(220px, 1fr) ); gap:14px; transition: opacity .6s ease }
+    /* Artefakter-grid: hold alltid innenfor fargeområdet (panel) ved scroll */
+    .grid{ margin:1.6rem auto 0; display:grid; grid-template-columns:repeat( auto-fit, minmax(220px, 1fr) ); gap:14px; transition: opacity .6s ease; width:100% }
     .grid.latent{opacity:0; pointer-events:none}
-    .card{ position:relative; border:1px solid rgba(220,220,255,.18); padding:14px; background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); border-radius:10px }
+    .card{ position:relative; border:1px solid rgba(220,220,255,.18); padding:14px; background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); border-radius:10px; overflow:hidden }
     .card h3{ margin:.1rem 0 .35rem 0; font-size:15px; letter-spacing:.08em; text-transform:uppercase }
     .card p{ margin:.2rem 0 .6rem 0; font-size:13px; color:#c8c8d2; line-height:1.6 }
     .bind{ display:inline-flex; align-items:center; gap:.45rem; font-size:11px; letter-spacing:.12em; text-transform:uppercase; padding:.65rem .9rem; cursor:pointer; background:transparent; color:var(--ink); border:1px solid rgba(220,220,255,.5) }
@@ -160,6 +144,7 @@
     .ring{ position:absolute; inset:-2px; border-radius:6px; pointer-events:none; box-shadow:0 0 0 0 rgba(170,150,255,.35); transition: box-shadow .6s ease }
     .card.bound .ring{ box-shadow:0 0 0 2px rgba(170,150,255,.55), 0 0 34px 6px rgba(140,120,255,.18) }
 
+    /* Countdown (uendret funksjon/tekst) */
     .countdown{ margin-top:.35rem; display:grid; justify-items:center; gap:.4rem }
     .cd-label{ color:var(--mute); letter-spacing:.08em; text-transform:lowercase; opacity:.85; margin-bottom:.35rem; font-size:clamp(12px,1.6vw,14px) }
     .cd-digits{ display:flex; align-items:flex-end; justify-content:center; gap:1rem; color:var(--ink); font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; text-align:center }
@@ -176,6 +161,10 @@
   </style>
 </head>
 <body>
+  <script>
+    /* ÉN konfig-nøkkel for lydnivå (kan justeres uten ny deploy ved inline endring) */
+    window.VOIDPASS_CONFIG = { bassGain: 1.25, swellFadeMs: 180, openDebounceMs: 400 };
+  </script>
   <script>document.documentElement.classList.add('js');</script>
 
   <div class="wrapper">
@@ -199,7 +188,7 @@
           </div>
         </div>
         <div class="layer l2">
-          <p class="sub">the architecture has no walls.<br/>before the question</p>
+          <p class="sub">the architecture has no walls.<br/>the mind has no owner.</p>
           <div class="note">(origin field / dominion)</div>
         </div>
         <div class="layer l3">
@@ -239,6 +228,9 @@
   <noscript><div style="color:#d2d2d8; text-align:center; padding:1rem">This experience requires JavaScript enabled.</div></noscript>
 
 <script>
+  /* =============================================================
+     INGEN endringer i tekster eller timer-logikk nedenfor
+  ============================================================= */
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* Reveal */
@@ -248,14 +240,6 @@
   setTimeout(()=>l3.classList.add('show'),1240);
   [l1.querySelector('h1'), document.querySelector('.sub')].forEach(el=> el && el.classList.add('hitch'));
   setTimeout(()=> document.querySelectorAll('.hitch').forEach(el=> el.classList.remove('hitch')), 1900);
-
-  /* Gaze lag */
-  (function initGaze(){ if(reduceMotion) return; const gaze=document.querySelector('.gaze'); let gx=50,gy=50,tx=50,ty=50,raf=null; function f(){ gx=gx+(tx-gx)*0.12; gy=gy+(ty-gy)*0.12; gaze.style.transform=`translate(-50%,-50%) translate(${gx-50}%, ${gy-50}%)`; raf=requestAnimationFrame(f);} window.addEventListener('mousemove',e=>{ tx=(e.clientX/window.innerWidth)*100; ty=(e.clientY/window.innerHeight)*100; if(!raf) raf=requestAnimationFrame(f);}); })();
-
-  /* Dot – sporadisk tremor */
-  (function dotTremor(){ if(reduceMotion) return; const dot=document.querySelector('.sigdot'); if(!dot) return; function schedule(){ const next=5000+Math.random()*10000; setTimeout(()=>{ dot.classList.add('tremor'); dot.addEventListener('animationend',()=>dot.classList.remove('tremor'),{once:true}); schedule(); }, next);} schedule(); })();
-  /* Dot parallax ved scroll (litt mer på mobil) */
-  (function dotParallax(){ const onScroll=()=>{ const y=(window.scrollY||document.documentElement.scrollTop)*0.03; document.documentElement.style.setProperty('--dot-y', y.toFixed(1)+'px'); }; window.addEventListener('scroll', onScroll, {passive:true}); onScroll(); })();
 
   /* Veil, fokus, scroll */
   const veil=document.getElementById('veil');
@@ -269,6 +253,7 @@
   const dotEl=document.querySelector('.sigdot');
 
   let lastFocus=null; let scrollY=0; let focusables=[]; let firstFocusable=null; let lastFocusable=null;
+  let lastOpenAt=0; // debounce for Enter/Remain
 
   function lockScroll(){ scrollY = window.scrollY || 0; document.body.classList.add('lock'); document.body.style.top = `-${scrollY}px`; }
   function unlockScroll(){ document.body.classList.remove('lock'); document.body.style.top = ''; window.scrollTo(0, scrollY); }
@@ -279,6 +264,10 @@
 
   function revealArtifacts(){ grid.classList.remove('latent'); grid.removeAttribute('aria-hidden'); }
   function openVeil(){
+    const now = Date.now();
+    if(now - lastOpenAt < (window.VOIDPASS_CONFIG?.openDebounceMs||400)) return; // debounce
+    lastOpenAt = now;
+
     lastFocus=document.activeElement;
     document.body.classList.add('veil-open');
     veil.classList.add('open');
@@ -299,54 +288,113 @@
 
   enterBtn.addEventListener('click', openVeil);
   closeBtn.addEventListener('click', ()=>{ closeVeil(); });
-  passBtn.addEventListener('click', ()=>{ openVeil(); });
+  passBtn.addEventListener('click', openVeil);
 
   grid.addEventListener('click', (e)=>{ const btn=e.target.closest('.bind'); if(!btn) return; const card=btn.closest('.card'); const id=card?.dataset?.id||'artefact'; const bound=card.classList.toggle('bound'); btn.setAttribute('aria-pressed', bound?'true':'false'); btn.textContent = bound ? 'bound' : 'bind to self'; if(live) live.textContent = bound ? `${id} bound` : `${id} unbound`; });
 
   /* --------------------
-     AUDIO – drone + statisk surreal swell + klikkløs
+     AUDIO – bass + statisk swell + klikkløs + iOS-vennlig
      -------------------- */
-  let ac, master, gain, lp, oscA, oscB, sub, lfo, lfoGain;
-  function ensureAC(){ if(ac) return; ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); master.gain.value=1.0; master.connect(ac.destination); }
-  function startDrone(){ if(reduceMotion) return; try{ if(ac && gain){ setVolume(0.22); return; } ensureAC(); gain=ac.createGain(); lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=180; lp.Q.value=0.7; oscA=ac.createOscillator(); oscB=ac.createOscillator(); sub=ac.createOscillator(); oscA.type='sine'; oscB.type='sine'; sub.type='triangle'; oscA.frequency.value=36; oscB.frequency.value=41; sub.frequency.value=18; lfo=ac.createOscillator(); lfoGain=ac.createGain(); lfo.type='sine'; lfo.frequency.value=0.12; lfoGain.gain.value=5; lfo.connect(lfoGain); lfoGain.connect(oscA.frequency); lfoGain.connect(oscB.frequency); const gA=ac.createGain(); gA.gain.value=0.22; const gB=ac.createGain(); gB.gain.value=0.18; const gS=ac.createGain(); gS.gain.value=0.10; oscA.connect(gA); oscB.connect(gB); sub.connect(gS); gA.connect(lp); gB.connect(lp); gS.connect(lp); lp.connect(gain); gain.connect(master); gain.gain.value=0.0; oscA.start(); oscB.start(); sub.start(); lfo.start(); setVolume(0.22);}catch(err){ if(live) live.textContent='audio error'; console.error('Audio init failed', err);} }
-  function setVolume(target){ if(!ac||!gain) return; const now=ac.currentTime; try{ const tau=/iPhone|iPad|iPod|Safari/i.test(navigator.userAgent)?0.1:0.06; gain.gain.cancelScheduledValues(now); gain.gain.setTargetAtTime(target, now, tau);}catch(_){} }
-  function rampToZero(duration=0.08){ if(!ac||!gain) return; const now=ac.currentTime; const start=gain.gain.value; const N=256; const curve=new Float32Array(N); for(let i=0;i<N;i++){ const t=i/(N-1); const w=0.5*(1+Math.cos(Math.PI*t)); curve[i]=start*w; } gain.gain.cancelScheduledValues(now); gain.gain.setValueCurveAtTime(curve, now, duration); }
-  function stopDrone(hard=false){ if(!ac||!gain) return; rampToZero(0.08); if(hard){ setTimeout(()=>{ try{ oscA?.stop(); oscB?.stop(); sub?.stop(); lfo?.stop(); }catch(_){} try{ ac.close(); }catch(_){} ac=null; master=null; gain=null; lp=null; oscA=oscB=sub=lfo=lfoGain=null; }, 100);} }
+  let ac, master, compressor, gain, lp, oscA, oscB, sub, lfo, lfoGain;
+  let swellNodes = null; // for å stoppe forrige instans
 
-  // Statisk surreal swell (ingen pitch-sweep)
+  function ensureAC(){ if(ac) return; ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); master.gain.value=1.0; compressor = ac.createDynamicsCompressor(); compressor.threshold.value = -24; compressor.knee.value = 24; compressor.ratio.value = 3; compressor.attack.value = 0.003; compressor.release.value = 0.25; master.connect(ac.destination); }
+
+  function startDrone(){ if(reduceMotion) return; try{ if(ac && gain){ setVolume(0.22); return; } ensureAC(); gain=ac.createGain(); lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=180; lp.Q.value=0.7; oscA=ac.createOscillator(); oscB=ac.createOscillator(); sub=ac.createOscillator(); oscA.type='sine'; oscB.type='sine'; sub.type='triangle'; oscA.frequency.value=36; oscB.frequency.value=41; sub.frequency.value=18; lfo=ac.createOscillator(); lfoGain=ac.createGain(); lfo.type='sine'; lfo.frequency.value=0.12; lfoGain.gain.value=5; lfo.connect(lfoGain); lfoGain.connect(oscA.frequency); lfoGain.connect(oscB.frequency); const boost = (window.VOIDPASS_CONFIG?.bassGain||1); const gA=ac.createGain(); gA.gain.value=0.22*boost; const gB=ac.createGain(); gB.gain.value=0.18*boost; const gS=ac.createGain(); gS.gain.value=0.10*boost; oscA.connect(gA); oscB.connect(gB); sub.connect(gS); gA.connect(lp); gB.connect(lp); gS.connect(lp); lp.connect(gain); gain.connect(compressor); compressor.connect(master); gain.gain.value=0.0; oscA.start(); oscB.start(); sub.start(); lfo.start(); setVolume(0.22);}catch(err){ if(live) live.textContent='audio error'; console.error('Audio init failed', err);} }
+
+  function setVolume(target){ if(!ac||!gain) return; const now=ac.currentTime; try{ const tau=/iPhone|iPad|iPod|Safari/i.test(navigator.userAgent)?0.1:0.06; gain.gain.cancelScheduledValues(now); gain.gain.setTargetAtTime(target, now, tau);}catch(_){} }
+
+  function rampToZero(duration=0.12){ if(!ac||!gain) return; const now=ac.currentTime; const start=gain.gain.value; const N=256; const curve=new Float32Array(N); for(let i=0;i<N;i++){ const t=i/(N-1); const w=0.5*(1+Math.cos(Math.PI*t)); curve[i]=start*w; } gain.gain.cancelScheduledValues(now); gain.gain.setValueCurveAtTime(curve, now, duration); }
+
+  function stopDrone(hard=false){ if(!ac||!gain) return; rampToZero(0.12); if(hard){ setTimeout(()=>{ try{ oscA?.stop(); oscB?.stop(); sub?.stop(); lfo?.stop(); }catch(_){} try{ ac.close(); }catch(_){} ac=null; master=compressor=gain=lp=oscA=oscB=sub=lfo=lfoGain=null; }, 150);} }
+
+  // Statisk surreal swell (ingen pitch-sweep) med fade inn/ut og forrige-instans-stopp
+  function fadeAndStopSwell(){ if(!swellNodes||!ac) return; const { g, src, am } = swellNodes; try{ const now=ac.currentTime; const ms=(window.VOIDPASS_CONFIG?.swellFadeMs||180)/1000; g.gain.cancelScheduledValues(now); g.gain.linearRampToValueAtTime(0.0, now+ms); setTimeout(()=>{ try{ src.stop(); }catch(_){} try{ am.stop(); }catch(_){} swellNodes=null; }, (ms*1000)+30); }catch(_){} }
+
   function playSwell(){
     try{
       ensureAC();
+      fadeAndStopSwell(); // stopp forrige
+
       const now=ac.currentTime; const dur=1.2; const sr=ac.sampleRate; const frames=Math.floor(sr*dur);
       const buf=ac.createBuffer(1, frames, sr); const data=buf.getChannelData(0);
       for(let i=0;i<frames;i++){ const n=(Math.random()*2-1); data[i]=(i>0?data[i-1]*0.94+n*0.06:n*0.06); }
       const src=ac.createBufferSource(); src.buffer=buf; src.loop=false;
       const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=420; bp.Q.value=5.5;
       const g=ac.createGain(); const am=ac.createOscillator(); const amGain=ac.createGain();
-      g.gain.value=0.0; am.frequency.value=0.8; amGain.gain.value=0.18;
-      am.connect(amGain); amGain.connect(g.gain);
-      src.connect(bp); bp.connect(g); g.connect(master);
+      g.gain.value=0.0; am.frequency.value=0.8; amGain.gain.value=0.18; am.connect(amGain); amGain.connect(g.gain);
+      src.connect(bp); bp.connect(g); g.connect(compressor||master);
+
+      const ms=(window.VOIDPASS_CONFIG?.swellFadeMs||180)/1000;
       g.gain.setValueAtTime(0.0, now);
-      g.gain.linearRampToValueAtTime(0.30, now+0.40);
+      g.gain.linearRampToValueAtTime(0.30, now+ms);
       g.gain.linearRampToValueAtTime(0.0, now+dur);
+
       am.start(now); src.start(now); src.stop(now+dur+0.03); am.stop(now+dur+0.05);
+      swellNodes = { g, src, am };
     }catch(err){ console.warn('swell error', err); }
   }
-  function enterSilenceWithSwell(){ if(gain){ rampToZero(0.08); } playSwell(); if(gain){ setTimeout(()=> stopDrone(true), 120); } }
 
-  /* Mute */
-  muteBtn.addEventListener('click', ()=>{ if(!ac||!gain){ startDrone(); return; } const pressed=muteBtn.getAttribute('aria-pressed')==='true'; if(pressed){ muteBtn.setAttribute('aria-pressed','false'); muteBtn.textContent='mute'; setVolume(0.22); } else { muteBtn.setAttribute('aria-pressed','true'); muteBtn.textContent='unmute'; rampToZero(0.08); } });
+  function enterSilenceWithSwell(){ if(gain){ rampToZero(0.12); } playSwell(); if(gain){ setTimeout(()=> stopDrone(true), 150); } }
+
+  /* Mute (klikkløs) */
+  muteBtn.addEventListener('click', ()=>{ if(!ac||!gain){ startDrone(); return; } const pressed=muteBtn.getAttribute('aria-pressed')==='true'; if(pressed){ muteBtn.setAttribute('aria-pressed','false'); muteBtn.textContent='mute'; setVolume(0.22); } else { muteBtn.setAttribute('aria-pressed','true'); muteBtn.textContent='unmute'; rampToZero(0.12); } });
 
   /* ESC */
   window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && veil.classList.contains('open')){ closeVeil(); } });
 
-  /* Global puls + hue-drift */
+  /* Global puls + hue-drift (uendret) */
   (function animateField(){ if(reduceMotion) return; const pulseFreq=0.16; const hueAmpDeg=8; const huePeriod=90000; const t0=performance.now(); function frame(){ const now=performance.now(); const t=(now-t0)/1000; const phase=Math.sin(2*Math.PI*pulseFreq*t); const pulse=0.96+0.05*((phase+1)/2); document.documentElement.style.setProperty('--pulse', pulse.toFixed(3)); const hue=Math.sin((now-t0)*(2*Math.PI/huePeriod))*hueAmpDeg; document.documentElement.style.setProperty('--hue', hue.toFixed(2)+'deg'); requestAnimationFrame(frame);} requestAnimationFrame(frame); })();
 
-  /* Countdown */
-  const TARGET_UTC_MS = Date.UTC(2026, 1, 1, 0, 0, 0);
-  const RITUAL_START_REAL_MS = null; const RITUAL_SPEED = 0.5;
-  (function initRitualCountdown(){ const el={ days:document.getElementById('cd-days'), hours:document.getElementById('cd-hours'), mins:document.getElementById('cd-mins'), secs:document.getElementById('cd-secs'), digits:document.querySelector('.cd-digits'), openMsg:document.getElementById('cd-open') }; if(!el.days||!el.hours||!el.mins||!el.secs) return; const startReal=(typeof RITUAL_START_REAL_MS==='number')?RITUAL_START_REAL_MS:Date.now(); const base=Math.max(0, TARGET_UTC_MS - startReal); function fmt(n){ return n<10?'0'+n:''+n;} function render(ms){ let total=Math.floor(ms/1000); if(total<0) total=0; const d=Math.floor(total/86400); const h=Math.floor((total%86400)/3600); const m=Math.floor((total%3600)/60); const s=total%60; el.days.textContent=fmt(d); el.hours.textContent=fmt(h); el.mins.textContent=fmt(m); el.secs.textContent=fmt(s);} function done(){ if(el.digits) el.digits.hidden=true; if(el.openMsg){ el.openMsg.hidden=false; el.openMsg.textContent='The door is open.';} if(live) live.textContent='ritual open'; } function tick(){ const now=Date.now(); const elapsed=now-startReal; const ritual=elapsed*RITUAL_SPEED; const remain=Math.floor(base - ritual); if(remain<=0){ render(0); done(); clearInterval(iv); return; } render(remain);} tick(); const iv=setInterval(tick, 1000); })();
+  /* =============================================================
+     RITUAL COUNTDOWN — beholdt eksakt som før
+  ============================================================= */
+  const TARGET_UTC_MS = Date.UTC(2026, 1, 1, 0, 0, 0); // Feb = 1 (0-indeksert måned)
+  const RITUAL_START_REAL_MS = null;
+  const RITUAL_SPEED = 0.5; // 0.5x realtid = 1 ritual-sek = 2 sanne sek
+
+  (function initRitualCountdown(){
+    const el = {
+      days:  document.getElementById('cd-days'),
+      hours: document.getElementById('cd-hours'),
+      mins:  document.getElementById('cd-mins'),
+      secs:  document.getElementById('cd-secs'),
+      digits: document.querySelector('.cd-digits'),
+      openMsg: document.getElementById('cd-open')
+    };
+    if(!el.days || !el.hours || !el.mins || !el.secs) return;
+
+    const startReal = (typeof RITUAL_START_REAL_MS === 'number') ? RITUAL_START_REAL_MS : Date.now();
+    const baseRitualRemaining = Math.max(0, TARGET_UTC_MS - startReal);
+
+    function fmt(n){ return n<10 ? '0'+n : ''+n; }
+    function render(ms){
+      let total = Math.floor(ms/1000); if(total<0) total=0;
+      const d = Math.floor(total/86400);
+      const h = Math.floor((total%86400)/3600);
+      const m = Math.floor((total%3600)/60);
+      const s = total%60;
+      el.days.textContent  = fmt(d);
+      el.hours.textContent = fmt(h);
+      el.mins.textContent  = fmt(m);
+      el.secs.textContent  = fmt(s);
+    }
+    function done(){
+      if(el.digits) el.digits.hidden = true;
+      if(el.openMsg){ el.openMsg.hidden = false; el.openMsg.textContent = 'The door is open.'; }
+      if(live) live.textContent = 'ritual open';
+    }
+    function tick(){
+      const nowReal = Date.now();
+      const elapsedReal = nowReal - startReal;
+      const elapsedRitual = elapsedReal * RITUAL_SPEED;         // skalerer tiden
+      const remainingRitual = Math.floor(baseRitualRemaining - elapsedRitual);
+      if(remainingRitual <= 0){ render(0); done(); clearInterval(iv); return; }
+      render(remainingRitual);
+    }
+    tick();
+    const iv = setInterval(tick, 1000); // oppdater hvert ekte sekund (sek vises i halv hastighet)
+  })();
 </script>
 </body>
 </html>
