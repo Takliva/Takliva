@@ -90,15 +90,17 @@
       position:absolute; z-index:3; top:22%; left:18%; width:6px; height:6px; border-radius:50%;
       background:radial-gradient(circle at 40% 40%, #ffffff 0%, #dfe2ff 55%, rgba(255,255,255,0) 70%);
       opacity:.88;
-      transform: translateZ(0) scale(1);
+      transform: translate(var(--jx,0), var(--jy,0)) scale(1);
       will-change: transform, opacity, box-shadow;
-      animation: dotPulse 16s ease-in-out infinite;
+      animation: dotPulse 18s ease-in-out infinite;
       animation-play-state: running;
       transition: opacity .3s ease;
       box-shadow:0 0 12px rgba(214,210,255,.50), 0 0 3px rgba(255,255,255,.9) inset;
     }
     @keyframes dotPulse{
-      0%,100%{ transform:scale(1.000); opacity:0.82; box-shadow:0 0 12px rgba(214,210,255,.50), 0 0 3px rgba(255,255,255,.90) inset }
+      0%,100%{ transform:translate(var(--jx,0), var(--jy,0)) scale(1.000); opacity:0.84; box-shadow:0 0 14px rgba(214,210,255,.55), 0 0 4px rgba(255,255,255,.95) inset }
+      50%    { transform:translate(var(--jx,0), var(--jy,0)) scale(1.120); opacity:1.00; box-shadow:0 0 40px rgba(214,210,255,.85), 0 0 7px rgba(255,255,255,1.0) inset }
+    }
       50%    { transform:scale(1.060); opacity:1.00; box-shadow:0 0 32px rgba(214,210,255,.80), 0 0 6px rgba(255,255,255,1.0) inset }
     }
     /* Skjul dot når veil er åpen */
@@ -147,17 +149,17 @@
     .card{ position:relative; border:1px solid rgba(220,220,255,.18); padding:14px; background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); border-radius:10px; overflow:hidden }
     .card h3{ margin:.1rem 0 .35rem 0; font-size:15px; letter-spacing:.08em; text-transform:uppercase }
     .card p{ margin:.2rem 0 .6rem 0; font-size:13px; color:#c8c8d2; line-height:1.6 }
-    .bind{ display:inline-flex; align-items:center; gap:.45rem; font-size:11px; letter-spacing:.12em; text-transform:uppercase; padding:.65rem .9rem; cursor:pointer; background:transparent; color:var(--ink); border:1px solid rgba(220,220,255,.5) }
+    .bind{ display:inline-flex; align-items:center; gap:.45rem; font-size:.68em; letter-spacing:.12em; text-transform:uppercase; padding:.5rem 1.1rem; cursor:pointer; background:transparent; color:var(--ink); border:1px solid rgba(220,220,255,.5) }
     .bind:hover{ background:var(--ink); color:#0a0a0a }
     .ring{ position:absolute; inset:-2px; border-radius:6px; pointer-events:none; box-shadow:0 0 0 0 rgba(170,150,255,.35); transition: box-shadow .6s ease }
     .card.bound .ring{ box-shadow:0 0 0 2px rgba(170,150,255,.55), 0 0 34px 6px rgba(140,120,255,.18) }
 
     /* Countdown (uendret funksjon/tekst) */
     .countdown{ margin-top:.35rem; display:grid; justify-items:center; gap:.4rem }
-    .cd-label{ color:var(--mute); letter-spacing:.08em; text-transform:lowercase; opacity:.85; margin-bottom:.35rem; font-size:clamp(12px,1.6vw,14px) }
+    .cd-label{ color:var(--mute); letter-spacing:.08em; text-transform:lowercase; opacity:.85; margin-bottom:.35rem; font-size:clamp(.7em,.9em,1em) }
     .cd-digits{ display:flex; align-items:flex-end; justify-content:center; gap:1rem; color:var(--ink); font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; text-align:center }
-    .cd-seg span{ display:block; font-size:clamp(22px,5vw,48px); line-height:1; min-width: 5ch }
-    .cd-seg small{ display:block; margin-top:.4rem; font-size:clamp(10px,1.4vw,12px); color:var(--mute); letter-spacing:.12em; opacity:.9 }
+    .cd-seg span{ display:block; font-size:clamp(1.8em,2.2em,2.8em); line-height:1; min-width: 5ch }
+    .cd-seg small{ display:block; margin-top:.4rem; font-size:clamp(.6em,.7em,.8em); color:var(--mute); letter-spacing:.12em; opacity:.9 }
     .cd-open-msg{ color:var(--ink); font-size:clamp(18px,4.2vw,28px); letter-spacing:.02em; margin-top:.2rem }
 
     @media (max-width:420px){ .cd-digits{ gap:.6rem } .cd-seg span{ min-width:4.5ch } }
@@ -256,6 +258,17 @@
   const grid=document.getElementById('grid');
   const live=document.getElementById('live');
   const dotEl=document.querySelector('.sigdot');
+  // mikro-jitter av og til for "levende" prikk
+  function jitterTick(){
+    const wait = 6000 + Math.random()*8000; // hvert 6–14s
+    setTimeout(()=>{
+      if(!dotEl) return;
+      dotEl.style.setProperty('--jx', ((Math.random()*2-1)*0.6).toFixed(2)+'px');
+      dotEl.style.setProperty('--jy', ((Math.random()*2-1)*0.6).toFixed(2)+'px');
+      setTimeout(()=>{ if(!dotEl) return; dotEl.style.setProperty('--jx','0px'); dotEl.style.setProperty('--jy','0px'); jitterTick(); }, 140);
+    }, wait);
+  }
+  if(dotEl) jitterTick();
 
   let lastFocus=null; let scrollY=0; let focusables=[]; let firstFocusable=null; let lastFocusable=null;
   let lastOpenAt=0; // debounce for Enter/Remain
@@ -326,14 +339,14 @@
       const buf=ac.createBuffer(1, frames, sr); const data=buf.getChannelData(0);
       for(let i=0;i<frames;i++){ const n=(Math.random()*2-1); data[i]=(i>0?data[i-1]*0.94+n*0.06:n*0.06); }
       const src=ac.createBufferSource(); src.buffer=buf; src.loop=false;
-      const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=420; bp.Q.value=5.5;
+      const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=380; bp.Q.value=2.4;
       const g=ac.createGain(); const am=ac.createOscillator(); const amGain=ac.createGain();
       g.gain.value=0.0; am.frequency.value=0.8; amGain.gain.value=0.18; am.connect(amGain); amGain.connect(g.gain);
-      src.connect(bp); bp.connect(g); g.connect(compressor||master);
+      src.connect(bp); bp.connect(g); g.connect(master);
 
       const ms=(window.VOIDPASS_CONFIG?.swellFadeMs||220)/1000;
       g.gain.setValueAtTime(0.0, now);
-      g.gain.linearRampToValueAtTime(0.38, now+ms);
+      g.gain.linearRampToValueAtTime(0.50, now+ms);
       g.gain.linearRampToValueAtTime(0.0, now+dur);
 
       am.start(now); src.start(now); src.stop(now+dur+0.05); am.stop(now+dur+0.07);
