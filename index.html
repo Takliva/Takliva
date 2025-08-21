@@ -97,12 +97,20 @@
       transition: opacity .3s ease;
       box-shadow:0 0 12px rgba(214,210,255,.50), 0 0 3px rgba(255,255,255,.9) inset;
     }
-    @keyframes dotPulse{
-      0%,100%{ transform:translate(var(--jx,0), var(--jy,0)) scale(1.000); opacity:0.84; box-shadow:0 0 14px rgba(214,210,255,.55), 0 0 4px rgba(255,255,255,.95) inset }
-      50%    { transform:translate(var(--jx,0), var(--jy,0)) scale(1.120); opacity:1.00; box-shadow:0 0 40px rgba(214,210,255,.85), 0 0 7px rgba(255,255,255,1.0) inset }
+    @keyframes dotPulse {
+      0%, 100% {
+        transform: translate(var(--jx, 0), var(--jy, 0)) scale(1);
+        opacity: 0.84;
+        box-shadow: 0 0 14px rgba(214,210,255,.55), 0 0 4px rgba(255,255,255,.95) inset;
+      }
+      50% {
+        transform: translate(var(--jx, 0), var(--jy, 0)) scale(1.12);
+        opacity: 1;
+        box-shadow: 0 0 40px rgba(214,210,255,.85), 0 0 7px rgba(255,255,255,1) inset;
+      }
     }
-/* Skjul dot når veil er åpen */
-    body.veil-open .sigdot{ opacity:0 !important }
+    /* Skjul dot når veil er åpen */
+    body.veil-open .sigdot{ opacity:0 !important; animation-play-state: paused; }
 
     /* Gaze spotlight – inni rammen */
     .gaze{ position:absolute; z-index:1; width:44vmax; height:44vmax; border-radius:50%; pointer-events:none; left:50%; top:50%; transform:translate(-50%,-50%); background: radial-gradient(circle at 50% 50%, rgba(210,218,255,.08), rgba(0,0,0,0) 55%); mix-blend-mode: screen; filter: blur(12px) saturate(1.1); }
@@ -115,8 +123,8 @@
     .js .layer.show{opacity:1; transform:none}
 
     /* Typografi: Sans serif for tittel og veil-h2 */
-    h1.title{ margin:0 0 .65rem; font-weight:600; letter-spacing:.02em; text-transform:lowercase; font-size: clamp(2.6em, 3.4em, 4.6em); text-shadow:0 0 28px rgba(150,130,255,.16); font-family: Inter, Helvetica, Arial, ui-sans-serif, system-ui }
-    #vh{ font-family: Inter, Helvetica, Arial, ui-sans-serif, system-ui; font-weight:600 }
+    h1.title{ margin:0 0 .65rem; font-weight:600; letter-spacing:.02em; text-transform:lowercase; font-size: clamp(2.6em, 3.4em, 4.6em); text-shadow:0 0 28px rgba(150,130,255,.16); font-family: Inter, Helvetica, Arial, sans-serif; }
+    #vh{ font-family: Inter, Helvetica, Arial, sans-serif; font-weight:600 }
 
     .sub{margin:.25rem 0 1.2rem; font-size:clamp(1.0em,1.15em,1.35em); line-height:1.8; color:#bfc2cc; opacity:.92}
     .note{margin:.3rem 0 2.1rem; font-size:13px; color:var(--mute)}
@@ -135,7 +143,7 @@
 
     /* Panel matcher også rammens størrelse og er alltid midtstilt */
     .panel{ position:absolute; width:var(--frame-w); max-height:var(--frame-h); left:50%; top:50%; transform:translate(-50%,-50%); z-index:1; text-align:center; border-radius:0; padding: clamp(16px, 2.2vw, 28px); background:transparent; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; overflow:auto }
-    .panel h2{ margin:.2rem auto .85rem auto; font-weight:600; letter-spacing:.02em; font-size:clamp(1.6em,2em,2.4em); font-family: Inter, Helvetica, Arial, ui-sans-serif, system-ui }
+    .panel h2{ margin:.2rem auto .85rem auto; font-weight:600; letter-spacing:.02em; font-size:clamp(1.6em,2em,2.4em); font-family: Inter, Helvetica, Arial, sans-serif }
     .panel p{ margin:.45rem 0 1rem 0; font-size:clamp(1.0em,1.1em,1.2em); line-height:1.9; color:#c6c8d0; opacity:.95 }
 
     .back{ display:inline-block; margin-top:1.2rem; font-size:13px; color:var(--mute); text-decoration:none; border-bottom:1px dashed #333; padding-bottom:2px; background:none; border:none; cursor:pointer }
@@ -165,11 +173,20 @@
     @keyframes hitch{ 0%{transform:translateY(0)} 8%{transform:translateY(1px)} 12%{transform:translateY(-1px)} 18%{letter-spacing:.02em} 24%{opacity:.96} 30%{transform:translateY(.5px)} 36%{letter-spacing:0} 48%{opacity:.9} 60%{transform:translateY(0)} 100%{opacity:1} }
     .hitch{ animation: hitch 1.8s steps(20,end) 1 both }
 
+    /* Mobil-justeringer: mindre knapper, flytt void./countdown ned, prikk opp/venstre, veil: 1 kolonne/mindre tekst */
     @media (max-width: 600px), (orientation: portrait) and (max-height: 900px){
-      /* mobil: litt høyere prikk og mindre type for balanse */
-      .sigdot{ top:16%; left:22%; }
+      /* Mobil: litt høyere prikk og mindre type for balanse */
+      .sigdot{ top:12%; left:15%; }
       .frame{ --fs-base: calc(var(--fmin) / 34); }
-      .btn{ font-size:.7em; padding:.5em 1.1em; }
+      .stage { padding-top: 3.5rem; } /* Flytt void. og countdown ned */
+      .layer.l1 { margin-top: 1.5rem; } /* Ekstra nedjustering for l1 */
+      .btn{ font-size:0.65em; padding:.45em 1em; } /* Mindre knapper */
+      .actions { justify-content: center; gap:0.6rem; } /* Midtstill actions */
+      .panel h2 { font-size: 1.4em; } /* Mindre tekst i veil */
+      .panel p { font-size: 0.95em; }
+      .grid { grid-template-columns: 1fr; width: 90%; } /* 1 kolonne i grid */
+      .bind { font-size: 0.6em; padding: 0.45em 1em; }
+      .panel { display: flex; flex-direction: column; align-items: center; justify-content: center; } /* Midtstill veil-innhold */
     }
 
     @media (prefers-reduced-motion: reduce){
@@ -180,7 +197,7 @@
         scroll-behavior:auto !important
       }
       .gaze{transition:none}
-    } .gaze{transition:none} }
+    }
   </style>
 </head>
 <body>
@@ -351,7 +368,7 @@
   function stopDrone(hard=false){ if(!ac||!gain) return; rampToZero(0.14); if(hard){ setTimeout(()=>{ try{ oscA?.stop(); oscB?.stop(); sub?.stop(); lfo?.stop(); }catch(_){} try{ ac.close(); }catch(_){} ac=null; master=compressor=gain=lp=oscA=oscB=sub=lfo=lfoGain=null; }, 160);} }
 
   // Statisk surreal swell (ingen pitch-sweep) med fade inn/ut og forrige-instans-stopp
-  function fadeAndStopSwell(){ if(!swellNodes||!ac) return; const { g, src, am } = swellNodes; try{ const now=ac.currentTime; const ms=(window.VOIDPASS_CONFIG?.swellFadeMs||220)/1000; g.gain.cancelScheduledValues(now); g.gain.linearRampToValueAtTime(0.0, now+ms); setTimeout(()=>{ try{ src.stop(); }catch(_){} try{ am.stop(); }catch(_){} swellNodes=null; }, (ms*1000)+40); }catch(_){} }
+  function fadeAndStopSwell(){ if(!swellNodes||!ac) return; const { g, src } = swellNodes; try{ const now=ac.currentTime; const ms=(window.VOIDPASS_CONFIG?.swellFadeMs||220)/1000; g.gain.cancelScheduledValues(now); g.gain.linearRampToValueAtTime(0.0, now+ms); setTimeout(()=>{ try{ src.stop(); }catch(_){} swellNodes=null; }, (ms*1000)+40); }catch(_){} }
 
   function playSwell(){
     try{
@@ -362,25 +379,19 @@
       const buf=ac.createBuffer(1, frames, sr); const data=buf.getChannelData(0);
       for(let i=0;i<frames;i++){ const n=(Math.random()*2-1); data[i]=(i>0?data[i-1]*0.94+n*0.06:n*0.06); }
       const src=ac.createBufferSource(); src.buffer=buf; src.loop=false;
-      const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=380; bp.Q.value=2.4;
-      const g=ac.createGain(); const am=ac.createOscillator(); const amGain=ac.createGain();
-      g.gain.value=0.0; am.frequency.value=0.8; amGain.gain.value=0.18; am.connect(amGain); amGain.connect(g.gain);
+      const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=320; bp.Q.value=2.8;
+      const g=ac.createGain(); g.gain.value=0.55;
       src.connect(bp); bp.connect(g); g.connect(master);
 
-      const ms=(window.VOIDPASS_CONFIG?.swellFadeMs||220)/1000;
-      g.gain.setValueAtTime(0.0, now);
-      g.gain.linearRampToValueAtTime(0.50, now+ms);
-      g.gain.linearRampToValueAtTime(0.0, now+dur);
-
-      am.start(now); src.start(now); src.stop(now+dur+0.05); am.stop(now+dur+0.07);
-      swellNodes = { g, src, am };
+      src.start(now); src.stop(now+dur); // Brå kutt, ingen fade
+      swellNodes = { g, src };
     }catch(err){ console.warn('swell error', err); }
   }
 
   function enterSilenceWithSwell(){
     if(gain){ rampToZero(0.14); }
     // spill en tydelig, rolig swell uten å slå av AudioContext
-    playSwell();
+    if (!swellNodes) playSwell(); // Spill bare hvis ingen swell kjører
   }
 
   /* Mute (klikkløs) — bruker eksisterende muteBtn */
