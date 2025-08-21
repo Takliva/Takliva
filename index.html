@@ -101,9 +101,7 @@
       0%,100%{ transform:translate(var(--jx,0), var(--jy,0)) scale(1.000); opacity:0.84; box-shadow:0 0 14px rgba(214,210,255,.55), 0 0 4px rgba(255,255,255,.95) inset }
       50%    { transform:translate(var(--jx,0), var(--jy,0)) scale(1.120); opacity:1.00; box-shadow:0 0 40px rgba(214,210,255,.85), 0 0 7px rgba(255,255,255,1.0) inset }
     }
-      50%    { transform:scale(1.060); opacity:1.00; box-shadow:0 0 32px rgba(214,210,255,.80), 0 0 6px rgba(255,255,255,1.0) inset }
-    }
-    /* Skjul dot når veil er åpen */
+/* Skjul dot når veil er åpen */
     body.veil-open .sigdot{ opacity:0 !important }
 
     /* Gaze spotlight – inni rammen */
@@ -167,7 +165,22 @@
     @keyframes hitch{ 0%{transform:translateY(0)} 8%{transform:translateY(1px)} 12%{transform:translateY(-1px)} 18%{letter-spacing:.02em} 24%{opacity:.96} 30%{transform:translateY(.5px)} 36%{letter-spacing:0} 48%{opacity:.9} 60%{transform:translateY(0)} 100%{opacity:1} }
     .hitch{ animation: hitch 1.8s steps(20,end) 1 both }
 
-    @media (prefers-reduced-motion: reduce){ *,*::before,*::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:0s !important; scroll-behavior:auto !important } .gaze{transition:none} }
+    @media (max-width: 600px), (orientation: portrait) and (max-height: 900px){
+      /* mobil: litt høyere prikk og mindre type for balanse */
+      .sigdot{ top:16%; left:22%; }
+      .frame{ --fs-base: calc(var(--fmin) / 34); }
+      .btn{ font-size:.7em; padding:.5em 1.1em; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      *,*::before,*::after{
+        animation-duration:.001ms !important;
+        animation-iteration-count:1 !important;
+        transition-duration:0s !important;
+        scroll-behavior:auto !important
+      }
+      .gaze{transition:none}
+    } .gaze{transition:none} }
   </style>
 </head>
 <body>
@@ -270,6 +283,15 @@
   }
   if(dotEl) jitterTick();
 
+  // iOS/Android: resume AudioContext ved første input
+  window.addEventListener('pointerdown', ()=>{
+    try{
+      ensureAC();
+      ac && ac.resume && ac.resume();
+      startDrone(); // start bassen på første berøring
+    }catch(_){}
+  }, { once:true });
+
   let lastFocus=null; let scrollY=0; let focusables=[]; let firstFocusable=null; let lastFocusable=null;
   let lastOpenAt=0; // debounce for Enter/Remain
 
@@ -286,6 +308,7 @@
     if(now - lastOpenAt < (window.VOIDPASS_CONFIG?.openDebounceMs||450)) return; // debounce
     lastOpenAt = now;
 
+    try{ ensureAC(); ac && ac.resume && ac.resume(); }catch(_){}
     lastFocus=document.activeElement;
     document.body.classList.add('veil-open');
     veil.classList.add('open');
