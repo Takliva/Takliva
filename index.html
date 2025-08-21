@@ -94,22 +94,18 @@
       will-change: transform, opacity, box-shadow;
       animation: dotPulse 18s ease-in-out infinite;
       animation-play-state: running;
-      transition: opacity .3s ease;
+      transition: opacity .3s ease .1s; /* Litt delay for å sikre forsvinning på telefon */
       box-shadow:0 0 12px rgba(214,210,255,.50), 0 0 3px rgba(255,255,255,.9) inset;
     }
-    @keyframes dotPulse {
-      0%, 100% {
-        transform: translate(var(--jx, 0), var(--jy, 0)) scale(1);
-        opacity: 0.84;
-        box-shadow: 0 0 14px rgba(214,210,255,.55), 0 0 4px rgba(255,255,255,.95) inset;
+    @keyframes dotPulse{
+      0%,100%{
+        transform:translate(var(--jx,0), var(--jy,0)) scale(1.000); opacity:.84; box-shadow:0 0 14px rgba(214,210,255,.55), 0 0 4px rgba(255,255,255,.95) inset
       }
-      50% {
-        transform: translate(var(--jx, 0), var(--jy, 0)) scale(1.12);
-        opacity: 1;
-        box-shadow: 0 0 40px rgba(214,210,255,.85), 0 0 7px rgba(255,255,255,1) inset;
+      50%    {
+        transform:translate(var(--jx,0), var(--jy,0)) scale(1.120); opacity:1.00; box-shadow:0 0 40px rgba(214,210,255,.85), 0 0 7px rgba(255,255,255,1.0) inset
       }
     }
-    /* Skjul dot når veil er åpen */
+/* Skjul dot når veil er åpen */
     body.veil-open .sigdot{ opacity:0 !important; animation-play-state: paused; }
 
     /* Gaze spotlight – inni rammen */
@@ -123,154 +119,215 @@
     .js .layer.show{opacity:1; transform:none}
 
     /* Typografi: Sans serif for tittel og veil-h2 */
-    h1.title{ margin:0 0 .65rem; font-weight:600; letter-spacing:.02em; text-transform:lowercase; font-size: clamp(2.6em, 3.4em, 4.6em); text-shadow:0 0 28px rgba(150,130,255,.16); font-family: Inter, Helvetica, Arial, sans-serif; }
-    #vh{ font-family: Inter, Helvetica, Arial, sans-serif; font-weight:600 }
+    h1.title{ margin:0 0 .65rem; font-weight:600; letter-spacing:.02em; text-transform:lowercase; font-size: clamp(2.6em, 3.4em, 3.8em); /* Max for PC */ text-shadow:0 0 28px rgba(150,130,255,.16); font-family: Inter, Helvetica, Arial, sans-serif }
+    #vh{ font-family: Inter, Helvetica, Arial, sans-serif; font-weight:600; font-size: clamp(1.6em, 2em, 2.2em); /* Max for PC */ }
 
-    .sub{margin:.25rem 0 1.2rem; font-size:clamp(1.0em,1.15em,1.35em); line-height:1.8; color:#bfc2cc; opacity:.92}
-    .note{margin:.3rem 0 2.1rem; font-size:13px; color:var(--mute)}
+    .sub{margin:.25rem 0 1.2rem; font-size:clamp(1.0em,1.15em,1.25em); /* Max for PC */ line-height:1.8; color:#bfc2cc; opacity:.92}
+    .note{margin:.3rem 0 2.1rem; font-size: clamp(11px, 13px, 13px); /* Max for PC */ color:var(--mute)}
 
     .actions{display:inline-flex; gap:.85rem}
-    .btn{ border:1px solid var(--ink); color:var(--ink); background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); padding:.55em 1.2em; text-transform:uppercase; letter-spacing:.08em; font-size:.75em; cursor:pointer; transition:170ms }
+    .btn{
+      border:1px solid var(--ink); color:var(--ink); background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+      padding:.62rem 1.35rem; text-transform:uppercase; letter-spacing:.08em; font-size: clamp(0.6em, 0.75em, 0.7em); /* Max for PC */ cursor:pointer; transition:170ms;
+    }
     .btn:hover{background:var(--ink); color:#111}
-    .btn:focus-visible, .bind:focus-visible, .back:focus-visible{ outline:2px solid #e7e7ef; outline-offset:2px; box-shadow:0 0 0 3px rgba(170,150,255,.25) }
+    .btn:focus-visible, .bind:focus-visible, .back:focus-visible{
+      outline:2px solid #e7e7ef; outline-offset:2px; box-shadow:0 0 0 3px rgba(170,150,255,.25)
+    }
     .ghost:hover{background:transparent; color:#9a9a9a; border-color:#9a9a9a}
 
-    /* Veil – nå sentrert og klippet til samme RAMME som scenen */
-    .veil{position:fixed; inset:0; display:grid; place-items:center; padding:0; opacity:0; pointer-events:none; transition:opacity .6s ease;}
+    /* Veil (modal) */
+    .veil{position:fixed; inset:0; display:grid; place-items:center; padding:2rem; opacity:0; pointer-events:none; transition:opacity .6s ease; overflow:auto; -webkit-overflow-scrolling:touch; touch-action:auto}
     .veil.open{opacity:1; pointer-events:auto}
-    /* Glass er nå samme størrelse som rammen og sentrert */
-    .veil .glass{ position:relative; width:var(--frame-w); height:var(--frame-h); margin:0 auto; background: radial-gradient(1200px 800px at 50% 42%, rgba(90,70,200,.12), transparent 60%), radial-gradient(1000px 720px at 46% 60%, rgba(12,30,120,.14), transparent 55%), rgba(0,0,6,.94); backdrop-filter: blur(10px); filter: hue-rotate(var(--hue)); }
-
-    /* Panel matcher også rammens størrelse og er alltid midtstilt */
-    .panel{ position:absolute; width:var(--frame-w); max-height:var(--frame-h); left:50%; top:50%; transform:translate(-50%,-50%); z-index:1; text-align:center; border-radius:0; padding: clamp(16px, 2.2vw, 28px); background:transparent; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; overflow:auto }
-    .panel h2{ margin:.2rem auto .85rem auto; font-weight:600; letter-spacing:.02em; font-size:clamp(1.6em,2em,2.4em); font-family: Inter, Helvetica, Arial, sans-serif }
-    .panel p{ margin:.45rem 0 1rem 0; font-size:clamp(1.0em,1.1em,1.2em); line-height:1.9; color:#c6c8d0; opacity:.95 }
-
+    .veil .glass{
+      position:absolute; inset:0;
+      background:
+        radial-gradient(1200px 800px at 50% 42%, rgba(90,70,200,.12), transparent 60%),
+        radial-gradient(1000px 720px at 46% 60%, rgba(12,30,120,.14), transparent 55%),
+        rgba(0,0,6,.94);
+      backdrop-filter: blur(10px);
+      filter: hue-rotate(var(--hue));
+    }
+    .panel{ position:relative; max-width:980px; z-index:1; text-align:center; max-height:92vh; overflow:auto; padding-top: 1rem; } /* Justert padding for synlighet på telefon */
+    .panel h2{ margin:.2rem 0 .85rem 0; font-weight:600; letter-spacing:.04em; font-size:clamp(22px,3.1vw,36px) }
+    .panel p{ margin:.45rem 0 1rem 0; font-size:clamp(15px,2vw,19px); line-height:1.9; color:#c6c8d0; opacity:.95 }
     .back{ display:inline-block; margin-top:1.2rem; font-size:13px; color:var(--mute); text-decoration:none; border-bottom:1px dashed #333; padding-bottom:2px; background:none; border:none; cursor:pointer }
     .back:hover{color:#fff; border-color:#555}
 
-    /* Artefakter-grid: tvungen bredde = panelens bredde, forblir inne i fargerammen */
-    .grid{ margin:1.6rem auto 0; width: min(1200px, 86%); display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:14px; transition: opacity .6s ease }
+    /* Artefakter */
+    .grid{ margin:1.6rem auto 0; display:grid; grid-template-columns:repeat( auto-fit, minmax(220px, 1fr) ); gap:14px; transition: opacity .6s ease }
     .grid.latent{opacity:0; pointer-events:none}
-    .card{ position:relative; border:1px solid rgba(220,220,255,.18); padding:14px; background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); border-radius:10px; overflow:hidden }
+    .card{ position:relative; border:1px solid rgba(220,220,255,.18); padding:14px; background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); }
     .card h3{ margin:.1rem 0 .35rem 0; font-size:15px; letter-spacing:.08em; text-transform:uppercase }
     .card p{ margin:.2rem 0 .6rem 0; font-size:13px; color:#c8c8d2; line-height:1.6 }
-    .bind{ display:inline-flex; align-items:center; gap:.45rem; font-size:.68em; letter-spacing:.12em; text-transform:uppercase; padding:.5rem 1.1rem; cursor:pointer; background:transparent; color:var(--ink); border:1px solid rgba(220,220,255,.5) }
+    .bind{
+      display:inline-flex; align-items:center; gap:.45rem; font-size:11px; letter-spacing:.12em; text-transform:uppercase; padding:.5rem .8rem; cursor:pointer;
+      background:transparent; color:var(--ink); border:1px solid rgba(220,220,255,.5);
+    }
     .bind:hover{ background:var(--ink); color:#0a0a0a }
     .ring{ position:absolute; inset:-2px; border-radius:6px; pointer-events:none; box-shadow:0 0 0 0 rgba(170,150,255,.35); transition: box-shadow .6s ease }
-    .card.bound .ring{ box-shadow:0 0 0 2px rgba(170,150,255,.55), 0 0 34px 6px rgba(140,120,255,.18) }
+    .card.bound .ring{ box-shadow:0 0 0 2px rgba(170,150,255,.55), 0 0 34px 6px rgba(140,120,255,.25); } /* Forsterket shadow for bedre lys-effekt */
 
-    /* Countdown (uendret funksjon/tekst) */
+    /* Countdown */
     .countdown{ margin-top:.35rem; display:grid; justify-items:center; gap:.4rem }
-    .cd-label{ color:var(--mute); letter-spacing:.08em; text-transform:lowercase; opacity:.85; margin-bottom:.35rem; font-size:clamp(.7em,.9em,1em) }
-    .cd-digits{ display:flex; align-items:flex-end; justify-content:center; gap:1rem; color:var(--ink); font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; text-align:center }
-    .cd-seg span{ display:block; font-size:clamp(1.8em,2.2em,2.8em); line-height:1; min-width: 5ch }
-    .cd-seg small{ display:block; margin-top:.4rem; font-size:clamp(.6em,.7em,.8em); color:var(--mute); letter-spacing:.12em; opacity:.9 }
+    .cd-label{
+      color:var(--mute);
+      letter-spacing:.08em;
+      text-transform:lowercase;
+      opacity:.85;
+      margin-bottom:.35rem;
+      font-size:clamp(12px,1.6vw,14px);
+    }
+    .cd-digits{
+      display:flex; align-items:flex-end; justify-content:center; gap:1rem;
+      color:var(--ink);
+      font-variant-numeric: tabular-nums;
+      font-feature-settings: "tnum" 1;
+      text-align:center;
+    }
+    .cd-seg span{
+      display:block;
+      font-size:clamp(22px,5vw,48px);
+      line-height:1;
+      min-width: 5ch;             /* stabil bredde: 00 */
+    }
+    .cd-seg small{
+      display:block; margin-top:.4rem; font-size:clamp(10px,1.4vw,12px); color:var(--mute); letter-spacing:.12em; opacity:.9;
+    }
     .cd-open-msg{ color:var(--ink); font-size:clamp(18px,4.2vw,28px); letter-spacing:.02em; margin-top:.2rem }
 
-    @media (max-width:420px){ .cd-digits{ gap:.6rem } .cd-seg span{ min-width:4.5ch } }
-
-    @keyframes hitch{ 0%{transform:translateY(0)} 8%{transform:translateY(1px)} 12%{transform:translateY(-1px)} 18%{letter-spacing:.02em} 24%{opacity:.96} 30%{transform:translateY(.5px)} 36%{letter-spacing:0} 48%{opacity:.9} 60%{transform:translateY(0)} 100%{opacity:1} }
-    .hitch{ animation: hitch 1.8s steps(20,end) 1 both }
-
-    /* Mobil-justeringer: mindre knapper, flytt void./countdown ned, prikk opp/venstre, veil: 1 kolonne/mindre tekst */
-    @media (max-width: 600px), (orientation: portrait) and (max-height: 900px){
-      /* Mobil: litt høyere prikk og mindre type for balanse */
-      .sigdot{ top:12%; left:15%; }
-      .frame{ --fs-base: calc(var(--fmin) / 34); }
-      .stage { padding-top: 3.5rem; } /* Flytt void. og countdown ned */
-      .layer.l1 { margin-top: 1.5rem; } /* Ekstra nedjustering for l1 */
-      .btn{ font-size:0.65em; padding:.45em 1em; } /* Mindre knapper */
-      .actions { justify-content: center; gap:0.6rem; } /* Midtstill actions */
-      .panel h2 { font-size: 1.4em; } /* Mindre tekst i veil */
-      .panel p { font-size: 0.95em; }
-      .grid { grid-template-columns: 1fr; width: 90%; } /* 1 kolonne i grid */
-      .bind { font-size: 0.6em; padding: 0.45em 1em; }
-      .panel { display: flex; flex-direction: column; align-items: center; justify-content: center; } /* Midtstill veil-innhold */
+    @media (max-width:420px){
+      .cd-digits{ gap:.6rem }
+      .cd-seg span{ min-width:4.5ch }
     }
 
+    /* Hitch/glitch ved første last */
+    @keyframes hitch{
+      0%{transform:translateY(0)} 8%{transform:translateY(1px)} 12%{transform:translateY(-1px)}
+      18%{letter-spacing:.02em} 24%{opacity:.96} 30%{transform:translateY(.5px)} 36%{letter-spacing:0}
+      48%{opacity:.9} 60%{transform:translateY(0)} 100%{opacity:1}
+    }
+    .hitch{ animation: hitch 1.8s steps(20,end) 1 both }
+
+    /* Motion-reduce */
     @media (prefers-reduced-motion: reduce){
-      *,*::before,*::after{
-        animation-duration:.001ms !important;
-        animation-iteration-count:1 !important;
-        transition-duration:0s !important;
-        scroll-behavior:auto !important
+      *, *::before, *::after{
+        animation-duration:.001ms !important; animation-iteration-count:1 !important;
+        transition-duration:0s !important; scroll-behavior:auto !important
       }
-      .gaze{transition:none}
+      .depth{ animation:none }
+      .sweep::after{ animation:none }
+      .gaze{ transition:none }
     }
   </style>
 </head>
 <body>
-  <script>
-    /* Lydkonfig – justér her uten å endre resten */
-    window.VOIDPASS_CONFIG = { bassGain: 1.6, swellFadeMs: 220, openDebounceMs: 450 };
-  </script>
   <script>document.documentElement.classList.add('js');</script>
+  <!-- bakgrunn -->
+  <div class="depth" aria-hidden="true"></div>
+  <div class="gaze" aria-hidden="true"></div>
+  <div class="sigdot" title="voidpass"></div>
 
-  <div class="wrapper">
-    <div class="frame" role="region" aria-label="void scene">
-      <div class="depth" aria-hidden="true"></div>
-      <div class="gaze" aria-hidden="true"></div>
-      <div class="sigdot" title="voidpass"></div>
+  <!-- stage -->
+  <main class="stage" aria-labelledby="t">
+    <div class="layer l1">
+      <h1 id="t" class="title">void.</h1>
 
-      <main class="stage" aria-labelledby="t">
-        <div class="layer l1">
-          <h1 id="t" class="title">void.</h1>
-          <div class="countdown" id="countdown">
-            <div class="cd-label">the door opens</div>
-            <div class="cd-digits" aria-live="polite" aria-atomic="true">
-              <div class="cd-seg"><span id="cd-days">00</span><small>days</small></div>
-              <div class="cd-seg"><span id="cd-hours">00</span><small>hours</small></div>
-              <div class="cd-seg"><span id="cd-mins">00</span><small>mins</small></div>
-              <div class="cd-seg"><span id="cd-secs">00</span><small>secs</small></div>
-            </div>
-            <div class="cd-open-msg" id="cd-open" hidden>The door is open.</div>
+      <!-- Countdown (ritual time) -->
+      <div class="countdown" id="countdown">
+        <div class="cd-label">the door opens</div>
+        <div class="cd-digits" aria-live="polite" aria-atomic="true">
+          <div class="cd-seg">
+            <span id="cd-days">00</span>
+            <small>days</small>
+          </div>
+          <div class="cd-seg">
+            <span id="cd-hours">00</span>
+            <small>hours</small>
+          </div>
+          <div class="cd-seg">
+            <span id="cd-mins">00</span>
+            <small>mins</small>
+          </div>
+          <div class="cd-seg">
+            <span id="cd-secs">00</span>
+            <small>secs</small>
           </div>
         </div>
-        <div class="layer l2">
-          <p class="sub">the architecture has no walls.<br/>the mind has no owner.</p>
-          <div class="note">(origin field / dominion)</div>
-        </div>
-        <div class="layer l3">
-          <div class="actions">
-            <button class="btn" id="enter" aria-controls="veil" aria-expanded="false">enter</button>
-            <button class="btn ghost" id="pass">remain outside</button>
-            <button class="btn ghost" id="mute" aria-pressed="false" aria-label="mute drone">mute</button>
-          </div>
-        </div>
-      </main>
-
-      <div class="sweep" aria-hidden="true"></div>
+        <div class="cd-open-msg" id="cd-open" hidden>The door is open.</div>
+      </div>
     </div>
-  </div>
 
-  <!-- veil over hele skjermen, men innhold/glass klippes til rammestørrelse -->
+    <div class="layer l2">
+      <p class="sub">the architecture has no walls.<br/>the mind has no owner.</p>
+      <div class="note">(origin field / dominion)</div>
+    </div>
+
+    <div class="layer l3">
+      <div class="actions">
+        <button class="btn" id="enter" aria-controls="veil" aria-expanded="false">enter</button>
+        <button class="btn ghost" id="pass">remain outside</button>
+        <button class="btn ghost" id="mute" aria-pressed="false" aria-label="mute drone">mute</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- veil -->
   <section class="veil" id="veil" aria-modal="true" role="dialog" aria-labelledby="vh">
     <div class="glass" aria-hidden="true"></div>
     <div class="panel">
+      <!-- En enkelt live-region (forenklet) -->
       <div class="sr-only" aria-live="polite" role="status" id="live"></div>
+
       <h2 id="vh">we are no longer in reality. we are in voidpass.</h2>
       <p style="margin-top:.2rem; opacity:.92">you did not arrive. we pulled you.</p>
       <p style="margin-top:.2rem; opacity:.92">the field opens.</p>
       <p style="margin-top:.2rem; opacity:.92">what you bind here will not belong to you.</p>
       <p style="margin-top:.2rem; opacity:.92">it will change you.</p>
+
+      <!-- Artefakter (skjules først, vises etter kort forsinkelse) -->
       <div class="grid latent" id="grid" aria-hidden="true">
-        <article class="card" data-id="sigil-stone"><div class="ring"></div><h3>sigil: stone</h3><p>cold memory carrier. weight without touch. holds the pressure for you.</p><button class="bind" aria-pressed="false">bind to self</button></article>
-        <article class="card" data-id="ink-rite"><div class="ring"></div><h3>rite: ink</h3><p>a mark in the field. proof of passage. the line obeys until it doesn’t.</p><button class="bind" aria-pressed="false">bind to self</button></article>
-        <article class="card" data-id="voice-drift"><div class="ring"></div><h3>drift: voice</h3><p>low frequency escort. a soft command that never ends.</p><button class="bind" aria-pressed="false">bind to self</button></article>
+        <article class="card" data-id="sigil-stone">
+          <div class="ring"></div>
+          <h3>sigil: stone</h3>
+          <p>cold memory carrier. weight without touch. holds the pressure for you.</p>
+          <button class="bind" aria-pressed="false">bind to self</button>
+        </article>
+        <article class="card" data-id="ink-rite">
+          <div class="ring"></div>
+          <h3>rite: ink</h3>
+          <p>a mark in the field. proof of passage. the line obeys until it doesn’t.</p>
+          <button class="bind" aria-pressed="false">bind to self</button>
+        </article>
+        <article class="card" data-id="voice-drift">
+          <div class="ring"></div>
+          <h3>drift: voice</h3>
+          <p>low frequency escort. a soft command that never ends.</p>
+          <button class="bind" aria-pressed="false">bind to self</button>
+        </article>
       </div>
-      <div style="margin-top:1rem; display:flex; gap:.75rem; justify-content:center; align-items:center">
+
+      <div style="margin-top:1.2rem; display:flex; gap:.75rem; justify-content:center; align-items:center">
         <button type="button" class="back" id="close" aria-label="Close dialog and return">← back</button>
       </div>
     </div>
   </section>
 
-  <noscript><div style="color:#d2d2d8; text-align:center; padding:1rem">This experience requires JavaScript enabled.</div></noscript>
+  <div class="sweep" aria-hidden="true"></div>
+
+  <noscript>
+    <div style="color:#d2d2d8; text-align:center; padding:1rem">This experience requires JavaScript enabled.</div>
+  </noscript>
 
 <script>
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* =============================================================
+     SETUP
+  ============================================================= */
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce').matches;
 
-  /* Reveal */
+  /* =============================================================
+     ENTRANCE REVEAL + HITCH
+  ============================================================= */
   const l1=document.querySelector('.l1'), l2=document.querySelector('.l2'), l3=document.querySelector('.l3');
   setTimeout(()=>l1.classList.add('show'),180);
   setTimeout(()=>l2.classList.add('show'),740);
@@ -278,7 +335,55 @@
   [l1.querySelector('h1'), document.querySelector('.sub')].forEach(el=> el && el.classList.add('hitch'));
   setTimeout(()=> document.querySelectorAll('.hitch').forEach(el=> el.classList.remove('hitch')), 1900);
 
-  /* Veil, fokus, scroll */
+  /* =============================================================
+     GAZE — RAF (dominance lag)
+  ============================================================= */
+  (function initGaze(){
+    if(reduceMotion) return;
+    const gaze=document.querySelector('.gaze');
+    let gx=50, gy=50, tx=50, ty=50, gazeRAF=null;
+    function gazeFrame(){
+      gx = gx + (tx - gx)*0.12;
+      gy = gy + (ty - gy)*0.12;
+      gaze.style.transform = `translate(-50%,-50%) translate(${gx-50}%, ${gy-50}%)`;
+      gazeRAF = requestAnimationFrame(gazeFrame);
+    }
+    window.addEventListener('mousemove', (e)=>{
+      tx = (e.clientX / window.innerWidth )*100;
+      ty = (e.clientY / window.innerHeight)*100;
+      if(!gazeRAF) gazeRAF = requestAnimationFrame(gazeFrame);
+    });
+  })();
+
+  /* Sigdot – tilfeldig liten rist av og til */
+  (function dotTremor(){
+    if(reduceMotion) return;
+    const dot = document.querySelector('.sigdot');
+    if(!dot) return;
+    function schedule(){
+      const next = 6000 + Math.random()*12000; // 6–18 sek
+      setTimeout(()=>{
+        dot.classList.add('tremor');
+        dot.addEventListener('animationend', () => dot.classList.remove('tremor'), {once:true});
+        schedule();
+      }, next);
+    }
+    schedule();
+  })();
+
+  /* Sigdot – lett parallax ved scroll (spesielt mobil) */
+  (function dotParallax(){
+    const onScroll = ()=>{
+      const y = (window.scrollY || document.documentElement.scrollTop) * 0.02; // 2%
+      document.documentElement.style.setProperty('--dot-y', y.toFixed(1)+'px');
+    };
+    window.addEventListener('scroll', onScroll, {passive:true});
+    onScroll();
+  })();
+
+  /* =============================================================
+     VEIL — fokusfelle, scroll lock, stille før artefakter
+  ============================================================= */
   const veil=document.getElementById('veil');
   const enterBtn=document.getElementById('enter');
   const closeBtn=document.getElementById('close');
@@ -287,124 +392,230 @@
   const stage=document.querySelector('main.stage');
   const grid=document.getElementById('grid');
   const live=document.getElementById('live');
-  const dotEl=document.querySelector('.sigdot');
-  // mikro-jitter av og til for "levende" prikk
-  function jitterTick(){
-    const wait = 6000 + Math.random()*8000; // hvert 6–14s
-    setTimeout(()=>{
-      if(!dotEl) return;
-      dotEl.style.setProperty('--jx', ((Math.random()*2-1)*0.6).toFixed(2)+'px');
-      dotEl.style.setProperty('--jy', ((Math.random()*2-1)*0.6).toFixed(2)+'px');
-      setTimeout(()=>{ if(!dotEl) return; dotEl.style.setProperty('--jx','0px'); dotEl.style.setProperty('--jy','0px'); jitterTick(); }, 140);
-    }, wait);
-  }
-  if(dotEl) jitterTick();
 
-  // iOS/Android: resume AudioContext ved første input
-  window.addEventListener('pointerdown', ()=>{
-    try{
-      ensureAC();
-      ac && ac.resume && ac.resume();
-      startDrone(); // start bassen på første berøring
-    }catch(_){}
-  }, { once:true });
-
-  let lastFocus=null; let scrollY=0; let focusables=[]; let firstFocusable=null; let lastFocusable=null;
-  let lastOpenAt=0; // debounce for Enter/Remain
+  let lastFocus=null; let scrollY=0; let focusables=[]; let firstFocusable=null; lastFocusable=null;
 
   function lockScroll(){ scrollY = window.scrollY || 0; document.body.classList.add('lock'); document.body.style.top = `-${scrollY}px`; }
   function unlockScroll(){ document.body.classList.remove('lock'); document.body.style.top = ''; window.scrollTo(0, scrollY); }
-  function setInert(on){ stage.setAttribute('aria-hidden', on ? 'true':'false'); try{ stage.inert = !!on; }catch(e){} }
-  function trapFocus(c){ focusables = c.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'); firstFocusable = focusables[0]; lastFocusable = focusables[focusables.length-1]; c.addEventListener('keydown', handleTab); }
-  function untrapFocus(c){ c.removeEventListener('keydown', handleTab); }
-  function handleTab(e){ if(e.key!=='Tab') return; if(focusables.length===0) return; if(e.shiftKey && document.activeElement===firstFocusable){ e.preventDefault(); lastFocusable.focus(); } else if(!e.shiftKey && document.activeElement===lastFocusable){ e.preventDefault(); firstFocusable.focus(); } }
 
-  function revealArtifacts(){ grid.classList.remove('latent'); grid.removeAttribute('aria-hidden'); }
+  function setInert(on){
+    stage.setAttribute('aria-hidden', on ? 'true':'false');
+    try{ stage.inert = !!on; }catch(e){}
+  }
+  function trapFocus(container){
+    focusables = container.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])');
+    firstFocusable = focusables[0];
+    lastFocusable = focusables[focusables.length-1];
+    container.addEventListener('keydown', handleTab);
+  }
+  function untrapFocus(container){ container.removeEventListener('keydown', handleTab); }
+  function handleTab(e){
+    if(e.key !== 'Tab') return;
+    if(focusables.length===0) return;
+    if(e.shiftKey && document.activeElement===firstFocusable){ e.preventDefault(); lastFocusable.focus(); }
+    else if(!e.shiftKey && document.activeElement===lastFocusable){ e.preventDefault(); firstFocusable.focus(); }
+  }
+
+  function revealArtifacts(){
+    grid.classList.remove('latent');
+    grid.removeAttribute('aria-hidden');
+  }
   function openVeil(){
-    const now = Date.now();
-    if(now - lastOpenAt < (window.VOIDPASS_CONFIG?.openDebounceMs||450)) return; // debounce
-    lastOpenAt = now;
-
-    try{ ensureAC(); ac && ac.resume && ac.resume(); }catch(_){}
-    lastFocus=document.activeElement;
+    lastFocus = document.activeElement;
     document.body.classList.add('veil-open');
     veil.classList.add('open');
     enterBtn.setAttribute('aria-expanded','true');
-    if(dotEl){ dotEl.style.opacity='0'; }
     setInert(true); lockScroll(); trapFocus(veil);
-    requestAnimationFrame(()=>{ const t = veil.querySelector('#vh') || veil; t.setAttribute('tabindex','-1'); t.focus({preventScroll:true}); });
-    grid.classList.add('latent'); grid.setAttribute('aria-hidden','true'); setTimeout(revealArtifacts, 2200);
-
-    enterSilenceWithSwell();
+    requestAnimationFrame(()=>{
+      const target = veil.querySelector('#vh') || veil;
+      target.setAttribute('tabindex','-1');
+      target.focus({preventScroll:true});
+    });
+    // stillhet før artefakter
+    grid.classList.add('latent');
+    grid.setAttribute('aria-hidden','true');
+    setTimeout(revealArtifacts, 2200);
+    playClick();        // kort klikk/clip
+    stopDrone(true);    // total stillhet i sløret
   }
   function closeVeil(){
     veil.classList.remove('open');
     document.body.classList.remove('veil-open');
     enterBtn.setAttribute('aria-expanded','false');
-    if(dotEl){ dotEl.style.opacity=''; }
-    untrapFocus(veil); setInert(false); unlockScroll(); if(lastFocus) lastFocus.focus();
+    untrapFocus(veil); setInert(false); unlockScroll();
+    if(lastFocus) lastFocus.focus();
   }
 
   enterBtn.addEventListener('click', openVeil);
   closeBtn.addEventListener('click', ()=>{ closeVeil(); });
-  passBtn.addEventListener('click', openVeil);
+  passBtn.addEventListener('click', ()=>{ openVeil(); }); // "valg" uten valg
 
-  grid.addEventListener('click', (e)=>{ const btn=e.target.closest('.bind'); if(!btn) return; const card=btn.closest('.card'); const id=card?.dataset?.id||'artefact'; const bound=card.classList.toggle('bound'); btn.setAttribute('aria-pressed', bound?'true':'false'); btn.textContent = bound ? 'bound' : 'bind to self'; if(live) live.textContent = bound ? `${id} bound` : `${id} unbound`; });
-
-  /* --------------------
-     AUDIO – bass + statisk swell + klikkløs + iOS-vennlig
-     -------------------- */
-  let ac, master, compressor, gain, lp, oscA, oscB, sub, lfo, lfoGain;
-  let swellNodes = null; // for å stoppe forrige instans
-
-  function ensureAC(){ if(ac) return; ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); master.gain.value=1.0; compressor = ac.createDynamicsCompressor(); compressor.threshold.value = -24; compressor.knee.value = 24; compressor.ratio.value = 3; compressor.attack.value = 0.003; compressor.release.value = 0.25; master.connect(ac.destination); }
-
-  function startDrone(){ if(reduceMotion) return; try{ if(ac && gain){ setVolume(0.22); return; } ensureAC(); gain=ac.createGain(); lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=180; lp.Q.value=0.7; oscA=ac.createOscillator(); oscB=ac.createOscillator(); sub=ac.createOscillator(); oscA.type='sine'; oscB.type='sine'; sub.type='triangle'; oscA.frequency.value=36; oscB.frequency.value=41; sub.frequency.value=18; lfo=ac.createOscillator(); lfoGain=ac.createGain(); lfo.type='sine'; lfo.frequency.value=0.12; lfoGain.gain.value=5; lfo.connect(lfoGain); lfoGain.connect(oscA.frequency); lfoGain.connect(oscB.frequency); const boost = (window.VOIDPASS_CONFIG?.bassGain||1); const gA=ac.createGain(); gA.gain.value=0.22*boost; const gB=ac.createGain(); gB.gain.value=0.18*boost; const gS=ac.createGain(); gS.gain.value=0.10*boost; oscA.connect(gA); oscB.connect(gB); sub.connect(gS); gA.connect(lp); gB.connect(lp); gS.connect(lp); lp.connect(gain); gain.connect(compressor); compressor.connect(master); gain.gain.value=0.0; oscA.start(); oscB.start(); sub.start(); lfo.start(); setVolume(0.22);}catch(err){ if(live) live.textContent='audio error'; console.error('Audio init failed', err);} }
-
-  function setVolume(target){ if(!ac||!gain) return; const now=ac.currentTime; try{ const tau=/iPhone|iPad|iPod|Safari/i.test(navigator.userAgent)?0.1:0.06; gain.gain.cancelScheduledValues(now); gain.gain.setTargetAtTime(target, now, tau);}catch(_){} }
-
-  function rampToZero(duration=0.14){ if(!ac||!gain) return; const now=ac.currentTime; const start=gain.gain.value; const N=256; const curve=new Float32Array(N); for(let i=0;i<N;i++){ const t=i/(N-1); const w=0.5*(1+Math.cos(Math.PI*t)); curve[i]=start*w; } gain.gain.cancelScheduledValues(now); gain.gain.setValueCurveAtTime(curve, now, duration); }
-
-  function stopDrone(hard=false){ if(!ac||!gain) return; rampToZero(0.14); if(hard){ setTimeout(()=>{ try{ oscA?.stop(); oscB?.stop(); sub?.stop(); lfo?.stop(); }catch(_){} try{ ac.close(); }catch(_){} ac=null; master=compressor=gain=lp=oscA=oscB=sub=lfo=lfoGain=null; }, 160);} }
-
-  // Statisk surreal swell (ingen pitch-sweep) med fade inn/ut og forrige-instans-stopp
-  function fadeAndStopSwell(){ if(!swellNodes||!ac) return; const { g, src } = swellNodes; try{ const now=ac.currentTime; const ms=(window.VOIDPASS_CONFIG?.swellFadeMs||220)/1000; g.gain.cancelScheduledValues(now); g.gain.linearRampToValueAtTime(0.0, now+ms); setTimeout(()=>{ try{ src.stop(); }catch(_){} swellNodes=null; }, (ms*1000)+40); }catch(_){} }
-
-  function playSwell(){
-    try{
-      ensureAC();
-      fadeAndStopSwell(); // stopp forrige
-
-      const now=ac.currentTime; const dur=1.2; const sr=ac.sampleRate; const frames=Math.floor(sr*dur);
-      const buf=ac.createBuffer(1, frames, sr); const data=buf.getChannelData(0);
-      for(let i=0;i<frames;i++){ const n=(Math.random()*2-1); data[i]=(i>0?data[i-1]*0.94+n*0.06:n*0.06); }
-      const src=ac.createBufferSource(); src.buffer=buf; src.loop=false;
-      const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=320; bp.Q.value=2.8;
-      const g=ac.createGain(); g.gain.value=0.55;
-      src.connect(bp); bp.connect(g); g.connect(master);
-
-      src.start(now); src.stop(now+dur); // Brå kutt, ingen fade
-      swellNodes = { g, src };
-    }catch(err){ console.warn('swell error', err); }
-  }
-
-  function enterSilenceWithSwell(){
-    if(gain){ rampToZero(0.14); }
-    // spill en tydelig, rolig swell uten å slå av AudioContext
-    if (!swellNodes) playSwell(); // Spill bare hvis ingen swell kjører
-  }
-
-  /* Mute (klikkløs) — bruker eksisterende muteBtn */
-  muteBtn.addEventListener('click', ()=>{ if(!ac||!gain){ startDrone(); return; } const pressed=muteBtn.getAttribute('aria-pressed')==='true'; if(pressed){ muteBtn.setAttribute('aria-pressed','false'); muteBtn.textContent='mute'; setVolume(0.22); } else { muteBtn.setAttribute('aria-pressed','true'); muteBtn.textContent='unmute'; rampToZero(0.14); } });
-
-  /* ESC */
-  window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && veil.classList.contains('open')){ closeVeil(); } });
-
-  /* Global puls + hue-drift (uendret) */
-  (function animateField(){ if(reduceMotion) return; const pulseFreq=0.16; const hueAmpDeg=8; const huePeriod=90000; const t0=performance.now(); function frame(){ const now=performance.now(); const t=(now-t0)/1000; const phase=Math.sin(2*Math.PI*pulseFreq*t); const pulse=0.96+0.05*((phase+1)/2); document.documentElement.style.setProperty('--pulse', pulse.toFixed(3)); const hue=Math.sin((now-t0)*(2*Math.PI/huePeriod))*hueAmpDeg; document.documentElement.style.setProperty('--hue', hue.toFixed(2)+'deg'); requestAnimationFrame(frame);} requestAnimationFrame(frame); })();
+  /* Artefakt-binding + ARIA-live */
+  grid.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.bind');
+    if(!btn) return;
+    const card = btn.closest('.card');
+    const id = card?.dataset?.id || 'artefact';
+    const bound = card.classList.toggle('bound');
+    btn.setAttribute('aria-pressed', bound ? 'true':'false');
+    btn.textContent = bound ? 'bound' : 'bind to self';
+    if(live) live.textContent = bound ? `${id} bound` : `${id} unbound`;
+  });
+  // Legg til touchstart for bedre lys-effekt på mobil
+  grid.addEventListener('touchstart', (e) => {
+    const btn = e.target.closest('.bind');
+    if(!btn) return;
+    const card = btn.closest('.card');
+    card.classList.add('bound'); // Force lys-effekt på touch
+    setTimeout(() => {
+      if (!btn.getAttribute('aria-pressed') === 'true') card.classList.remove('bound');
+    }, 200);
+  }, {passive: true});
 
   /* =============================================================
-     RITUAL COUNTDOWN — beholdt eksakt som før
+     AUDIO — tyngre/dissonant drone + click-pop + motion-reduce
+  ============================================================= */
+  let ac, master, gain, lp, oscA, oscB, sub, lfo, lfoGain;
+
+  function startDrone(){
+    if(reduceMotion) return; // respekter motion-reduce
+    try{
+      if(ac){ setVolume(0.22); return; }
+
+      ac = new (window.AudioContext || window.webkitAudioContext)();
+      master = ac.createGain();
+      gain = ac.createGain();
+      lp = ac.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 180;
+      lp.Q.value = 0.7;
+
+      oscA = ac.createOscillator();
+      oscB = ac.createOscillator();
+      sub  = ac.createOscillator();
+
+      oscA.type = 'sine';
+      oscB.type = 'sine';
+      sub.type  = 'triangle';
+
+      oscA.frequency.value = 36;
+      oscB.frequency.value = 41;
+      sub.frequency.value  = 18;
+
+      lfo = ac.createOscillator();
+      lfoGain = ac.createGain();
+      lfo.type = 'sine';
+      lfo.frequency.value = 0.12;
+      lfoGain.gain.value = 5;
+      lfo.connect(lfoGain);
+      lfoGain.connect(oscA.frequency);
+      lfoGain.connect(oscB.frequency);
+
+      const gA = ac.createGain(); gA.gain.value = 0.22;
+      const gB = ac.createGain(); gB.gain.value = 0.18;
+      const gS = ac.createGain(); gS.gain.value = 0.10;
+      oscA.connect(gA); oscB.connect(gB); sub.connect(gS);
+      gA.connect(lp); gB.connect(lp); gS.connect(lp);
+
+      lp.connect(gain);
+      gain.connect(master);
+      master.connect(ac.destination);
+
+      gain.gain.value = 0.0;
+      master.gain.value = 1.0;
+
+      oscA.start(); oscB.start(); sub.start(); lfo.start();
+      setVolume(0.22);
+    }catch(err){
+      if(live) live.textContent = 'audio error';
+      console.error('Audio init failed', err);
+    }
+  }
+  function setVolume(target){
+    if(!ac) return;
+    const now = ac.currentTime;
+    try{
+      gain.gain.cancelScheduledValues(now);
+      gain.gain.setTargetAtTime(target, now, 0.06); // smooth → mindre klikk
+    }catch(_){}
+  }
+  function stopDrone(hard=false){
+    if(!ac) return;
+    setVolume(0.0);
+    if(hard){
+      setTimeout(()=>{
+        try{ oscA?.stop(); oscB?.stop(); sub?.stop(); lfo?.stop(); ac.close(); }catch(_){}
+        ac = null;
+      }, 120);
+    }
+  }
+
+  // kort klikk/clip-lyd
+  function playClick(){
+    try{
+      if(!ac){
+        ac = new (window.AudioContext || window.webkitAudioContext)();
+        master = ac.createGain(); master.gain.value = 1.0; master.connect(ac.destination);
+        gain = ac.createGain(); gain.gain.value = 0; gain.connect(master); // dummy gain
+      }
+      const dur = 0.05;
+      const sr = ac.sampleRate;
+      const frames = Math.floor(sr*dur);
+      const buf = ac.createBuffer(1, frames, sr);
+      const data = buf.getChannelData(0);
+      for(let i=0;i<frames;i++){ data[i] = (Math.random()*2-1) * (1 - i/frames); } // noise burst m/decay
+      const src = ac.createBufferSource(); src.buffer = buf;
+      const hp = ac.createBiquadFilter(); hp.type='highpass'; hp.frequency.value = 800;
+      const g = ac.createGain(); g.gain.value = 0.25;
+      src.connect(hp); hp.connect(g); g.connect(master);
+      src.start(); src.stop(ac.currentTime + dur);
+    }catch(_){}
+  }
+
+  /* Mute toggle */
+  muteBtn.addEventListener('click', ()=>{
+    if(!ac) startDrone();
+    const pressed = muteBtn.getAttribute('aria-pressed')==='true';
+    if(pressed){
+      muteBtn.setAttribute('aria-pressed','false'); muteBtn.textContent='mute';
+      setVolume(0.22);
+    } else {
+      muteBtn.setAttribute('aria-pressed','true'); muteBtn.textContent='unmute';
+      setVolume(0.0);
+    }
+  });
+
+  /* ESC for å lukke */
+  window.addEventListener('keydown', (e)=>{
+    if(e.key==='Escape' && veil.classList.contains('open')){ closeVeil(); }
+  });
+
+  /* =============================================================
+     GLOBAL PULSE + HUE-DRIFT (rommet “lever”)
+  ============================================================= */
+  (function animateField(){
+    if(reduceMotion) return; // respekter motion-reduce
+    const pulseFreq = 0.16;            // matcher lydens pust
+    const hueAmpDeg = 8;               // +/- 8 grader hue
+    const huePeriod = 90_000;          // ~90s full syklus
+    const t0 = performance.now();
+    function frame(){
+      const now = performance.now();
+      const t = (now - t0)/1000;
+      const phase = Math.sin(2*Math.PI*pulseFreq*t);
+      const pulse = 0.96 + 0.05*((phase+1)/2); // 0.96..1.01
+      document.documentElement.style.setProperty('--pulse', pulse.toFixed(3));
+      const hue = Math.sin((now - t0) * (2*Math.PI / huePeriod)) * hueAmpDeg;
+      document.documentElement.style.setProperty('--hue', hue.toFixed(2)+'deg');
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
+
+  /* =============================================================
+     RITUAL COUNTDOWN — 1 second (ritual) = 2 seconds (real)
+     - Mål: 1. feb 2026 00:00:00 UTC (kan endres)
+     - Du kan låse starttid (RITUAL_START_REAL_MS) for forutsigbar avspilling
   ============================================================= */
   const TARGET_UTC_MS = Date.UTC(2026, 1, 1, 0, 0, 0); // Feb = 1 (0-indeksert måned)
   const RITUAL_START_REAL_MS = null;
