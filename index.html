@@ -482,211 +482,218 @@
   // void@takliva.com SUBJECT: ok Takliva, im in!
   // --- (End of your pasted code) ---
 
-  grid.addEventListener('click', (e)=>{
-    const btn=e.target.closest('.bind'); if(!btn) return;
-    const card=btn.closest('.card');
-    const id=card?.dataset?.id||'artefact';
-    const bound=card.classList.toggle('bound');
-    btn.setAttribute('aria-pressed', bound?'true':'false');
-    btn.textContent = bound ? 'bound' : 'bind to self';
-    if(live) live.textContent = bound ? `${id} bound` : `${id} unbound`;
-  });
+ grid.addEventListener('click', (e)=>{
+    const btn=e.target.closest('.bind'); if(!btn) return;
+    const card=btn.closest('.card');
+    const id=card?.dataset?.id||'artefact';
+    const bound=card.classList.toggle('bound');
+    btn.setAttribute('aria-pressed', bound?'true':'false');
+    btn.textContent = bound ? 'bound' : 'bind to self';
+    if(live) live.textContent = bound ? `${id} bound` : `${id} unbound`;
+  });
 
-  /* --------------------
-     AUDIO – bass + swell
-     -------------------- */
-  let ac, master, compressor, gain, lp, oscA, oscB, sub, lfo, lfoGain;
-  let swellNodes = null;
+  /* --------------------
+     AUDIO – bass + swell
+     -------------------- */
+  let ac, master, compressor, gain, lp, oscA, oscB, sub, lfo, lfoGain;
+  let swellNodes = null;
 
-  function ensureAC(){
-    if(ac) return;
-    ac = new (window.AudioContext || window.webkitAudioContext)();
-    master = ac.createGain(); master.gain.value=1.0;
-    compressor = ac.createDynamicsCompressor();
-    compressor.threshold.value = -24; compressor.knee.value = 24; compressor.ratio.value = 3;
-    compressor.attack.value = 0.003; compressor.release.value = 0.25;
-    master.connect(ac.destination);
-  }
+  function ensureAC(){
+    if(ac) return;
+    ac = new (window.AudioContext || window.webkitAudioContext)();
+    master = ac.createGain(); master.gain.value=1.0;
+    compressor = ac.createDynamicsCompressor();
+    compressor.threshold.value = -24; compressor.knee.value = 24; compressor.ratio.value = 3;
+    compressor.attack.value = 0.003; compressor.release.value = 0.25;
+    master.connect(ac.destination);
+  }
 
-  function startDrone(){
-    if(reduceMotion) return;
-    try{
-      if(ac && gain){ setVolume(0.22); return; }
-      ensureAC();
-      gain=ac.createGain();
-      lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=180; lp.Q.value=0.7;
-      oscA=ac.createOscillator(); oscB=ac.createOscillator(); sub=ac.createOscillator();
-      oscA.type='sine'; oscB.type='sine'; sub.type='triangle';
-      oscA.frequency.value=36; oscB.frequency.value=41; sub.frequency.value=18;
-      lfo=ac.createOscillator(); lfoGain=ac.createGain();
-      lfo.type='sine'; lfo.frequency.value=0.12; lfoGain.gain.value=5;
-      lfo.connect(lfoGain); lfoGain.connect(oscA.frequency); lfoGain.connect(oscB.frequency);
-      const boost = (window.VOIDPASS_CONFIG?.bassGain||1);
-      const gA=ac.createGain(); gA.gain.value=0.22*boost;
-      const gB=ac.createGain(); gB.gain.value=0.18*boost;
-      const gS=ac.createGain(); gS.gain.value=0.10*boost;
-      oscA.connect(gA); oscB.connect(gB); sub.connect(gS);
-      gA.connect(lp); gB.connect(lp); gS.connect(lp);
-      lp.connect(gain); gain.connect(compressor); compressor.connect(master);
-      gain.gain.value=0.0;
-      oscA.start(); oscB.start(); sub.start(); lfo.start();
-      setVolume(0.22);
-    }catch(err){ if(live) live.textContent='audio error'; console.error('Audio init failed', err);}
-  }
+  function startDrone(){
+    if(reduceMotion) return;
+    try{
+      if(ac && gain){ setVolume(0.22); return; }
+      ensureAC();
+      gain=ac.createGain();
+      lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=180; lp.Q.value=0.7;
+      oscA=ac.createOscillator(); oscB=ac.createOscillator(); sub=ac.createOscillator();
+      oscA.type='sine'; oscB.type='sine'; sub.type='triangle';
+      oscA.frequency.value=36; oscB.frequency.value=41; sub.frequency.value=18;
+      lfo=ac.createOscillator(); lfoGain=ac.createGain();
+      lfo.type='sine'; lfo.frequency.value=0.12; lfoGain.gain.value=5;
+      lfo.connect(lfoGain); lfoGain.connect(oscA.frequency); lfoGain.connect(oscB.frequency);
+      const boost = (window.VOIDPASS_CONFIG?.bassGain||1);
+      const gA=ac.createGain(); gA.gain.value=0.22*boost;
+      const gB=ac.createGain(); gB.gain.value=0.18*boost;
+      const gS=ac.createGain(); gS.gain.value=0.10*boost;
+      oscA.connect(gA); oscB.connect(gB); sub.connect(gS);
+      lp.connect(gain); gain.connect(compressor); compressor.connect(master);
+      gain.gain.value=0.0;
+      oscA.start(); oscB.start(); sub.start(); lfo.start();
+      setVolume(0.22);
+    }catch(err){ if(live) live.textContent='audio error'; console.error('Audio init failed', err);}
+  }
 
-  function setVolume(target){
-    if(!ac||!gain) return; const now=ac.currentTime;
-    try{ const tau=/iPhone|iPad|iPod|Safari/i.test(navigator.userAgent)?0.1:0.06;
-      gain.gain.cancelScheduledValues(now);
-      gain.gain.setTargetAtTime(target, now, tau);
-    }catch(_){}
-  }
+  function setVolume(target){
+    if(!ac||!gain) return; const now=ac.currentTime;
+    try{ const tau=/iPhone|iPad|iPod|Safari/i.test(navigator.userAgent)?0.1:0.06;
+      gain.gain.cancelScheduledValues(now);
+      gain.gain.setTargetAtTime(target, now, tau);
+    }catch(_){}
+  }
 
-  function rampToZero(duration=0.14){
-    if(!ac||!gain) return; const now=ac.currentTime; const start=gain.gain.value; const N=256;
-    const curve=new Float32Array(N);
-    for(let i=0;i<N;i++){ const t=i/(N-1); const w=0.5*(1+Math.cos(Math.PI*t)); curve[i]=start*w; }
-    gain.gain.cancelScheduledValues(now);
-    gain.gain.setValueCurveAtTime(curve, now, duration);
-  }
+  function rampToZero(duration=0.14){
+    if(!ac||!gain) return; const now=ac.currentTime; const start=gain.gain.value; const N=256;
+    const curve=new Float32Array(N);
+    for(let i=0;i<N;i++){ const t=i/(N-1); const w=0.5*(1+Math.cos(Math.PI*t)); curve[i]=start*w; }
+    gain.gain.cancelScheduledValues(now);
+    gain.gain.setValueCurveAtTime(curve, now, duration);
+  }
 
-  function stopDrone(hard=false){
-    if(!ac||!gain) return; rampToZero(0.14);
-    if(hard){
-      setTimeout(()=>{ try{ oscA?.stop(); oscB?.stop(); sub?.stop(); lfo?.stop(); }catch(_){} try{ ac.close(); }catch(_){} ac=null; master=compressor=gain=lp=oscA=oscB=sub=lfo=lfoGain=null; }, 160);
-    }
-  }
+  function stopDrone(hard=false){
+    if(!ac||!gain) return; rampToZero(0.14);
+    if(hard){
+      setTimeout(()=>{ try{ oscA?.stop(); oscB?.stop(); sub?.stop(); lfo?.stop(); }catch(_){} try{ ac.close(); }catch(_){} ac=null; master=compressor=gain=lp=oscA=oscB=sub=lfo=lfoGain=null; }, 160);
+    }
+  }
 
-  // Fade ut evt. forrige swell, men IKKE fade ut på slutten av den nye — vi kutter hardt.
-  function fadeAndStopSwell(){
-    if(!swellNodes||!ac) return;
-    const { g, src } = swellNodes;
-    try{
-      const now=ac.currentTime;
-      const ms=(window.VOIDPASS_CONFIG?.swellFadeMs||220)/1000;
-      g.gain.cancelScheduledValues(now);
-      g.gain.linearRampToValueAtTime(0.0, now+ms);
-      setTimeout(()=>{ try{ src.stop(); }catch(_){} swellNodes=null; }, (ms*1000)+40);
-    }catch(_){}
-  }
+  // Fade ut evt. forrige swell, men IKKE fade ut på slutten av den nye — vi kutter hardt.
+  function fadeAndStopSwell(){
+    if(!swellNodes||!ac) return;
+    const { g, src } = swellNodes;
+    try{
+      const now=ac.currentTime;
+      const ms=(window.VOIDPASS_CONFIG?.swellFadeMs||220)/1000;
+      g.gain.cancelScheduledValues(now);
+      g.gain.linearRampToValueAtTime(0.0, now+ms);
+      setTimeout(()=>{ try{ src.stop(); }catch(_){} swellNodes=null; }, (ms*1000)+40);
+    }catch(_){}
+  }
 
-  // (1) SWELL: start lavt, fade OPP, så hard cut ved slutt
-  function playSwell(){
-    try{
-      ensureAC();
-      fadeAndStopSwell(); // stopp forrige mykt
+  // (1) SWELL: start lavt, fade OPP, så hard cut ved slutt
+  function playSwell(){
+    try{
+      ensureAC();
+      fadeAndStopSwell(); // stopp forrige mykt
 
-      const now=ac.currentTime, dur=1.2, sr=ac.sampleRate, frames=Math.floor(sr*dur);
-      const buf=ac.createBuffer(1, frames, sr), data=buf.getChannelData(0);
-      for(let i=0;i<frames;i++){ const n=(Math.random()*2-1); data[i]=(i>0?data[i-1]*0.94+n*0.06:n*0.06); }
-      const src=ac.createBufferSource(); src.buffer=buf; src.loop=false;
+      const now=ac.currentTime, dur=1.2, sr=ac.sampleRate, frames=Math.floor(sr*dur);
+      const buf=ac.createBuffer(1, frames, sr), data=buf.getChannelData(0);
+      for(let i=0;i<frames;i++){ const n=(Math.random()*2-1); data[i]=(i>0?data[i-1]*0.94+n*0.06:n*0.06); }
+      const src=ac.createBufferSource(); src.buffer=buf; src.loop=false;
 
-      const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=320; bp.Q.value=2.8;
-      const g=ac.createGain(); const targetGain=0.55; g.gain.value=0.0; // start lavt
-      src.connect(bp); bp.connect(g); g.connect(master);
+      const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=320; bp.Q.value=2.8;
+      const g=ac.createGain(); const targetGain=0.55; g.gain.value=0.0; // start lavt
+      src.connect(bp); bp.connect(g); g.connect(master);
 
-      // FADE OPP raskt (attack), så CUT ved stop
-      g.gain.setValueAtTime(0.0, now);
-      g.gain.linearRampToValueAtTime(targetGain, now + 0.6); // ~600ms opp
+      // FADE OPP raskt (attack), så CUT ved stop
+      g.gain.setValueAtTime(0.0, now);
+      g.gain.linearRampToValueAtTime(targetGain, now + 0.6); // ~600ms opp
 
-      src.onended = ()=>{ swellNodes=null; };
-      src.start(now);
-      src.stop(now+dur); // hard cut (ingen fade ut)
-      swellNodes = { g, src };
-    }catch(err){ console.warn('swell error', err); }
-  }
+      src.onended = ()=>{ swellNodes=null; };
+      src.start(now);
+      src.stop(now+dur); // hard cut (ingen fade ut)
+      swellNodes = { g, src };
+    }catch(err){ console.warn('swell error', err); }
+  }
 
-  // spiller alltid en ny swell ved åpning, og demper dronen
-  function enterSilenceWithSwell(){
-    if(gain){ rampToZero(0.14); }
-    playSwell();
-  }
+  // spiller alltid en ny swell ved åpning, og demper dronen
+  function enterSilenceWithSwell(){
+    if(gain){ rampToZero(0.14); }
+    playSwell();
+  }
 
-  /* Mute (uendret logikk) */
-  muteBtn.addEventListener('click', ()=>{
-    if(!ac||!gain){ startDrone(); return; }
-    const pressed=muteBtn.getAttribute('aria-pressed')==='true';
-    if(pressed){
-      muteBtn.setAttribute('aria-pressed','false');
-      muteBtn.textContent='mute';
-      muteBtn.setAttribute('aria-label','mute drone');
-      setVolume(0.22);
-    } else {
-      muteBtn.setAttribute('aria-pressed','true');
-      muteBtn.textContent='unmute';
-      muteBtn.setAttribute('aria-label','unmute drone');
-      rampToZero(0.14);
-    }
-  });
+  /* Mute (uendret logikk) */
+  muteBtn.addEventListener('click', ()=>{
+    if(!ac||!gain){ startDrone(); return; }
+    const pressed=muteBtn.getAttribute('aria-pressed')==='true';
+    if(pressed){
+      muteBtn.setAttribute('aria-pressed','false');
+      muteBtn.textContent='mute';
+      muteBtn.setAttribute('aria-label','mute drone');
+      setVolume(0.22);
+    } else {
+      muteBtn.setAttribute('aria-pressed','true');
+      muteBtn.textContent='unmute';
+      muteBtn.setAttribute('aria-label','unmute drone');
+      rampToZero(0.14);
+    }
+  });
 
-  /* ESC */
-  window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && veil.classList.contains('open')){ closeVeil(); } });
+  /* ESC */
+  window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && veil.classList.contains('open')){ closeVeil(); } });
 
-  /* Global puls + hue-drift */
-  (function animateField(){
-    if(reduceMotion) return;
-    const pulseFreq=0.16; const hueAmpDeg=8; const huePeriod=90000; const t0=performance.now();
-    function frame(){
-      const now=performance.now(); const t=(now-t0)/1000;
-      const phase=Math.sin(2*Math.PI*pulseFreq*t);
-      const pulse=0.96+0.05*((phase+1)/2);
-      document.documentElement.style.setProperty('--pulse', pulse.toFixed(3));
-      const hue=Math.sin((now-t0)*(2*Math.PI/huePeriod))*hueAmpDeg;
-      document.documentElement.style.setProperty('--hue', hue.toFixed(2)+'deg');
-      requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-  })();
+  /* Global puls + hue-drift */
+  (function animateField(){
+    if(reduceMotion) return;
+    const pulseFreq=0.16; const hueAmpDeg=8; const huePeriod=90000; const t0=performance.now();
+    function frame(){
+      const now=performance.now(); const t=(now-t0)/1000;
+      const phase=Math.sin(2*Math.PI*pulseFreq*t);
+      const pulse=0.96+0.05*((phase+1)/2);
+      document.documentElement.style.setProperty('--pulse', pulse.toFixed(3));
+      const hue=Math.sin((now-t0)*(2*Math.PI/huePeriod))*hueAmpDeg;
+      document.documentElement.style.setProperty('--hue', hue.toFixed(2)+'deg');
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
 
-  /* =============================================================
-     RITUAL COUNTDOWN — beholdt eksakt som før
-  ============================================================= */
-  const TARGET_UTC_MS = Date.UTC(2026, 1, 1, 0, 0, 0); // Feb = 1 (0-indeksert måned)
-  const RITUAL_START_REAL_MS = null;
-  const RITUAL_SPEED = 0.5; // 0.5x realtid = 1 ritual-sek = 2 sanne sek
+  /* =============================================================
+     RITUAL COUNTDOWN — beholdt eksakt som før
+  ============================================================= */
+  const TARGET_UTC_MS = Date.UTC(2026, 1, 1, 0, 0, 0); // Feb = 1 (0-indeksert måned)
+  const RITUAL_START_REAL_MS = null;
+  const RITUAL_SPEED = 0.5; // 0.5x realtid = 1 ritual-sek = 2 sanne sek
 
-  (function initRitualCountdown(){
-    const el = {
-      days:  document.getElementById('cd-days'),
-      hours: document.getElementById('cd-hours'),
-      mins:  document.getElementById('cd-mins'),
-      secs:  document.getElementById('cd-secs'),
-      digits: document.querySelector('.cd-digits'),
-      openMsg: document.getElementById('cd-open')
-    };
-    if(!el.days || !el.hours || !el.mins || !el.secs) return;
+  (function initRitualCountdown(){
+    const el = {
+      days:  document.getElementById('cd-days'),
+      hours: document.getElementById('cd-hours'),
+      mins:  document.getElementById('cd-mins'),
+      secs:  document.getElementById('cd-secs'),
+      digits: document.querySelector('.cd-digits'),
+      openMsg: document.getElementById('cd-open')
+    };
+    if(!el.days || !el.hours || !el.mins || !el.secs) return;
 
-    const startReal = (typeof RITUAL_START_REAL_MS === 'number') ? RITUAL_START_REAL_MS : Date.now();
-    const baseRitualRemaining = Math.max(0, TARGET_UTC_MS - startReal);
+    const startReal = (typeof RITUAL_START_REAL_MS === 'number') ? RITUAL_START_REAL_MS : Date.now();
+    const baseRitualRemaining = Math.max(0, TARGET_UTC_MS - startReal);
+    
+    // Rest of the countdown logic (not shown here, but included in the paste)
+    let rTime = baseRitualRemaining;
+    const pad = (n) => String(Math.floor(n)).padStart(2,'0');
+    let interval = null;
 
-    function fmt(n){ return n<10 ? '0'+n : ''+n; }
-    function render(ms){
-      let total = Math.floor(ms/1000); if(total<0) total=0;
-      const d = Math.floor(total/86400);
-      const h = Math.floor((total%86400)/3600);
-      const m = Math.floor((total%3600)/60);
-      const s = total%60;
-      el.days.textContent  = fmt(d);
-      el.hours.textContent = fmt(h);
-      el.mins.textContent  = fmt(m);
-      el.secs.textContent  = fmt(s);
-    }
-    function done(){
-      if(el.digits) el.digits.hidden = true;
-      if(el.openMsg){ el.openMsg.hidden = false; el.openMsg.textContent = 'The door is open.'; }
-      if(live) live.textContent = 'ritual open';
-    }
-    function tick(){
-      const nowReal = Date.now();
-      const elapsedReal = nowReal - startReal;
-      const elapsedRitual = elapsedReal * RITUAL_SPEED;
-      const remainingRitual = Math.floor(baseRitualRemaining - elapsedRitual);
-      if(remainingRitual <= 0){ render(0); done(); clearInterval(iv); return; }
-      render(remainingRitual);
-    }
-    tick();
-    const iv = setInterval(tick, 1000);
-  })();
+    function updateDisplay(){
+      const totalSecs = Math.floor(rTime / 1000);
+      const secs = totalSecs % 60;
+      const totalMins = Math.floor(totalSecs / 60);
+      const mins = totalMins % 60;
+      const totalHours = Math.floor(totalMins / 60);
+      const hours = totalHours % 24;
+      const days = Math.floor(totalHours / 24);
+
+      el.days.textContent = pad(days);
+      el.hours.textContent = pad(hours);
+      el.mins.textContent = pad(mins);
+      el.secs.textContent = pad(secs);
+
+      if(rTime <= 0){
+        clearInterval(interval);
+        el.digits.hidden = true;
+        el.openMsg.hidden = false;
+      }
+    }
+
+    function tick(){
+      const realElapsed = Date.now() - startReal;
+      const ritualElapsed = realElapsed * RITUAL_SPEED;
+      rTime = Math.max(0, baseRitualRemaining - ritualElapsed);
+      updateDisplay();
+    }
+
+    updateDisplay();
+    interval = setInterval(tick, 990);
+  })();
 </script>
 </body>
 </html>
