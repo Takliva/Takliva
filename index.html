@@ -482,18 +482,11 @@
   // void@takliva.com SUBJECT: ok Takliva, im in!
   // --- (End of your pasted code) ---
 
- grid.addEventListener('click', (e)=>{
-    const btn=e.target.closest('.bind'); if(!btn) return;
-    const card=btn.closest('.card');
-    const id=card?.dataset?.id||'artefact';
-    const bound=card.classList.toggle('bound');
-    btn.setAttribute('aria-pressed', bound?'true':'false');
-    btn.textContent = bound ? 'bound' : 'bind to self';
-    if(live) live.textContent = bound ? `${id} bound` : `${id} unbound`;
-  });
-
+ // void@takliva.com SUBJECT: ok Takliva, im in!
+  // --- (End of your pasted code) ---
+ 
   /* --------------------
-     AUDIO – bass + swell
+     AUDIO – bass + swell (Must be defined before mute/enter buttons use them)
      -------------------- */
   let ac, master, compressor, gain, lp, oscA, oscB, sub, lfo, lfoGain;
   let swellNodes = null;
@@ -526,6 +519,8 @@
       const gB=ac.createGain(); gB.gain.value=0.18*boost;
       const gS=ac.createGain(); gS.gain.value=0.10*boost;
       oscA.connect(gA); oscB.connect(gB); sub.connect(gS);
+      // NOTE: lp.connect(gain) must happen before gain.connect(compressor)
+      gA.connect(lp); gB.connect(lp); gS.connect(lp);
       lp.connect(gain); gain.connect(compressor); compressor.connect(master);
       gain.gain.value=0.0;
       oscA.start(); oscB.start(); sub.start(); lfo.start();
@@ -601,7 +596,7 @@
     playSwell();
   }
 
-  /* Mute (uendret logikk) */
+  /* Mute Logic */
   muteBtn.addEventListener('click', ()=>{
     if(!ac||!gain){ startDrone(); return; }
     const pressed=muteBtn.getAttribute('aria-pressed')==='true';
@@ -617,11 +612,26 @@
       rampToZero(0.14);
     }
   });
+  
+  /* Artifact grid click handler */
+  // NOTE: The grid variable (grid=document.getElementById('grid')) is null in the current HTML.
+  // Since the grid doesn't exist yet, we wrap it in an if statement to prevent errors.
+  if(grid){
+    grid.addEventListener('click', (e)=>{
+      const btn=e.target.closest('.bind'); if(!btn) return;
+      const card=btn.closest('.card');
+      const id=card?.dataset?.id||'artefact';
+      const bound=card.classList.toggle('bound');
+      btn.setAttribute('aria-pressed', bound?'true':'false');
+      btn.textContent = bound ? 'bound' : 'bind to self';
+      if(live) live.textContent = bound ? `${id} bound` : `${id} unbound`;
+    });
+  }
 
   /* ESC */
   window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && veil.classList.contains('open')){ closeVeil(); } });
 
-  /* Global puls + hue-drift */
+  /* Global puls + hue-drift (Dot Pulse) */
   (function animateField(){
     if(reduceMotion) return;
     const pulseFreq=0.16; const hueAmpDeg=8; const huePeriod=90000; const t0=performance.now();
@@ -638,11 +648,11 @@
   })();
 
   /* =============================================================
-     RITUAL COUNTDOWN — beholdt eksakt som før
+     RITUAL COUNTDOWN
   ============================================================= */
-  const TARGET_UTC_MS = Date.UTC(2026, 1, 1, 0, 0, 0); // Feb = 1 (0-indeksert måned)
+  const TARGET_UTC_MS = Date.UTC(2026, 1, 1, 0, 0, 0); // Feb = 1 (0-indexed month)
   const RITUAL_START_REAL_MS = null;
-  const RITUAL_SPEED = 0.5; // 0.5x realtid = 1 ritual-sek = 2 sanne sek
+  const RITUAL_SPEED = 0.5; // 0.5x real time = 1 ritual sec = 2 true secs
 
   (function initRitualCountdown(){
     const el = {
@@ -658,7 +668,6 @@
     const startReal = (typeof RITUAL_START_REAL_MS === 'number') ? RITUAL_START_REAL_MS : Date.now();
     const baseRitualRemaining = Math.max(0, TARGET_UTC_MS - startReal);
     
-    // Rest of the countdown logic (not shown here, but included in the paste)
     let rTime = baseRitualRemaining;
     const pad = (n) => String(Math.floor(n)).padStart(2,'0');
     let interval = null;
@@ -695,4 +704,3 @@
     interval = setInterval(tick, 990);
   })();
 </script>
-
