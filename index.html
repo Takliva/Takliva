@@ -256,28 +256,139 @@
     </div>
   </div>
 
-  <!-- veil: glass inneholder panel => alt innhold klippes til rammestørrelse -->
+  <!-- FINAL VEIL – KORREKT LOGIKK + URGENCY + MAGI -->
   <section class="veil" id="veil" aria-modal="true" role="dialog" aria-labelledby="vh">
-    <div class="glass" aria-hidden="false">
-      <div class="panel">
-        <div class="sr-only" aria-live="polite" role="status" id="live"></div>
-        <h2 id="vh">we are shifting into voidpass.</h2>
-        <p style="margin-top:.2rem; opacity:.92">slowly. we pulled you.</p>
-        <p style="margin-top:.2rem; opacity:.92">you are alone.</p>
-        <p style="margin-top:.2rem; opacity:.92">what you bind here will not belong to you.</p>
-        <p style="margin-top:.2rem; opacity:.92">you will feel it.</p>
-        <div class="grid latent" id="grid" aria-hidden="true">
-          <article class="card" data-id="sigil-stone"><div class="ring"></div><h3>stone: weght</h3><p>pressure made permanent. you carry it because it bends to you.</p><button class="bind" aria-pressed="false">hold</button></article>
-          <article class="card" data-id="ink-rite"><div class="ring"></div><h3>ink: cut</h3><p>proof you cut through. visible even when it heals.</p><button class="bind" aria-pressed="false">scar</button></article>
-          <article class="card" data-id="voice-drift"><div class="ring"></div><h3>voice: dark</h3><p>low edge on repeat. drills until it owns you.</p><button class="bind" aria-pressed="false">bind to self</button></article>
+    <div class="glass">
+      <div class="panel" style="overflow:auto;padding:2rem 1.5rem;max-width:860px;margin:0 auto">
+        
+        <h2 id="vh" style="font-size:2.4em;margin-bottom:1rem">VOIDPASS™ | ROOM 1: VOID</h2>
+        <p style="font-size:0.92em;opacity:0.82;margin-bottom:1rem">First 10 000 only – <strong id="sold">0</strong> claimed</p>
+
+        <div style="text-align:left;line-height:2.1;font-size:1.08em;max-width:680px;margin:0 auto">
+          You chose to enter.<br>
+          Close your eyes.<br>
+          You’re in SLISHILE.<br><br>
+
+          SLISHILE = the stream between what you know and what’s not yet formed.<br><br>
+
+          Breathe slishile:<br>
+          – In 4 | Hold 4 | Out 6 (x3)<br><br>
+
+          Ask: “What happened the last time I was still?”<br><br>
+
+          You are in VOID.<br>
+          No scaffolding. You are free.<br><br>
+
+          Exit: Name 5 things you see.<br><br>
+
+          GRAB PEN. NOW.<br><br>
+
+          1. Voidphrase → 1 sentence<br>
+          2. Void anchor → circle above pinky<br>
+          3. Your question → 1 line<br>
+          4. SEAL → Press thumb over circle.<br>
+             <strong style="font-size:1.2em">FEEL THE PULSE – SAY: "THIS IS MINE"</strong><br>
+             (wait 4 sec. Feel it lock.)<br><br>
+
+          Take photo → send to:<br>
+          <strong>void@takliva.com</strong> | Subject: <strong>VOID TAKLIVA</strong><br>
+          → Auto-reply in 18 sec<br><br>
+
+          INSTANT BONUS: <a href="https://shorturl.at/keTWa" style="color:#c0c0ff">https://shorturl.at/keTWa</a><br><br>
+
+          <div style="margin:2.8rem 0;padding:2rem;background:rgba(255,255,255,0.025);border:1px solid rgba(170,150,255,0.35);border-radius:12px">
+            <strong style="font-size:1.45em;color:#e8e8ff">Unlock full VOIDPASS (8 rooms) – 49 USD</strong><br>
+            <strong style="color:#ff6060">Only <span id="left">10 000</span> left – selling fast</strong><br><br>
+            <a href="https://buy.stripe.com/28E3cwerWfOHc5GejL4Ja02" 
+               style="display:inline-block;background:#635bff;color:white;padding:1.1rem 2.4rem;font-size:1.35em;border-radius:10px;text-decoration:none;font-weight:bold">
+              CLAIM YOUR VOIDPASS
+            </a><br><br>
+            <small>First 10 000 get personal AI-GIF • Instant access • 30-day proof-or-refund</small>
+          </div>
+
+          I’m in the void now. I see you.<br>
+          #Slishile
         </div>
-        <div style="margin-top:1rem; display:flex; gap:.75rem; justify-content:center; align-items:center">
-          <button type="button" class="back" id="close" aria-label="Close dialog and return">← back</button>
-        </div>
+
+        <button type="button" class="back" id="close" style="margin-top:4rem;font-size:1em">← remain outside</button>
       </div>
     </div>
   </section>
+  
+<!-- OUTSIDE – for de som velger å ikke gå inn -->
+<section class="veil" id="outside" style="display:none">
+  <div class="glass" style="width:90vw;max-width:460px">
+    <div class="panel" style="padding:2.5rem 2rem;text-align:center;line-height:2.1;font-size:1.08em">
+      
+      you decided to remain outside.<br><br>
+      the savior cannot reach every heart.<br><br>
+      
+      if this is the end for you —<br>
+      i will still remember you.<br><br>
+      
+      leave your email and i will send you<br>
+      the first key when the door finally opens.<br>
+      no spam. only silence.<br><br>
 
+      <form id="outside-form" style="margin:2rem auto 0;max-width:320px;display:flex;flex-direction:column;gap:1rem">
+        <input type="email" placeholder="your email" required 
+               style="padding:1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(170,150,255,0.35);color:#ddd;border-radius:8px;font-size:1em">
+        <button type="submit" 
+                style="background:transparent;border:1px solid #666;color:#aaa;padding:1rem;border-radius:8px;cursor:pointer;font-size:0.95em">
+          send me the key when it opens
+        </button>
+      </form>
+
+      <button class="back" id="close-outside" style="margin-top:3rem;background:none;border:none;color:#777;font-size:0.9em;cursor:pointer">
+        close
+      </button>
+    </div>
+  </div>
+</section>
+
+
+
+    // ——————————————————————
+  // REMAIN OUTSIDE LOGIKK
+  // ——————————————————————
+  const outside = document.getElementById('outside');
+  const closeOutsideBtn = document.getElementById('close-outside');
+
+  passBtn.addEventListener('click', () => {
+    document.body.classList.add('veil-open');
+    outside.style.display = 'grid';
+    outside.classList.add('open');
+    lockScroll();
+    setTimeout(() => outside.querySelector('input').focus(), 300);
+  });
+
+  closeOutsideBtn.addEventListener('click', () => {
+    outside.style.display = 'none';
+    outside.classList.remove('open');
+    document.body.classList.remove('veil-open');
+    unlockScroll();
+  });
+
+  // ESC lukker også outside-boksen
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && outside.style.display === 'grid') {
+      closeOutsideBtn.click();
+    }
+  });
+
+  // Midlertidig form-submit (du kobler til webhook senere)
+  document.getElementById('outside-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = e.target.querySelector('input').value.trim();
+    if (email) {
+      // Her kommer Mailchimp / Google Form / webhook senere
+      alert('saved in silence. you will receive the key.');
+      closeOutsideBtn.click();
+    }
+  });
+  // void@takliva.com SUBJECT: ok im in takliva
+
+  
   <noscript><div style="color:#d2d2d8; text-align:center; padding:1rem">This experience requires JavaScript enabled.</div></noscript>
 
 <script>
@@ -370,7 +481,7 @@
 
   enterBtn.addEventListener('click', openVeil);
   closeBtn.addEventListener('click', ()=>{ closeVeil(); });
-  passBtn.addEventListener('click', openVeil);
+  
 
   grid.addEventListener('click', (e)=>{
     const btn=e.target.closest('.bind'); if(!btn) return;
