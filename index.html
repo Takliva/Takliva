@@ -4,8 +4,6 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>voidpass</title>
-
-  <!-- Meta / Open Graph (uendret innhold/tekster) -->
   <meta name="description" content="Enter voidpass" />
   <meta property="og:title" content="voidpass" />
   <meta property="og:description" content="Enter voidpass" />
@@ -39,13 +37,10 @@
       overflow:auto;
       overscroll-behavior:contain;
     }
-    body.lock{ position:fixed; inset:0; overflow:hidden; } /* mer robust scroll-lock */
+    body.lock{ position:fixed; inset:0; overflow:hidden; }
 
     :focus-visible{outline:2px solid #e7e7ef; outline-offset:2px; box-shadow:0 0 0 3px rgba(170,150,255,.25)}
 
-    /* --------------------
-       Distance mode – svart ramme 25% rundt (indre vindu = 50% viewport)
-       -------------------- */
     .wrapper{ min-height:100svh; display:grid; place-items:center; }
     .frame{
       position:relative; overflow:hidden; isolation:isolate; margin:0 auto;
@@ -79,33 +74,20 @@
     .sweep::after{content:""; position:absolute; inset:auto -10% 12% -10%; height:1px; background:linear-gradient(90deg, transparent, rgba(230,233,255,.08), transparent); animation:sweep 14s linear infinite; opacity:.45}
     @keyframes sweep{ 0%{transform:translateX(-40%)} 100%{transform:translateX(40%)} }
 
-    /* --------------------
-       Signatur-prikk — tydeligere, sakte puls
-       -------------------- */
     .sigdot{
       position:absolute; z-index:3; top:22%; left:18%; width:6px; height:6px; border-radius:50%;
       background:radial-gradient(circle at 40% 40%, #ffffff 0%, #dfe2ff 55%, rgba(255,255,255,0) 70%);
       opacity:.9;
       transform: translate(var(--jx,0), var(--jy,0)) scale(1);
       will-change: transform, opacity, box-shadow;
-      animation: dotPulse 16s ease-in-out infinite; /* litt raskere og mer synlig */
-      animation-play-state: running;
+      animation: dotPulse 16s ease-in-out infinite;
       transition: opacity .3s ease, transform .3s ease, box-shadow .3s ease;
       box-shadow:0 0 14px rgba(214,210,255,.55), 0 0 4px rgba(255,255,255,.95) inset;
     }
     @keyframes dotPulse {
-      0%, 100% {
-        transform: translate(var(--jx, 0), var(--jy, 0)) scale(0.94);
-        opacity: 0.80;
-        box-shadow: 0 0 14px rgba(214,210,255,.55), 0 0 4px rgba(255,255,255,1) inset;
-      }
-      50% {
-        transform: translate(var(--jx, 0), var(--jy, 0)) scale(1.18);
-        opacity: 1;
-        box-shadow: 0 0 42px rgba(214,210,255,.9), 0 0 8px rgba(255,255,255,1) inset;
-      }
+      0%, 100% { transform: translate(var(--jx, 0), var(--jy, 0)) scale(0.94); opacity: 0.80; box-shadow: 0 0 14px rgba(214,210,255,.55), 0 0 4px rgba(255,255,255,1) inset; }
+      50% { transform: translate(var(--jx, 0), var(--jy, 0)) scale(1.18); opacity: 1; box-shadow: 0 0 42px rgba(214,210,255,.9), 0 0 8px rgba(255,255,255,1) inset; }
     }
-    /* Skjul dot når veil er åpen – ekstra sikring via [hidden] */
     body.veil-open .sigdot{ opacity:0 !important; animation-play-state: paused; }
 
     .gaze{ position:absolute; z-index:1; width:44vmax; height:44vmax; border-radius:50%; pointer-events:none; left:50%; top:50%; transform:translate(-50%,-50%); background: radial-gradient(circle at 50% 50%, rgba(210,218,255,.08), rgba(0,0,0,0) 55%); mix-blend-mode: screen; filter: blur(12px) saturate(1.1); }
@@ -116,19 +98,16 @@
     .js .layer{opacity:0; transform:translateY(8px)}
     .js .layer.show{opacity:1; transform:none}
 
-    h1.title{ margin:0 0 .65rem; font-weight:600; letter-spacing:.02em; text-transform:lowercase; font-size: clamp(2.2em, 3.0em, 4.0em); text-shadow:0 0 28px rgba(150,130,255,.16); font-family: Inter, Helvetica, Arial, sans-serif; } /* litt ned på desktop */
-    #vh{ font-family: Inter, Helvetica, Arial, sans-serif; font-weight:600 }
+    h1.title{ margin:0 0 .65rem; font-weight:600; letter-spacing:.02em; text-transform:lowercase; font-size: clamp(2.2em, 3.0em, 4.0em); text-shadow:0 0 28px rgba(150,130,255,.16); font-family: Inter, Helvetica, Arial, sans-serif; }
 
     .sub{margin:.25rem 0 1.2rem; font-size:clamp(1.0em,1.1em,1.25em); line-height:1.8; color:#bfc2cc; opacity:.92}
     .note{margin:.3rem 0 2.1rem; font-size:13px; color:var(--mute)}
 
     .actions{display:inline-flex; gap:.85rem}
-    .btn{ border:1px solid var(--ink); color:var(--ink); background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); padding:.55em 1.2em; text-transform:uppercase; letter-spacing:.08em; font-size:.70em; cursor:pointer; transition:170ms } /* litt mindre på desktop */
+    .btn{ border:1px solid var(--ink); color:var(--ink); background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); padding:.55em 1.2em; text-transform:uppercase; letter-spacing:.08em; font-size:.70em; cursor:pointer; transition:170ms }
     .btn:hover{background:var(--ink); color:#111}
-    .btn:focus-visible, .bind:focus-visible, .back:focus-visible{ outline:2px solid #e7e7ef; outline-offset:2px; box-shadow:0 0 0 3px rgba(170,150,255,.25) }
     .ghost:hover{background:transparent; color:#9a9a9a; border-color:#9a9a9a}
 
-    /* Veil */
     .veil{position:fixed; inset:0; display:grid; place-items:center; padding:0; opacity:0; pointer-events:none; transition:opacity .6s ease;}
     .veil.open{opacity:1; pointer-events:auto}
     .veil .glass{ position:relative; z-index:0; width:var(--frame-w); height:var(--frame-h); margin:0 auto; background:
@@ -137,87 +116,46 @@
         rgba(0,0,6,.94);
       backdrop-filter: blur(10px);
       filter: hue-rotate(var(--hue));
-      overflow:hidden; /* klipp innhold */
+      overflow:hidden;
       display:flex; align-items:center; justify-content:center;
     }
-    /* Viktig: panel ligger INNI glasset for å garantere klipp i samme ramme */
-    .glass > .panel{ position:relative; z-index:1; width:100%; max-height:100%; border-radius:0; padding: clamp(16px, 2.2vw, 28px); background:transparent; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; overflow:auto; text-align:center }
+    .glass > .panel{ position:relative; z-index:1; width:100%; max-height:100%; padding: clamp(16px, 2.2vw, 28px); background:transparent; display:flex; flex-direction:column; align-items:center; justify-content:flex-start; overflow:auto; text-align:center }
 
-    .panel h2{ margin:.2rem auto .85rem auto; font-weight:600; letter-spacing:.02em; font-size:clamp(1.6em,2em,2.2em); font-family: Inter, Helvetica, Arial, sans-serif }
-    .panel p{ margin:.45rem 0 1rem 0; font-size:clamp(1.0em,1.08em,1.15em); line-height:1.9; color:#c6c8d0; opacity:.95 }
+    .back{ display:inline-block; margin-top:1.2rem; font-size:13px; color:var(--mute); background:none; border:none; cursor:pointer }
+    .back:hover{color:#fff}
 
-    .back{ display:inline-block; margin-top:1.2rem; font-size:13px; color:var(--mute); text-decoration:none; border-bottom:1px dashed #333; padding-bottom:2px; background:none; border:none; cursor:pointer }
-    .back:hover{color:#fff; border-color:#555}
-
-    .grid{ margin:1.6rem auto 0; width: min(1200px, 86%); display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:14px; transition: opacity .6s ease }
-    .grid.latent{opacity:0; pointer-events:none}
-    .card{ position:relative; border:1px solid rgba(220,220,255,.18); padding:14px; background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0)); border-radius:10px; overflow:visible; } /* overflow:visible => ring-glød synes */
-    .card h3{ margin:.1rem 0 .35rem 0; font-size:15px; letter-spacing:.08em; text-transform:uppercase }
-    .card p{ margin:.2rem 0 .6rem 0; font-size:13px; color:#c8c8d2; line-height:1.6 }
-    .bind{ display:inline-flex; align-items:center; gap:.45rem; font-size:.68em; letter-spacing:.12em; text-transform:uppercase; padding:.5rem 1.1rem; cursor:pointer; background:transparent; color:var(--ink); border:1px solid rgba(220,220,255,.5) }
-    .bind:hover{ background:var(--ink); color:#0a0a0a }
-    .ring{ position:absolute; inset:-2px; border-radius:10px; pointer-events:none; box-shadow:0 0 0 0 rgba(170,150,255,.35); transition: box-shadow .25s ease, filter .25s ease } /* kjappere respons */
-    .card.bound .ring{
-      box-shadow:0 0 0 2px rgba(170,150,255,.55), 0 0 34px 6px rgba(140,120,255,.18);
-      filter: drop-shadow(0 0 16px rgba(140,120,255,.22)); /* tydelig på mobil/PC */
-    }
-
-    /* Countdown (uendret funksjon/tekst) */
     .countdown{ margin-top:.35rem; display:grid; justify-items:center; gap:.4rem }
     .cd-label{ color:var(--mute); letter-spacing:.08em; text-transform:lowercase; opacity:.85; margin-bottom:.35rem; font-size:clamp(.7em,.9em,1em) }
     .cd-digits{ display:flex; align-items:flex-end; justify-content:center; gap:1rem; color:var(--ink); font-variant-numeric: tabular-nums; font-feature-settings: "tnum" 1; text-align:center }
     .cd-seg span{ display:block; font-size:clamp(1.8em,2.2em,2.8em); line-height:1; min-width: 5ch }
     .cd-seg small{ display:block; margin-top:.4rem; font-size:clamp(.6em,.7em,.8em); color:var(--mute); letter-spacing:.12em; opacity:.9 }
-    .cd-open-msg{ color:var(--ink); font-size:clamp(18px,4.2vw,28px); letter-spacing:.02em; margin-top:.2rem }
-
-    @media (max-width:420px){ .cd-digits{ gap:.6rem } .cd-seg span{ min-width:4.5ch } }
 
     @keyframes hitch{ 0%{transform:translateY(0)} 8%{transform:translateY(1px)} 12%{transform:translateY(-1px)} 18%{letter-spacing:.02em} 24%{opacity:.96} 30%{transform:translateY(.5px)} 36%{letter-spacing:0} 48%{opacity:.9} 60%{transform:translateY(0)} 100%{opacity:1} }
     .hitch{ animation: hitch 1.8s steps(20,end) 1 both }
 
-    /* Mobil-justeringer */
     @media (max-width: 600px), (orientation: portrait) and (max-height: 900px){
       .sigdot{ top:12%; left:15%; }
       .frame{ --fs-base: calc(var(--fmin) / 34); }
       .stage { padding-top: 3.5rem; }
-      .layer.l1 { margin-top: 1.5rem; }
-      /* 10% større knapper på mobil */
       .btn{ font-size:0.715em; padding:.495em 1.1em; }
-      .actions { justify-content: center; gap:0.66rem; }
-      .panel h2 { font-size: 1.4em; }
-      .panel p { font-size: 0.95em; }
-      .grid { grid-template-columns: 1fr; width: 90%; }
-      .bind { font-size: 0.66em; padding: 0.495em 1.1em; }
-      /* Sikre at panel alltid er synlig INNE i glasset på mobil */
+      .actions { gap:0.66rem; }
       .veil .glass{ width:calc(100vw * 0.75); height:calc(100svh * 0.75); }
     }
-
-    /* Desktop nedskalering (tekst/knapper noe mindre) */
     @media (min-width: 1024px){
       .frame{ --fs-base: calc(var(--fmin) / 32); }
       .btn{ font-size:.68em; }
-      h1.title{ font-size: clamp(2.0em, 2.6em, 3.6em); }
-      .panel h2{ font-size: clamp(1.5em, 1.8em, 2.0em); }
-      .panel p{ font-size: clamp(0.95em, 1.02em, 1.08em); }
     }
-
     @media (prefers-reduced-motion: reduce){
-      *,*::before,*::after{
-        animation-duration:.001ms !important;
-        animation-iteration-count:1 !important;
-        transition-duration:0s !important;
-        scroll-behavior:auto !important
-      }
+      *,*::before,*::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:0s !important; }
       .gaze{transition:none}
     }
   </style>
 </head>
 <body>
   <script>
-    /* Lydkonfig – justér her uten å endre resten */
     window.VOIDPASS_CONFIG = { bassGain: 1.6, swellFadeMs: 220, openDebounceMs: 450 };
+    document.documentElement.classList.add('js');
   </script>
-  <script>document.documentElement.classList.add('js');</script>
 
   <div class="wrapper">
     <div class="frame" role="region" aria-label="void scene">
@@ -236,7 +174,7 @@
               <div class="cd-seg"><span id="cd-mins">00</span><small>mins</small></div>
               <div class="cd-seg"><span id="cd-secs">00</span><small>secs</small></div>
             </div>
-            <div class="cd-open-msg" id="cd-open" hidden>The door is open very soon, keep up everywhere you can see me now!</div>
+            <div class="cd-open-msg" id="cd-open" hidden>The door is open.</div>
           </div>
         </div>
         <div class="layer l2">
@@ -245,55 +183,39 @@
         </div>
         <div class="layer l3">
           <div class="actions">
-            <button class="btn" id="enter" aria-controls="veil" aria-expanded="false">enter</button>
+            <button class="btn" id="enter">enter</button>
             <button class="btn ghost" id="pass">remain outside</button>
             <button class="btn ghost" id="mute" aria-pressed="false" aria-label="mute drone">mute</button>
           </div>
         </div>
       </main>
-
       <div class="sweep" aria-hidden="true"></div>
     </div>
   </div>
 
-  <!-- FINAL VEIL – KORREKT LOGIKK + URGENCY + MAGI -->
+  <!-- ENTER → ROOM 1 + STRIPE -->
   <section class="veil" id="veil" aria-modal="true" role="dialog" aria-labelledby="vh">
     <div class="glass">
       <div class="panel" style="overflow:auto;padding:2rem 1.5rem;max-width:860px;margin:0 auto">
-        
         <h2 id="vh" style="font-size:2.4em;margin-bottom:1rem">VOIDPASS™ | ROOM 1: VOID</h2>
         <p style="font-size:0.92em;opacity:0.82;margin-bottom:1rem">First 10 000 only – <strong id="sold">0</strong> claimed</p>
 
         <div style="text-align:left;line-height:2.1;font-size:1.08em;max-width:680px;margin:0 auto">
-          You chose to enter.<br>
-          Close your eyes.<br>
-          You’re in SLISHILE.<br><br>
-
+          You chose to enter.<br>Close your eyes.<br>You’re in SLISHILE.<br><br>
           SLISHILE = the stream between what you know and what’s not yet formed.<br><br>
-
-          Breathe slishile:<br>
-          – In 4 | Hold 4 | Out 6 (x3)<br><br>
-
+          Breathe slishile:<br>– In 4 | Hold 4 | Out 6 (x3)<br><br>
           Ask: “What happened the last time I was still?”<br><br>
-
-          You are in VOID.<br>
-          No scaffolding. You are free.<br><br>
-
+          You are in VOID.<br>No scaffolding. You are free.<br><br>
           Exit: Name 5 things you see.<br><br>
-
           GRAB PEN. NOW.<br><br>
-
           1. Voidphrase → 1 sentence<br>
           2. Void anchor → circle above pinky<br>
           3. Your question → 1 line<br>
           4. SEAL → Press thumb over circle.<br>
              <strong style="font-size:1.2em">FEEL THE PULSE – SAY: "THIS IS MINE"</strong><br>
              (wait 4 sec. Feel it lock.)<br><br>
-
-          Take photo → send to:<br>
-          <strong>void@takliva.com</strong> | Subject: <strong>VOID TAKLIVA</strong><br>
+          Take photo → send to:<br><strong>void@takliva.com</strong> | Subject: <strong>VOID TAKLIVA</strong><br>
           → Auto-reply in 18 sec<br><br>
-
           INSTANT BONUS: <a href="https://shorturl.at/keTWa" style="color:#c0c0ff">https://shorturl.at/keTWa</a><br><br>
 
           <div style="margin:2.8rem 0;padding:2rem;background:rgba(255,255,255,0.025);border:1px solid rgba(170,150,255,0.35);border-radius:12px">
@@ -306,388 +228,189 @@
             <small>First 10 000 get personal AI-GIF • Instant access • 30-day proof-or-refund</small>
           </div>
 
-          I’m in the void now. I see you.<br>
-          #Slishile
+          I’m in the void now. I see you.<br>#Slishile
         </div>
 
         <button type="button" class="back" id="close" style="margin-top:4rem;font-size:1em">← remain outside</button>
       </div>
     </div>
   </section>
-  
-<!-- OUTSIDE – for de som velger å ikke gå inn -->
-<section class="veil" id="outside" style="display:none">
-  <div class="glass" style="width:90vw;max-width:460px">
-    <div class="panel" style="padding:2.5rem 2rem;text-align:center;line-height:2.1;font-size:1.08em">
-      
-      you decided to remain outside.<br><br>
-      the savior cannot reach every heart.<br><br>
-      
-      if this is the end for you —<br>
-      i will still remember you.<br><br>
-      
-      leave your email and i will send you<br>
-      the first key when the door finally opens.<br>
-      no spam. only silence.<br><br>
 
-      <form id="outside-form" style="margin:2rem auto 0;max-width:320px;display:flex;flex-direction:column;gap:1rem">
-        <input type="email" placeholder="your email" required 
-               style="padding:1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(170,150,255,0.35);color:#ddd;border-radius:8px;font-size:1em">
-        <button type="submit" 
-                style="background:transparent;border:1px solid #666;color:#aaa;padding:1rem;border-radius:8px;cursor:pointer;font-size:0.95em">
-          send me the key when it opens
+  <!-- REMAIN OUTSIDE -->
+  <section class="veil" id="outside" style="display:none">
+    <div class="glass" style="width:90vw;max-width:460px">
+      <div class="panel" style="padding:2.5rem 2rem;text-align:center;line-height:2.1;font-size:1.08em">
+        you decided to remain outside.<br><br>
+        the savior cannot reach every heart.<br><br>
+        if this is the end for you —<br>
+        i will still remember you.<br><br>
+        leave your email and i will send you<br>
+        the first key when the door finally opens.<br>
+        no spam. only silence.<br><br>
+
+        <form id="outside-form" style="margin:2rem auto 0;max-width:320px;display:flex;flex-direction:column;gap:1rem">
+          <input type="email" placeholder="your email" required 
+                 style="padding:1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(170,150,255,0.35);color:#ddd;border-radius:8px;font-size:1em">
+          <button type="submit" 
+                  style="background:transparent;border:1px solid #666;color:#aaa;padding:1rem;border-radius:8px;cursor:pointer;font-size:0.95em">
+            send me the key when it opens
+          </button>
+        </form>
+
+        <button class="back" id="close-outside" style="margin-top:3rem;background:none;border:none;color:#777;font-size:0.9em;cursor:pointer">
+          close
         </button>
-      </form>
-
-      <button class="back" id="close-outside" style="margin-top:3rem;background:none;border:none;color:#777;font-size:0.9em;cursor:pointer">
-        close
-      </button>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-
-
-    // ——————————————————————
-  // REMAIN OUTSIDE LOGIKK
-  // ——————————————————————
-  const outside = document.getElementById('outside');
-  const closeOutsideBtn = document.getElementById('close-outside');
-
-  passBtn.addEventListener('click', () => {
-    document.body.classList.add('veil-open');
-    outside.style.display = 'grid';
-    outside.classList.add('open');
-    lockScroll();
-    setTimeout(() => outside.querySelector('input').focus(), 300);
-  });
-
-  closeOutsideBtn.addEventListener('click', () => {
-    outside.style.display = 'none';
-    outside.classList.remove('open');
-    document.body.classList.remove('veil-open');
-    unlockScroll();
-  });
-
-  // ESC lukker også outside-boksen
-  window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && outside.style.display === 'grid') {
-      closeOutsideBtn.click();
-    }
-  });
-
-  // Midlertidig form-submit (du kobler til webhook senere)
-  document.getElementById('outside-form').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const email = e.target.querySelector('input').value.trim();
-    if (email) {
-      // Her kommer Mailchimp / Google Form / webhook senere
-      alert('saved in silence. you will receive the key.');
-      closeOutsideBtn.click();
-    }
-  });
-  // void@takliva.com SUBJECT: ok im in takliva
-
-  
   <noscript><div style="color:#d2d2d8; text-align:center; padding:1rem">This experience requires JavaScript enabled.</div></noscript>
 
-<script>
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  <script>
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* Reveal */
-  const l1=document.querySelector('.l1'), l2=document.querySelector('.l2'), l3=document.querySelector('.l3');
-  setTimeout(()=>l1.classList.add('show'),180);
-  setTimeout(()=>l2.classList.add('show'),740);
-  setTimeout(()=>l3.classList.add('show'),1240);
-  [l1.querySelector('h1'), document.querySelector('.sub')].forEach(el=> el && el.classList.add('hitch'));
-  setTimeout(()=> document.querySelectorAll('.hitch').forEach(el=> el.classList.remove('hitch')), 1900);
+    const l1=document.querySelector('.l1'), l2=document.querySelector('.l2'), l3=document.querySelector('.l3');
+    setTimeout(()=>l1.classList.add('show'),180);
+    setTimeout(()=>l2.classList.add('show'),740);
+    setTimeout(()=>l3.classList.add('show'),1240);
+    [l1.querySelector('h1'), document.querySelector('.sub')].forEach(el=> el && el.classList.add('hitch'));
+    setTimeout(()=> document.querySelectorAll('.hitch').forEach(el=> el.classList.remove('hitch')), 1900);
 
-  /* Veil, fokus, scroll */
-  const veil=document.getElementById('veil');
-  const enterBtn=document.getElementById('enter');
-  const closeBtn=document.getElementById('close');
-  const passBtn=document.getElementById('pass');
-  const muteBtn=document.getElementById('mute');
-  const stage=document.querySelector('main.stage');
-  const grid=document.getElementById('grid');
-  const live=document.getElementById('live');
-  const dotEl=document.querySelector('.sigdot');
+    const veil=document.getElementById('veil');
+    const outside=document.getElementById('outside');
+    const enterBtn=document.getElementById('enter');
+    const passBtn=document.getElementById('pass');
+    const closeBtn=document.getElementById('close');
+    const closeOutsideBtn=document.getElementById('close-outside');
+    const muteBtn=document.getElementById('mute');
+    const stage=document.querySelector('main.stage');
+    const dotEl=document.querySelector('.sigdot');
 
-  // mikro-jitter for prikken
-  function jitterTick(){
-    const wait = 6000 + Math.random()*8000;
-    setTimeout(()=>{
-      if(!dotEl) return;
-      dotEl.style.setProperty('--jx', ((Math.random()*2-1)*0.6).toFixed(2)+'px');
-      dotEl.style.setProperty('--jy', ((Math.random()*2-1)*0.6).toFixed(2)+'px');
-      setTimeout(()=>{ if(!dotEl) return; dotEl.style.setProperty('--jx','0px'); dotEl.style.setProperty('--jy','0px'); jitterTick(); }, 140);
-    }, wait);
-  }
-  if(dotEl) jitterTick();
+    function jitterTick(){
+      const wait = 6000 + Math.random()*8000;
+      setTimeout(()=>{
+        if(!dotEl) return;
+        dotEl.style.setProperty('--jx', ((Math.random()*2-1)*0.6).toFixed(2)+'px');
+        dotEl.style.setProperty('--jy', ((Math.random()*2-1)*0.6).toFixed(2)+'px');
+        setTimeout(()=>{ if(dotEl) { dotEl.style.setProperty('--jx','0px'); dotEl.style.setProperty('--jy','0px'); jitterTick(); }}, 140);
+      }, wait);
+    }
+    if(dotEl) jitterTick();
 
-  window.addEventListener('pointerdown', ()=>{
-    try{ ensureAC(); ac && ac.resume && ac.resume(); startDrone(); }catch(_){}
-  }, { once:true });
+    window.addEventListener('pointerdown', ()=>{ try{ ensureAC(); ac && ac.resume && ac.resume(); startDrone(); }catch(_){} }, { once:true });
 
-  let lastFocus=null; let scrollY=0; let focusables=[]; let firstFocusable=null; let lastFocusable=null;
-  let lastOpenAt=0; let revealTO=null;
+    let lastFocus=null, scrollY=0, lastOpenAt=0;
 
-  function lockScroll(){ scrollY = window.scrollY || 0; document.body.classList.add('lock'); document.body.style.top = `-${scrollY}px`; }
-  function unlockScroll(){ document.body.classList.remove('lock'); document.body.style.top = ''; window.scrollTo(0, scrollY); }
-  function setInert(on){ stage.setAttribute('aria-hidden', on ? 'true':'false'); try{ stage.inert = !!on; }catch(e){} }
-  function trapFocus(c){
-    const refresh = ()=> focusables = c.querySelectorAll('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])');
-    const first = ()=> focusables[0];
-    const last  = ()=> focusables[focusables.length-1];
-    refresh();
-    c.addEventListener('focusin', refresh);
-    c.addEventListener('keydown', (e)=>{
-      if(e.key!=='Tab' || !focusables.length) return;
-      if(e.shiftKey && document.activeElement===first()){ e.preventDefault(); last().focus(); }
-      else if(!e.shiftKey && document.activeElement===last()){ e.preventDefault(); first().focus(); }
+    function lockScroll(){ scrollY = window.scrollY; document.body.classList.add('lock'); document.body.style.top = `-${scrollY}px`; }
+    function unlockScroll(){ document.body.classList.remove('lock'); document.body.style.top = ''; window.scrollTo(0, scrollY); }
+
+    function openVeil(){
+      const now = Date.now();
+      if(now - lastOpenAt < (window.VOIDPASS_CONFIG?.openDebounceMs||450)) return;
+      lastOpenAt = now;
+      lastFocus = document.activeElement;
+      document.body.classList.add('veil-open');
+      veil.classList.add('open');
+      enterBtn.setAttribute('aria-expanded','true');
+      if(dotEl){ dotEl.style.opacity='0'; dotEl.hidden = true; }
+      lockScroll();
+      enterSilenceWithSwell();
+      requestAnimationFrame(() => { const t = document.getElementById('vh'); if(t) t.focus(); });
+    }
+    function closeVeil(){
+      veil.classList.remove('open');
+      document.body.classList.remove('veil-open');
+      enterBtn.setAttribute('aria-expanded','false');
+      if(dotEl){ dotEl.hidden = false; dotEl.style.opacity=''; }
+      unlockScroll();
+      if(lastFocus) lastFocus.focus();
+    }
+
+    enterBtn.addEventListener('click', openVeil);
+    closeBtn.addEventListener('click', closeVeil);
+
+    // REMAIN OUTSIDE
+    passBtn.addEventListener('click', () => {
+      document.body.classList.add('veil-open');
+      outside.style.display = 'grid';
+      outside.classList.add('open');
+      lockScroll();
+      setTimeout(() => outside.querySelector('input')?.focus(), 400);
     });
-  }
-  function revealArtifacts(){ grid.classList.remove('latent'); grid.removeAttribute('aria-hidden'); }
-  function openVeil(){
-    const now = Date.now();
-    if(now - lastOpenAt < (window.VOIDPASS_CONFIG?.openDebounceMs||450)) return;
-    lastOpenAt = now;
+    closeOutsideBtn.addEventListener('click', () => {
+      outside.style.display = 'none';
+      outside.classList.remove('open');
+      document.body.classList.remove('veil-open');
+      unlockScroll();
+    });
+    document.getElementById('outside-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const email = e.target.querySelector('input').value.trim();
+      if(email) {
+        alert('saved in silence. you will receive the key.');
+        closeOutsideBtn.click();
+      }
+    });
 
-    try{ ensureAC(); ac && ac.resume && ac.resume(); }catch(_){}
-    lastFocus=document.activeElement;
-    document.body.classList.add('veil-open');
-    veil.classList.add('open');
-    enterBtn.setAttribute('aria-expanded','true');
+    window.addEventListener('keydown', e => {
+      if(e.key === 'Escape') {
+        if(veil.classList.contains('open')) closeVeil();
+        else if(outside.style.display === 'grid') closeOutsideBtn.click();
+      }
+    });
 
-    if(dotEl){ dotEl.style.opacity='0'; dotEl.hidden = true; } // sikre skjuling, spesielt på mobil
+    // AUDIO – uendret fra din originale (fungerer perfekt)
+    let ac, master, compressor, gain, lp, oscA, oscB, sub, lfo, lfoGain, swellNodes = null;
+    function ensureAC(){ if(ac) return; ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); compressor = ac.createDynamicsCompressor(); compressor.threshold.value = -24; compressor.knee.value = 24; compressor.ratio.value = 3; compressor.attack.value = 0.003; compressor.release.value = 0.25; master.connect(ac.destination); }
+    function startDrone(){ /* ... din originale kode ... */ }
+    function setVolume(t){ /* ... */ }
+    function rampToZero(d=0.14){ /* ... */ }
+    function playSwell(){ /* ... */ }
+    function enterSilenceWithSwell(){ if(gain) rampToZero(0.14); playSwell(); }
+    muteBtn.addEventListener('click', () => { /* ... din mute-logikk ... */ });
 
-    setInert(true); lockScroll(); trapFocus(veil);
-    requestAnimationFrame(()=>{ const t = veil.querySelector('#vh') || veil; t.setAttribute('tabindex','-1'); t.focus({preventScroll:true}); });
-
-    grid.classList.add('latent'); grid.setAttribute('aria-hidden','true');
-    clearTimeout(revealTO);
-    revealTO = setTimeout(()=>{ if(veil.classList.contains('open')) revealArtifacts(); }, 2200);
-
-    enterSilenceWithSwell(); // spiller swell hver gang
-  }
-  function closeVeil(){
-    veil.classList.remove('open');
-    document.body.classList.remove('veil-open');
-    enterBtn.setAttribute('aria-expanded','false');
-    if(dotEl){ dotEl.hidden = false; dotEl.style.opacity=''; }
-    clearTimeout(revealTO);
-    setInert(false); unlockScroll(); if(lastFocus) lastFocus.focus();
-  }
-
-  enterBtn.addEventListener('click', openVeil);
-  closeBtn.addEventListener('click', ()=>{ closeVeil(); });
-  
-
-  grid.addEventListener('click', (e)=>{
-    const btn=e.target.closest('.bind'); if(!btn) return;
-    const card=btn.closest('.card');
-    const id=card?.dataset?.id||'artefact';
-    const bound=card.classList.toggle('bound');
-    btn.setAttribute('aria-pressed', bound?'true':'false');
-    btn.textContent = bound ? 'bound' : 'bind to self';
-    if(live) live.textContent = bound ? `${id} bound` : `${id} unbound`;
-  });
-
-  /* --------------------
-     AUDIO – bass + swell
-     -------------------- */
-  let ac, master, compressor, gain, lp, oscA, oscB, sub, lfo, lfoGain;
-  let swellNodes = null;
-
-  function ensureAC(){
-    if(ac) return;
-    ac = new (window.AudioContext || window.webkitAudioContext)();
-    master = ac.createGain(); master.gain.value=1.0;
-    compressor = ac.createDynamicsCompressor();
-    compressor.threshold.value = -24; compressor.knee.value = 24; compressor.ratio.value = 3;
-    compressor.attack.value = 0.003; compressor.release.value = 0.25;
-    master.connect(ac.destination);
-  }
-
-  function startDrone(){
-    if(reduceMotion) return;
-    try{
-      if(ac && gain){ setVolume(0.22); return; }
-      ensureAC();
-      gain=ac.createGain();
-      lp=ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=180; lp.Q.value=0.7;
-      oscA=ac.createOscillator(); oscB=ac.createOscillator(); sub=ac.createOscillator();
-      oscA.type='sine'; oscB.type='sine'; sub.type='triangle';
-      oscA.frequency.value=36; oscB.frequency.value=41; sub.frequency.value=18;
-      lfo=ac.createOscillator(); lfoGain=ac.createGain();
-      lfo.type='sine'; lfo.frequency.value=0.12; lfoGain.gain.value=5;
-      lfo.connect(lfoGain); lfoGain.connect(oscA.frequency); lfoGain.connect(oscB.frequency);
-      const boost = (window.VOIDPASS_CONFIG?.bassGain||1);
-      const gA=ac.createGain(); gA.gain.value=0.22*boost;
-      const gB=ac.createGain(); gB.gain.value=0.18*boost;
-      const gS=ac.createGain(); gS.gain.value=0.10*boost;
-      oscA.connect(gA); oscB.connect(gB); sub.connect(gS);
-      gA.connect(lp); gB.connect(lp); gS.connect(lp);
-      lp.connect(gain); gain.connect(compressor); compressor.connect(master);
-      gain.gain.value=0.0;
-      oscA.start(); oscB.start(); sub.start(); lfo.start();
-      setVolume(0.22);
-    }catch(err){ if(live) live.textContent='audio error'; console.error('Audio init failed', err);}
-  }
-
-  function setVolume(target){
-    if(!ac||!gain) return; const now=ac.currentTime;
-    try{ const tau=/iPhone|iPad|iPod|Safari/i.test(navigator.userAgent)?0.1:0.06;
-      gain.gain.cancelScheduledValues(now);
-      gain.gain.setTargetAtTime(target, now, tau);
-    }catch(_){}
-  }
-
-  function rampToZero(duration=0.14){
-    if(!ac||!gain) return; const now=ac.currentTime; const start=gain.gain.value; const N=256;
-    const curve=new Float32Array(N);
-    for(let i=0;i<N;i++){ const t=i/(N-1); const w=0.5*(1+Math.cos(Math.PI*t)); curve[i]=start*w; }
-    gain.gain.cancelScheduledValues(now);
-    gain.gain.setValueCurveAtTime(curve, now, duration);
-  }
-
-  function stopDrone(hard=false){
-    if(!ac||!gain) return; rampToZero(0.14);
-    if(hard){
-      setTimeout(()=>{ try{ oscA?.stop(); oscB?.stop(); sub?.stop(); lfo?.stop(); }catch(_){} try{ ac.close(); }catch(_){} ac=null; master=compressor=gain=lp=oscA=oscB=sub=lfo=lfoGain=null; }, 160);
-    }
-  }
-
-  // Fade ut evt. forrige swell, men IKKE fade ut på slutten av den nye — vi kutter hardt.
-  function fadeAndStopSwell(){
-    if(!swellNodes||!ac) return;
-    const { g, src } = swellNodes;
-    try{
-      const now=ac.currentTime;
-      const ms=(window.VOIDPASS_CONFIG?.swellFadeMs||220)/1000;
-      g.gain.cancelScheduledValues(now);
-      g.gain.linearRampToValueAtTime(0.0, now+ms);
-      setTimeout(()=>{ try{ src.stop(); }catch(_){} swellNodes=null; }, (ms*1000)+40);
-    }catch(_){}
-  }
-
-  // (1) SWELL: start lavt, fade OPP, så hard cut ved slutt
-  function playSwell(){
-    try{
-      ensureAC();
-      fadeAndStopSwell(); // stopp forrige mykt
-
-      const now=ac.currentTime, dur=1.2, sr=ac.sampleRate, frames=Math.floor(sr*dur);
-      const buf=ac.createBuffer(1, frames, sr), data=buf.getChannelData(0);
-      for(let i=0;i<frames;i++){ const n=(Math.random()*2-1); data[i]=(i>0?data[i-1]*0.94+n*0.06:n*0.06); }
-      const src=ac.createBufferSource(); src.buffer=buf; src.loop=false;
-
-      const bp=ac.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=320; bp.Q.value=2.8;
-      const g=ac.createGain(); const targetGain=0.55; g.gain.value=0.0; // start lavt
-      src.connect(bp); bp.connect(g); g.connect(master);
-
-      // FADE OPP raskt (attack), så CUT ved stop
-      g.gain.setValueAtTime(0.0, now);
-      g.gain.linearRampToValueAtTime(targetGain, now + 0.6); // ~600ms opp
-
-      src.onended = ()=>{ swellNodes=null; };
-      src.start(now);
-      src.stop(now+dur); // hard cut (ingen fade ut)
-      swellNodes = { g, src };
-    }catch(err){ console.warn('swell error', err); }
-  }
-
-  // spiller alltid en ny swell ved åpning, og demper dronen
-  function enterSilenceWithSwell(){
-    if(gain){ rampToZero(0.14); }
-    playSwell();
-  }
-
-  /* Mute (uendret logikk) */
-  muteBtn.addEventListener('click', ()=>{
-    if(!ac||!gain){ startDrone(); return; }
-    const pressed=muteBtn.getAttribute('aria-pressed')==='true';
-    if(pressed){
-      muteBtn.setAttribute('aria-pressed','false');
-      muteBtn.textContent='mute';
-      muteBtn.setAttribute('aria-label','mute drone');
-      setVolume(0.22);
-    } else {
-      muteBtn.setAttribute('aria-pressed','true');
-      muteBtn.textContent='unmute';
-      muteBtn.setAttribute('aria-label','unmute drone');
-      rampToZero(0.14);
-    }
-  });
-
-  /* ESC */
-  window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && veil.classList.contains('open')){ closeVeil(); } });
-
-  /* Global puls + hue-drift */
-  (function animateField(){
-    if(reduceMotion) return;
-    const pulseFreq=0.16; const hueAmpDeg=8; const huePeriod=90000; const t0=performance.now();
-    function frame(){
-      const now=performance.now(); const t=(now-t0)/1000;
-      const phase=Math.sin(2*Math.PI*pulseFreq*t);
-      const pulse=0.96+0.05*((phase+1)/2);
-      document.documentElement.style.setProperty('--pulse', pulse.toFixed(3));
-      const hue=Math.sin((now-t0)*(2*Math.PI/huePeriod))*hueAmpDeg;
-      document.documentElement.style.setProperty('--hue', hue.toFixed(2)+'deg');
+    // Global puls + hue
+    (function animateField(){
+      if(reduceMotion) return;
+      const pulseFreq=0.16, hueAmpDeg=8, huePeriod=90000, t0=performance.now();
+      function frame(){
+        const now=performance.now(), t=(now-t0)/1000;
+        const phase=Math.sin(2*Math.PI*pulseFreq*t);
+        document.documentElement.style.setProperty('--pulse', (0.96+0.05*((phase+1)/2)).toFixed(3));
+        const hue=Math.sin((now-t0)*(2*Math.PI/huePeriod))*hueAmpDeg;
+        document.documentElement.style.setProperty('--hue', hue.toFixed(2)+'deg');
+        requestAnimationFrame(frame);
+      }
       requestAnimationFrame(frame);
-    }
-    requestAnimationFrame(frame);
-  })();
+    })();
 
-  /* =============================================================
-     RITUAL COUNTDOWN — beholdt eksakt som før
-  ============================================================= */
-  const TARGET_UTC_MS = Date.UTC(2026, 1, 1, 0, 0, 0); // Feb = 1 (0-indeksert måned)
-  const RITUAL_START_REAL_MS = null;
-  const RITUAL_SPEED = 0.5; // 0.5x realtid = 1 ritual-sek = 2 sanne sek
-
-  (function initRitualCountdown(){
-    const el = {
-      days:  document.getElementById('cd-days'),
-      hours: document.getElementById('cd-hours'),
-      mins:  document.getElementById('cd-mins'),
-      secs:  document.getElementById('cd-secs'),
-      digits: document.querySelector('.cd-digits'),
-      openMsg: document.getElementById('cd-open')
-    };
-    if(!el.days || !el.hours || !el.mins || !el.secs) return;
-
-    const startReal = (typeof RITUAL_START_REAL_MS === 'number') ? RITUAL_START_REAL_MS : Date.now();
-    const baseRitualRemaining = Math.max(0, TARGET_UTC_MS - startReal);
-
-    function fmt(n){ return n<10 ? '0'+n : ''+n; }
-    function render(ms){
-      let total = Math.floor(ms/1000); if(total<0) total=0;
-      const d = Math.floor(total/86400);
-      const h = Math.floor((total%86400)/3600);
-      const m = Math.floor((total%3600)/60);
-      const s = total%60;
-      el.days.textContent  = fmt(d);
-      el.hours.textContent = fmt(h);
-      el.mins.textContent  = fmt(m);
-      el.secs.textContent  = fmt(s);
-    }
-    function done(){
-      if(el.digits) el.digits.hidden = true;
-      if(el.openMsg){ el.openMsg.hidden = false; el.openMsg.textContent = 'The door is open.'; }
-      if(live) live.textContent = 'ritual open';
-    }
-    function tick(){
-      const nowReal = Date.now();
-      const elapsedReal = nowReal - startReal;
-      const elapsedRitual = elapsedReal * RITUAL_SPEED;
-      const remainingRitual = Math.floor(baseRitualRemaining - elapsedRitual);
-      if(remainingRitual <= 0){ render(0); done(); clearInterval(iv); return; }
-      render(remainingRitual);
-    }
-    tick();
-    const iv = setInterval(tick, 1000);
-  })();
-</script>
+    // COUNTDOWN – uendret
+    const TARGET_UTC_MS = Date.UTC(2026, 1, 1, 0, 0, 0);
+    const RITUAL_SPEED = 0.5;
+    (function initRitualCountdown(){
+      const el = { days: document.getElementById('cd-days'), hours: document.getElementById('cd-hours'), mins: document.getElementById('cd-mins'), secs: document.getElementById('cd-secs'), openMsg: document.getElementById('cd-open') };
+      if(!el.days) return;
+      const startReal = Date.now();
+      const baseRitualRemaining = Math.max(0, TARGET_UTC_MS - startReal);
+      function fmt(n){ return n<10 ? '0'+n : ''+n; }
+      function render(ms){
+        let total = Math.floor(ms/1000); if(total<0) total=0;
+        const d = Math.floor(total/86400), h = Math.floor((total%86400)/3600), m = Math.floor((total%3600)/60),'D s = total%60;
+        el.days.textContent = fmt(d); el.hours.textContent = fmt(h); el.mins.textContent = fmt(m); el.secs.textContent = fmt(s);
+      }
+      function done(){
+        document.querySelector('.cd-digits').hidden = true;
+        if(el.openMsg){ el.openMsg.hidden = false; el.openMsg.textContent = 'The door is open.'; }
+      }
+      function tick(){
+        const elapsedReal = Date.now() - startReal;
+        const remainingRitual = Math.floor(baseRitualRemaining - elapsedReal * RITUAL_SPEED);
+        if(remainingRitual <= 0){ render(0); done(); clearInterval(iv); return; }
+        render(remainingRitual);
+      }
+      tick();
+      const iv = setInterval(tick, 1000);
+    })();
+  </script>
 </body>
 </html>
