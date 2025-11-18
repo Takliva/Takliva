@@ -442,16 +442,14 @@
   enterBtn.addEventListener('click', openVeil);
   closeBtn.addEventListener('click', ()=>{ closeVeil(); });
 
-
-
-  // ——————————————————————
-  // REMAIN OUTSIDE LOGIKK (This is the code you pasted)
+// ——————————————————————
+  // REMAIN OUTSIDE LOGIKK
   // ——————————————————————
   const outside = document.getElementById('outside');
   const closeOutsideBtn = document.getElementById('close-outside');
 
   passBtn.addEventListener('click', () => {
-s    document.body.classList.add('veil-open');
+    document.body.classList.add('veil-open'); // <-- Fixed: removed 's'
     outside.style.display = 'grid';
     outside.classList.add('open');
     lockScroll();
@@ -462,7 +460,7 @@ s    document.body.classList.add('veil-open');
     outside.style.display = 'none';
     outside.classList.remove('open');
     document.body.classList.remove('veil-open');
-    unlockScroll();
+  	unlockScroll();
   });
 
   // ESC lukker også outside-boksen
@@ -475,16 +473,14 @@ s    document.body.classList.add('veil-open');
   // Midlertidig form-submit (du kobler til webhook senere)
   document.getElementById('outside-form').addEventListener('submit', (e) => {
     e.preventDefault();
-    const email = e.target.querySelector('input').value.trim();
-Click to copy
+  	const email = e.target.querySelector('input').value.trim();
+  	if (email) { // <-- Fixed: removed 'Click to copy' and added the 'if' check
       alert('saved in silence. you will receive the key.');
       closeOutsideBtn.click();
-    }
+  	}
   });
   // void@takliva.com SUBJECT: ok Takliva, im in!
   // --- (End of your pasted code) ---
-
-  
 
   grid.addEventListener('click', (e)=>{
     const btn=e.target.closest('.bind'); if(!btn) return;
