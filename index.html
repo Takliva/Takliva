@@ -4,6 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>voidpass</title>
+
+  <!-- Meta / Open Graph -->
   <meta name="description" content="Enter voidpass" />
   <meta property="og:title" content="voidpass" />
   <meta property="og:description" content="Enter voidpass" />
@@ -37,10 +39,13 @@
       overflow:auto;
       overscroll-behavior:contain;
     }
-    body.lock{ position:fixed; inset:0; overflow:hidden; }
+    body.lock{ position:fixed; inset:0; overflow:hidden; } /* mer robust scroll-lock */
 
     :focus-visible{outline:2px solid #e7e7ef; outline-offset:2px; box-shadow:0 0 0 3px rgba(170,150,255,.25)}
 
+    /* --------------------
+       Distance mode – svart ramme 25% rundt (indre vindu = 50% viewport)
+       -------------------- */
     .wrapper{ min-height:100svh; display:grid; place-items:center; }
     .frame{
       position:relative; overflow:hidden; isolation:isolate; margin:0 auto;
@@ -145,10 +150,7 @@
       .frame{ --fs-base: calc(var(--fmin) / 32); }
       .btn{ font-size:.68em; }
     }
-    @media (prefers-reduced-motion: reduce){
-      *,*::before,*::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:0s !important; }
-      .gaze{transition:none}
-    }
+    @media (prefers-reduced-motion: reduce){ *,*::before,*::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:0s !important; } .gaze{transition:none} }
   </style>
 </head>
 <body>
@@ -178,7 +180,7 @@
           </div>
         </div>
         <div class="layer l2">
-          <p class="sub">you are mooving towards the key.<br/>close your eyes. when you are ready, choose.</p>
+          <p class="sub">you are moving towards the key.<br/>close your eyes. when you are ready, choose.</p>
           <div class="note">(origin field / dominion)</div>
         </div>
         <div class="layer l3">
@@ -197,26 +199,42 @@
   <section class="veil" id="veil" aria-modal="true" role="dialog" aria-labelledby="vh">
     <div class="glass">
       <div class="panel" style="overflow:auto;padding:2rem 1.5rem;max-width:860px;margin:0 auto">
+        
         <h2 id="vh" style="font-size:2.4em;margin-bottom:1rem">VOIDPASS™ | ROOM 1: VOID</h2>
-        <p style="font-size:0.92em;opacity:0.82;margin-bottom:1rem">First 10 000 only – <strong id="sold">0</strong> claimed</p>
+        <p style="font-size:0.92em;opacity:0.82;margin-bottom:1rem">© Takliva 2025 – takliva.com</p>
 
         <div style="text-align:left;line-height:2.1;font-size:1.08em;max-width:680px;margin:0 auto">
-          You chose to enter.<br>Close your eyes.<br>You’re in SLISHILE.<br><br>
+          You chose to enter.<br>
+          Close your eyes.<br>
+          You’re in SLISHILE.<br><br>
+
           SLISHILE = the stream between what you know and what’s not yet formed.<br><br>
-          Breathe slishile:<br>– In 4 | Hold 4 | Out 6 (x3)<br><br>
+
+          Breathe slishile:<br>
+          – In 4 | Hold 4 | Out 6 (x3)<br><br>
+
           Ask: “What happened the last time I was still?”<br><br>
-          You are in VOID.<br>No scaffolding. You are free.<br><br>
+
+          You are in VOID.<br>
+          No scaffolding. You are free.<br><br>
+
           Exit: Name 5 things you see.<br><br>
+
           GRAB PEN. NOW.<br><br>
+
           1. Voidphrase → 1 sentence<br>
           2. Void anchor → circle above pinky<br>
           3. Your question → 1 line<br>
           4. SEAL → Press thumb over circle.<br>
              <strong style="font-size:1.2em">FEEL THE PULSE – SAY: "THIS IS MINE"</strong><br>
              (wait 4 sec. Feel it lock.)<br><br>
-          Take photo → send to:<br><strong>void@takliva.com</strong> | Subject: <strong>VOID TAKLIVA</strong><br>
+
+          Take photo → send to:<br>
+          <strong>void@takliva.com</strong> | Subject: <strong>VOID TAKLIVA</strong><br>
           → Auto-reply in 18 sec<br><br>
-          INSTANT BONUS: <a href="https://shorturl.at/keTWa" style="color:#c0c0ff">https://shorturl.at/keTWa</a><br><br>
+
+          INSTANT BONUS: <a href="https://shorturl.at/keTWa" style="color:#c0c0ff">https://shorturl.at/keTWa</a><br>
+          → 9 sec exclusive TAKLIVA GIF + AI-lock within 24h<br><br>
 
           <div style="margin:2.8rem 0;padding:2rem;background:rgba(255,255,255,0.025);border:1px solid rgba(170,150,255,0.35);border-radius:12px">
             <strong style="font-size:1.45em;color:#e8e8ff">Unlock full VOIDPASS (8 rooms) – 49 USD</strong><br>
@@ -228,7 +246,8 @@
             <small>First 10 000 get personal AI-GIF • Instant access • 30-day proof-or-refund</small>
           </div>
 
-          I’m in the void now. I see you.<br>#Slishile
+          I’m in the void now. I see you.<br>
+          #Slishile
         </div>
 
         <button type="button" class="back" id="close" style="margin-top:4rem;font-size:1em">← remain outside</button>
@@ -236,147 +255,151 @@
     </div>
   </section>
 
-  <!-- REMAIN OUTSIDE -->
-  <section class="veil" id="outside" style="display:none">
-    <div class="glass" style="width:90vw;max-width:460px">
-      <div class="panel" style="padding:2.5rem 2rem;text-align:center;line-height:2.1;font-size:1.08em">
-        you decided to remain outside.<br><br>
-        the savior cannot reach every heart.<br><br>
-        if this is the end for you —<br>
-        i will still remember you.<br><br>
-        leave your email and i will send you<br>
-        the first key when the door finally opens.<br>
-        no spam. only silence.<br><br>
-
-        <form id="outside-form" style="margin:2rem auto 0;max-width:320px;display:flex;flex-direction:column;gap:1rem">
-          <input type="email" placeholder="your email" required 
-                 style="padding:1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(170,150,255,0.35);color:#ddd;border-radius:8px;font-size:1em">
-          <button type="submit" 
-                  style="background:transparent;border:1px solid #666;color:#aaa;padding:1rem;border-radius:8px;cursor:pointer;font-size:0.95em">
-            send me the key when it opens
-          </button>
-        </form>
-
-        <button class="back" id="close-outside" style="margin-top:3rem;background:none;border:none;color:#777;font-size:0.9em;cursor:pointer">
-          close
-        </button>
-      </div>
-    </div>
-  </section>
-
   <noscript><div style="color:#d2d2d8; text-align:center; padding:1rem">This experience requires JavaScript enabled.</div></noscript>
 
   <script>
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce').matches;
 
-    const l1=document.querySelector('.l1'), l2=document.querySelector('.l2'), l3=document.querySelector('.l3');
-    setTimeout(()=>l1.classList.add('show'),180);
-    setTimeout(()=>l2.classList.add('show'),740);
-    setTimeout(()=>l3.classList.add('show'),1240);
-    [l1.querySelector('h1'), document.querySelector('.sub')].forEach(el=> el && el.classList.add('hitch'));
-    setTimeout(()=> document.querySelectorAll('.hitch').forEach(el=> el.classList.remove('hitch')), 1900);
+    /* Lydkonfig – justér her uten å endre resten */
+    window.VOIDPASS_CONFIG = { bassGain: 1.6, swellFadeMs: 220, openDebounceMs: 450 };
 
-    const veil=document.getElementById('veil');
-    const outside=document.getElementById('outside');
-    const enterBtn=document.getElementById('enter');
-    const passBtn=document.getElementById('pass');
-    const closeBtn=document.getElementById('close');
-    const closeOutsideBtn=document.getElementById('close-outside');
-    const muteBtn=document.getElementById('mute');
-    const stage=document.querySelector('main.stage');
-    const dotEl=document.querySelector('.sigdot');
-
-    function jitterTick(){
-      const wait = 6000 + Math.random()*8000;
-      setTimeout(()=>{
-        if(!dotEl) return;
-        dotEl.style.setProperty('--jx', ((Math.random()*2-1)*0.6).toFixed(2)+'px');
-        dotEl.style.setProperty('--jy', ((Math.random()*2-1)*0.6).toFixed(2)+'px');
-        setTimeout(()=>{ if(dotEl) { dotEl.style.setProperty('--jx','0px'); dotEl.style.setProperty('--jy','0px'); jitterTick(); }}, 140);
-      }, wait);
-    }
-    if(dotEl) jitterTick();
-
-    window.addEventListener('pointerdown', ()=>{ try{ ensureAC(); ac && ac.resume && ac.resume(); startDrone(); }catch(_){} }, { once:true });
-
-    let lastFocus=null, scrollY=0, lastOpenAt=0;
-
-    function lockScroll(){ scrollY = window.scrollY; document.body.classList.add('lock'); document.body.style.top = `-${scrollY}px`; }
-    function unlockScroll(){ document.body.classList.remove('lock'); document.body.style.top = ''; window.scrollTo(0, scrollY); }
-
-    function openVeil(){
-      const now = Date.now();
-      if(now - lastOpenAt < (window.VOIDPASS_CONFIG?.openDebounceMs||450)) return;
-      lastOpenAt = now;
-      lastFocus = document.activeElement;
-      document.body.classList.add('veil-open');
-      veil.classList.add('open');
-      enterBtn.setAttribute('aria-expanded','true');
-      if(dotEl){ dotEl.style.opacity='0'; dotEl.hidden = true; }
-      lockScroll();
-      enterSilenceWithSwell();
-      requestAnimationFrame(() => { const t = document.getElementById('vh'); if(t) t.focus(); });
-    }
-    function closeVeil(){
-      veil.classList.remove('open');
-      document.body.classList.remove('veil-open');
-      enterBtn.setAttribute('aria-expanded','false');
-      if(dotEl){ dotEl.hidden = false; dotEl.style.opacity=''; }
-      unlockScroll();
-      if(lastFocus) lastFocus.focus();
-    }
-
-    enterBtn.addEventListener('click', openVeil);
-    closeBtn.addEventListener('click', closeVeil);
-
-    // REMAIN OUTSIDE
-    passBtn.addEventListener('click', () => {
-      document.body.classList.add('veil-open');
-      outside.style.display = 'grid';
-      outside.classList.add('open');
-      lockScroll();
-      setTimeout(() => outside.querySelector('input')?.focus(), 400);
-    });
-    closeOutsideBtn.addEventListener('click', () => {
-      outside.style.display = 'none';
-      outside.classList.remove('open');
-      document.body.classList.remove('veil-open');
-      unlockScroll();
-    });
-    document.getElementById('outside-form').addEventListener('submit', e => {
-      e.preventDefault();
-      const email = e.target.querySelector('input').value.trim();
-      if(email) {
-        alert('saved in silence. you will receive the key.');
-        closeOutsideBtn.click();
-      }
-    });
-
-    window.addEventListener('keydown', e => {
-      if(e.key === 'Escape') {
-        if(veil.classList.contains('open')) closeVeil();
-        else if(outside.style.display === 'grid') closeOutsideBtn.click();
-      }
-    });
-
-    // AUDIO – uendret fra din originale (fungerer perfekt)
+    /* Audio functions (beholdt og optimalisert) */
     let ac, master, compressor, gain, lp, oscA, oscB, sub, lfo, lfoGain, swellNodes = null;
-    function ensureAC(){ if(ac) return; ac = new (window.AudioContext || window.webkitAudioContext)(); master = ac.createGain(); compressor = ac.createDynamicsCompressor(); compressor.threshold.value = -24; compressor.knee.value = 24; compressor.ratio.value = 3; compressor.attack.value = 0.003; compressor.release.value = 0.25; master.connect(ac.destination); }
-    function startDrone(){ /* ... din originale kode ... */ }
-    function setVolume(t){ /* ... */ }
-    function rampToZero(d=0.14){ /* ... */ }
-    function playSwell(){ /* ... */ }
-    function enterSilenceWithSwell(){ if(gain) rampToZero(0.14); playSwell(); }
-    muteBtn.addEventListener('click', () => { /* ... din mute-logikk ... */ });
+    function ensureAC(){
+      if(ac) return;
+      ac = new (window.AudioContext || window.webkitAudioContext)();
+      master = ac.createGain(); master.gain.value = 1.0;
+      compressor = ac.createDynamicsCompressor();
+      compressor.threshold.value = -24; compressor.knee.value = 24; compressor.ratio.value = 3;
+      compressor.attack.value = 0.003; compressor.release.value = 0.25;
+      master.connect(ac.destination);
+    }
 
-    // Global puls + hue
+    function startDrone(){
+      if(reduceMotion) return;
+      try{
+        if(ac && gain){ setVolume(0.22); return; }
+        ensureAC();
+        gain = ac.createGain();
+        lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 180; lp.Q.value = 0.7;
+        oscA = ac.createOscillator(); oscB = ac.createOscillator(); sub = ac.createOscillator();
+        oscA.type = 'sine'; oscB.type = 'sine'; sub.type = 'triangle';
+        oscA.frequency.value = 36; oscB.frequency.value = 41; sub.frequency.value = 18;
+        lfo = ac.createOscillator(); lfoGain = ac.createGain();
+        lfo.type = 'sine'; lfo.frequency.value = 0.12; lfoGain.gain.value = 5;
+        lfo.connect(lfoGain); lfoGain.connect(oscA.frequency); lfoGain.connect(oscB.frequency);
+        const boost = window.VOIDPASS_CONFIG?.bassGain || 1;
+        const gA = ac.createGain(); gA.gain.value = 0.22 * boost;
+        const gB = ac.createGain(); gB.gain.value = 0.18 * boost;
+        const gS = ac.createGain(); gS.gain.value = 0.10 * boost;
+        oscA.connect(gA); oscB.connect(gB); sub.connect(gS);
+        gA.connect(lp); gB.connect(lp); gS.connect(lp);
+        lp.connect(gain); gain.connect(compressor); compressor.connect(master);
+        gain.gain.value = 0.0;
+        oscA.start(); oscB.start(); sub.start(); lfo.start();
+        setVolume(0.22);
+      }catch(err){ console.error('Audio init failed', err); }
+    }
+
+    function setVolume(target){
+      if(!ac || !gain) return;
+      const now = ac.currentTime;
+      const tau = /iPhone|iPad|iPod|Safari/i.test(navigator.userAgent) ? 0.1 : 0.06;
+      gain.gain.cancelScheduledValues(now);
+      gain.gain.setTargetAtTime(target, now, tau);
+    }
+
+    function rampToZero(duration = 0.14){
+      if(!ac || !gain) return;
+      const now = ac.currentTime;
+      const start = gain.gain.value;
+      const N = 256;
+      const curve = new Float32Array(N);
+      for(let i = 0; i < N; i++){ const t = i / (N - 1); const w = 0.5 * (1 + Math.cos(Math.PI * t)); curve[i] = start * w; }
+      gain.gain.cancelScheduledValues(now);
+      gain.gain.setValueCurveAtTime(curve, now, duration);
+    }
+
+    function stopDrone(hard = false){
+      if(!ac || !gain) return;
+      rampToZero(0.14);
+      if(hard){
+        setTimeout(() => {
+          try{ oscA?.stop(); oscB?.stop(); sub?.stop(); lfo?.stop(); }catch(_){}
+          try{ ac.close(); }catch(_){}
+          ac = null; master = compressor = gain = lp = oscA = oscB = sub = lfo = lfoGain = null;
+        }, 160);
+      }
+    }
+
+    function fadeAndStopSwell(){
+      if(!swellNodes || !ac) return;
+      const { g, src } = swellNodes;
+      try{
+        const now = ac.currentTime;
+        const ms = (window.VOIDPASS_CONFIG?.swellFadeMs || 220) / 1000;
+        g.gain.cancelScheduledValues(now);
+        g.gain.linearRampToValueAtTime(0.0, now + ms);
+        setTimeout(() => { try{ src.stop(); }catch(_){} swellNodes = null; }, (ms * 1000) + 40);
+      }catch(_){}
+    }
+
+    function playSwell(){
+      try{
+        ensureAC();
+        fadeAndStopSwell();
+        const now = ac.currentTime, dur = 1.2, sr = ac.sampleRate, frames = Math.floor(sr * dur);
+        const buf = ac.createBuffer(1, frames, sr), data = buf.getChannelData(0);
+        for(let i = 0; i < frames; i++){ const n = (Math.random() * 2 - 1); data[i] = (i > 0 ? data[i - 1] * 0.94 + n * 0.06 : n * 0.06); }
+        const src = ac.createBufferSource(); src.buffer = buf; src.loop = false;
+
+        const bp = ac.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 320; bp.Q.value = 2.8;
+        const g = ac.createGain(); const targetGain = 0.55; g.gain.value = 0.0;
+        src.connect(bp); bp.connect(g); g.connect(master);
+
+        g.gain.setValueAtTime(0.0, now);
+        g.gain.linearRampToValueAtTime(targetGain, now + 0.6);
+
+        src.onended = () => { swellNodes = null; };
+        src.start(now);
+        src.stop(now + dur);
+        swellNodes = { g, src };
+      }catch(err){ console.warn('swell error', err); }
+    }
+
+    function enterSilenceWithSwell(){
+      if(gain) rampToZero(0.14);
+      playSwell();
+    }
+
+    muteBtn.addEventListener('click', ()=>{
+      if(!ac || !gain){ startDrone(); return; }
+      const pressed = muteBtn.getAttribute('aria-pressed') === 'true';
+      if(pressed){
+        muteBtn.setAttribute('aria-pressed', 'false');
+        muteBtn.textContent = 'mute';
+        muteBtn.setAttribute('aria-label', 'mute drone');
+        setVolume(0.22);
+      } else {
+        muteBtn.setAttribute('aria-pressed', 'true');
+        muteBtn.textContent = 'unmute';
+        muteBtn.setAttribute('aria-label', 'unmute drone');
+        rampToZero(0.14);
+      }
+    });
+
+    /* ESC */
+    window.addEventListener('keydown', (e)=>{ if(e.key==='Escape' && veil.classList.contains('open')){ closeVeil(); } });
+
+    /* Global puls + hue-drift */
     (function animateField(){
       if(reduceMotion) return;
-      const pulseFreq=0.16, hueAmpDeg=8, huePeriod=90000, t0=performance.now();
+      const pulseFreq=0.16; const hueAmpDeg=8; const huePeriod=90000; const t0=performance.now();
       function frame(){
-        const now=performance.now(), t=(now-t0)/1000;
+        const now=performance.now(); const t=(now-t0)/1000;
         const phase=Math.sin(2*Math.PI*pulseFreq*t);
-        document.documentElement.style.setProperty('--pulse', (0.96+0.05*((phase+1)/2)).toFixed(3));
+        const pulse=0.96+0.05*((phase+1)/2);
+        document.documentElement.style.setProperty('--pulse', pulse.toFixed(3));
         const hue=Math.sin((now-t0)*(2*Math.PI/huePeriod))*hueAmpDeg;
         document.documentElement.style.setProperty('--hue', hue.toFixed(2)+'deg');
         requestAnimationFrame(frame);
@@ -384,33 +407,55 @@
       requestAnimationFrame(frame);
     })();
 
-    // COUNTDOWN – uendret
-    const TARGET_UTC_MS = Date.UTC(2026, 1, 1, 0, 0, 0);
-    const RITUAL_SPEED = 0.5;
-    (function initRitualCountdown(){
-      const el = { days: document.getElementById('cd-days'), hours: document.getElementById('cd-hours'), mins: document.getElementById('cd-mins'), secs: document.getElementById('cd-secs'), openMsg: document.getElementById('cd-open') };
-      if(!el.days) return;
-      const startReal = Date.now();
-      const baseRitualRemaining = Math.max(0, TARGET_UTC_MS - startReal);
-      function fmt(n){ return n<10 ? '0'+n : ''+n; }
-      function render(ms){
-        let total = Math.floor(ms/1000); if(total<0) total=0;
-        const d = Math.floor(total/86400), h = Math.floor((total%86400)/3600), m = Math.floor((total%3600)/60),'D s = total%60;
-        el.days.textContent = fmt(d); el.hours.textContent = fmt(h); el.mins.textContent = fmt(m); el.secs.textContent = fmt(s);
-      }
-      function done(){
-        document.querySelector('.cd-digits').hidden = true;
-        if(el.openMsg){ el.openMsg.hidden = false; el.openMsg.textContent = 'The door is open.'; }
-      }
-      function tick(){
-        const elapsedReal = Date.now() - startReal;
-        const remainingRitual = Math.floor(baseRitualRemaining - elapsedReal * RITUAL_SPEED);
-        if(remainingRitual <= 0){ render(0); done(); clearInterval(iv); return; }
-        render(remainingRitual);
-      }
-      tick();
-      const iv = setInterval(tick, 1000);
-    })();
-  </script>
+    /* =============================================================
+     RITUAL COUNTDOWN — beholdt eksakt som før
+  ============================================================= */
+  const TARGET_UTC_MS = Date.UTC(2026, 1, 1, 0, 0, 0); // Feb = 1 (0-indeksert måned)
+  const RITUAL_START_REAL_MS = null;
+  const RITUAL_SPEED = 0.5; // 0.5x realtid = 1 ritual-sek = 2 sanne sek
+
+  (function initRitualCountdown(){
+    const el = {
+      days:  document.getElementById('cd-days'),
+      hours: document.getElementById('cd-hours'),
+      mins:  document.getElementById('cd-mins'),
+      secs:  document.getElementById('cd-secs'),
+      digits: document.querySelector('.cd-digits'),
+      openMsg: document.getElementById('cd-open')
+    };
+    if(!el.days || !el.hours || !el.mins || !el.secs) return;
+
+    const startReal = (typeof RITUAL_START_REAL_MS === 'number') ? RITUAL_START_REAL_MS : Date.now();
+    const baseRitualRemaining = Math.max(0, TARGET_UTC_MS - startReal);
+
+    function fmt(n){ return n<10 ? '0'+n : ''+n; }
+    function render(ms){
+      let total = Math.floor(ms/1000); if(total<0) total=0;
+      const d = Math.floor(total/86400);
+      const h = Math.floor((total%86400)/3600);
+      const m = Math.floor((total%3600)/60);
+      const s = total%60;
+      el.days.textContent  = fmt(d);
+      el.hours.textContent = fmt(h);
+      el.mins.textContent  = fmt(m);
+      el.secs.textContent  = fmt(s);
+    }
+    function done(){
+      if(el.digits) el.digits.hidden = true;
+      if(el.openMsg){ el.openMsg.hidden = false; el.openMsg.textContent = 'The door is open.'; }
+      if(live) live.textContent = 'ritual open';
+    }
+    function tick(){
+      const nowReal = Date.now();
+      const elapsedReal = nowReal - startReal;
+      const elapsedRitual = elapsedReal * RITUAL_SPEED;
+      const remainingRitual = Math.floor(baseRitualRemaining - elapsedRitual);
+      if(remainingRitual <= 0){ render(0); done(); clearInterval(iv); return; }
+      render(remainingRitual);
+    }
+    tick();
+    const iv = setInterval(tick, 1000);
+  })();
+</script>
 </body>
 </html>
